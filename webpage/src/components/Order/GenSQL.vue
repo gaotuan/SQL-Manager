@@ -119,7 +119,7 @@
       <Row>
         <Card>
           <div class="step-header-con">
-            <h3>Yearning SQL平台审核工单</h3>
+            <h3>SQL平台审核工单</h3>
           </div>
           <p class="step-content"></p>
           <Form class="step-form" :label-width="100">

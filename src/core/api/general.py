@@ -42,23 +42,23 @@ class addressing(baseview.BaseView):
                     dic = SqlDictionary.objects.all().values('Name')
                     dic.query.distinct = ['Name']
 
-                elif request.data['permissions_type'] == 'query':
-                    con_name = []
-                    permission_spec = grained.objects.filter(username=request.user).first()
-                    if permission_spec.permissions['query'] == '1':
-                        for i in permission_spec.permissions['querycon']:
-                            con_instance = DatabaseList.objects.filter(connection_name=i).first()
-                            if con_instance:
-                                con_name.append(
-                                    {
-                                        'id': con_instance.id,
-                                        'connection_name': con_instance.connection_name,
-                                        'ip': con_instance.ip ,
-                                        'computer_room': con_instance.computer_room
-                                    })
-                    assigned = grained.objects.filter(username=request.user).first()
-                    return Response({'assigend': assigned.permissions['person'], 'connection': con_name,
-                                     'custom': custom_com['con_room']})
+                # elif request.data['permissions_type'] == 'query':
+                #     con_name = []
+                #     permission_spec = grained.objects.filter(username=request.user).first()
+                #     if permission_spec.permissions['query'] == '1':
+                #         for i in permission_spec.permissions['querycon']:
+                #             con_instance = DatabaseList.objects.filter(connection_name=i).first()
+                #             if con_instance:
+                #                 con_name.append(
+                #                     {
+                #                         'id': con_instance.id,
+                #                         'connection_name': con_instance.connection_name,
+                #                         'ip': con_instance.ip ,
+                #                         'computer_room': con_instance.computer_room
+                #                     })
+                #     assigned = grained.objects.filter(username=request.user).first()
+                #     return Response({'assigend': assigned.permissions['person'], 'connection': con_name,
+                #                      'custom': custom_com['con_room']})
                 else:
                     con_name = []
                     _type = request.data['permissions_type'] + 'con'

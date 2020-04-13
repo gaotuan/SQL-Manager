@@ -24,7 +24,7 @@
           </div>
         </div>
         <div class="header-avator-con">
-          <a @mouseover="getc = true">捐助</a>
+<!--          <a @mouseover="getc = true">捐助</a>-->
           <Modal
             v-model="getc"
             title="捐助Yearning"
@@ -85,7 +85,6 @@
         || $route.name === 'dmledit'
         || $route.name === 'view-dml'
         || $route.name === 'serach-sql'
-        // || $route.name === 'online-query'
         ">
           <keep-alive>
             <router-view></router-view>
@@ -98,7 +97,7 @@
     </div>
     <Modal
       v-model="statement"
-      title="欢迎使用Yearning SQL审核平台"
+      title="欢迎使用 小影SQL审核平台"
       width="600"
       :mask-closable="false"
       :closable="false"
@@ -106,9 +105,9 @@
       ok-text="同意"
       @on-ok="statementput"
     >
-      <h3>关于Yearning:</h3>
+      <h3>关于小影SQL审核平台:</h3>
       <br>
-      <p>Yearning 是一款基于inception的开源SQL审核平台。设计的目的便是让DBA能够从手动审核的环境中释放出来.让sql审核更加流程化,标准化,自动化。非常欢迎大家体验并使用Yearning!</p>
+      <p>小影SQL审核平台 是一款基于inception的开源SQL审核平台。设计的目的便是让DBA能够从手动审核的环境中释放出来.让sql审核更加流程化,标准化,自动化。非常欢迎大家体验并使用!</p>
       <br>
       <H3>关于二次开发的声明:</H3>
       <br>
@@ -121,9 +120,9 @@
       <br>
       <h3>免责声明:</h3>
       <br>
-      <p>由Yearning平台所产生的一切后果,Yearning作者本人不负一切责任! 请在进行安全评估及测试体验后使用。</p>
+      <p>有疑问请联系管理员。</p>
       <br>
-      <h3>当然用的喜欢,就打赏下我吧 ^_^ 左上角点击捐助</h3>
+<!--      <h3>当然用的喜欢,就打赏下我吧 ^_^ 左上角点击捐助</h3>-->
       <br>
       <p>此声明不会对非超级管理员用户推送。当接受上述条款并点击同意后,此通知将不会再次出现在超级管理员页面中。</p>
     </Modal>

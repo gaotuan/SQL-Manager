@@ -16,7 +16,7 @@
     <MenuItem name="main">
       <Icon type="cube" size="50" class="MenuIcon"></Icon>
       <br>
-      <span>Yearning SQL审核平台</span>
+      <span>SQL审核平台</span>
     </MenuItem>
     <MenuItem name="home_index">
       <Icon type="home" :size="iconSize"></Icon>

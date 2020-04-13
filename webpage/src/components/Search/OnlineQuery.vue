@@ -348,13 +348,14 @@
     }
     },
     mounted () {
-      axios.put(`${util.url}/workorder/connection`, {'permissions_type': 'dml'})
+      axios.put(`${util.url}/workorder/connection`, {'permissions_type': 'query'})
         .then(res => {
           this.item = res.data['connection']
           this.assigned = res.data['assigend']
           this.datalist.computer_roomlist = res.data['custom']
         })
         .catch(error => {
+          this.$Message.error('没有权限请联系管理员！')
           util.err_notice(error)
         })
     }

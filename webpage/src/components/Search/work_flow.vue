@@ -87,7 +87,7 @@
     data () {
       return {
         stepData: {
-          title: 'Yearning SQL查询系统',
+          title: 'SQL查询系统',
           describe: `欢迎你！ ${sessionStorage.getItem('user')}`
         },
         step: {

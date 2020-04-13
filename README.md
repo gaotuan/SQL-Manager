@@ -2,7 +2,7 @@
         <img width="300" src="logo.png">
 </p>
 
-# Yearning SQL审核平台
+#SQL审核平台
 
 ![](https://img.shields.io/badge/build-release-brightgreen.svg)  
 ![](https://img.shields.io/badge/version-v1.2.0-brightgreen.svg)  
@@ -67,9 +67,9 @@
   
 ## About 联系方式
    
-   QQ群:103674679
+   QQ:279264044
    
-   E-mail: im@supermancookie.com
+   E-mail: 
 
 ## Snapshot 效果展示
 

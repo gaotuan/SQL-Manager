@@ -17,8 +17,8 @@
   <div id="band" class="div-relative">
     <div class="div-a">
       <div style='margin-left: 10%'>
-        <Icon type="cube" size="60" style="margin-top:5%"></Icon>
-        <p style="margin-left: 20%;margin-top: -10%;font-size: 20px">Yearning SQL 审核平台</p>
+        <Icon type="cube" size="40" style="margin-top:5%"></Icon>
+        <p style="margin-left: 20%;margin-top: -10%;font-size: 20px">SQL 审核平台</p>
       </div>
       <br>
       <Card>
