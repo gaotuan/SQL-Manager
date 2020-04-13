@@ -39,7 +39,7 @@
                 </FormItem>
 
                 <FormItem label="库名:" prop="basename">
-                  <Select v-model="formItem.basename" filterable @on-change="changeDB(formItem.basename)">
+                  <Select v-model="formItem.basename" filterable @on-change="ChangeDB(formItem.basename)">
                     <Option v-for="item in datalist.basenamelist" :value="item" :key="item">{{ item }}</Option>
                   </Select>
                 </FormItem>
@@ -126,17 +126,13 @@
         assigned: [],
         put_info: {
           base: '',
-          tablename: ''
+          connection_name: '',
+          computer_room: ''
         }
       }
     },
     methods: {
-      choseName (vl) {
-        if (vl.expand === true) {
-          this.put_info.base = vl.title
-        }
-      },
-      changeDB (v) {
+      ChangeDB (v) {
         this.put_info.base = v
       },
       Getbasename (vl) {
@@ -181,6 +177,7 @@
         this.formItem.basename = ''
         if (val) {
           this.ScreenConnection(val)
+          this.put_info.computer_room = val
         }
       },
       ScreenConnection (val) {
@@ -192,6 +189,7 @@
       },
       DataBaseName (index) {
         if (index) {
+          this.put_info.connection_name = index
           this.id = this.item.filter(item => {
             if (item.connection_name === index) {
               return item
@@ -290,13 +288,17 @@
       },
       Search_sql () {
         let address = {
-          'basename': this.put_info.base
+          'basename': this.put_info.base,
+          'connection_name': this.put_info.connection_name,
+          'computer_room': this.put_info.computer_room
         }
-        axios.post(`${util.url}/search`, {
-          'sql': this.formItem.textarea,
-          'address': JSON.stringify(address)
-        })
-          .then(res => {
+        this.$refs['formItem'].validate((valid) => {
+          if (valid) {
+            axios.post(`${util.url}/search`, {
+              'sql': this.formItem.textarea,
+              'address': JSON.stringify(address)
+            })
+              .then(res => {
             if (res.data['error']) {
               util.err_notice(res.data['error'])
             } else {
@@ -306,13 +308,19 @@
               this.total = res.data['len']
             }
           })
-          .catch(error => {
+              .catch(error => {
             util.err_notice(error)
           })
-      },
+          } else {
+            this.$Message.error('请选择相关的数据库!')
+          }
+        })
+    },
       Explain_sql () {
         let address = {
-          'basename': this.put_info.base
+          'basename': this.put_info.base,
+          'connection_name': this.put_info.connection_name,
+          'computer_room': this.put_info.computer_room
         }
         this.$refs['formItem'].validate((valid) => {
           if (valid) {

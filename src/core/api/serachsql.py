@@ -40,16 +40,17 @@ class search(baseview.BaseView):
         if check[0].startswith('explain') and len(check)>1:
             v_sql = 'explain '+ check[-1]
 
-        user = query_order.objects.filter(username=request.user).order_by('-id').first()
+        # user = query_order.objects.filter(username=request.user).order_by('-id').first()
         un_init = util.init_conf()
         custom_com = ast.literal_eval(un_init['other'])
-        if user.query_per == 1:
+        # if user.query_per == 1:
+        if True :
             if  v_sql.strip().lower().startswith('explain')  or v_sql.strip().lower().startswith('s') == 1:
 
                 address = json.loads(request.data['address'])
                 _c = DatabaseList.objects.filter(
-                    connection_name=user.connection_name,
-                    computer_room=user.computer_room
+                    connection_name=address['connection_name'],
+                    computer_room=address['computer_room']
                 ).first()
                 try:
                     with con_database.SQLgo(
@@ -70,10 +71,12 @@ class search(baseview.BaseView):
                                     if k == i:
                                         for n in range(data_set['len']):
                                             data_set['data'][n].update({k: '********'})
+
                         querypermissions.objects.create(
-                            work_id=user.work_id,
+                            work_id=datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S' ),
                             username=request.user,
-                            statements=query_sql
+                            statements=query_sql,
+                            db_info=address['computer_room']+':'+address['computer_room']+':'+address['basename']
                         )
                         return HttpResponse(simplejson.dumps(data_set, cls=DateEncoder, bigint_as_string=True))
                 except Exception as e:

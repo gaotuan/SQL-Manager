@@ -149,6 +149,7 @@ class querypermissions(models.Model):
     work_id = models.CharField(max_length=50, null=True, db_index=True)
     username = models.CharField(max_length=100, null=True)
     statements = models.TextField()
+    db_info = models.CharField(max_length=100, null=True)
 
 
 class query_order(models.Model):
