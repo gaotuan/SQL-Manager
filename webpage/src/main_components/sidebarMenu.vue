@@ -66,8 +66,8 @@
           'dmledit': '',
           'indexedit': '',
           'view-dml': '',
-          'serach-sql': '1',
-          'online-query': '1',
+          'serach-sql': '',
+          'online-query': '',
           'management-user': '',
           'management-database': '',
           'audit-audit': '1',
@@ -108,6 +108,7 @@
           this.filtermenulist.ddledit = c.ddl
           this.filtermenulist.indexedit = c.ddl
           this.filtermenulist.dmledit = c.dml
+          this.filtermenulist['online-query'] = c.query
           this.filtermenulist['view-dml'] = c.dic
           this.filtermenulist['management-user'] = c.user
           this.filtermenulist['management-database'] = c.base
