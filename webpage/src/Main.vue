@@ -85,6 +85,7 @@
         || $route.name === 'dmledit'
         || $route.name === 'view-dml'
         || $route.name === 'serach-sql'
+        // || $route.name === 'online-query'
         ">
           <keep-alive>
             <router-view></router-view>

@@ -36,13 +36,16 @@ class search(baseview.BaseView):
         limit = ast.literal_eval(un_init['other'])
         sql = request.data['sql']
         check = str(sql).strip().split(';\n')
+        v_sql = check[-1]
+        if check[0].startswith('explain') and len(check)>1:
+            v_sql = 'explain '+ check[-1]
+
         user = query_order.objects.filter(username=request.user).order_by('-id').first()
         un_init = util.init_conf()
         custom_com = ast.literal_eval(un_init['other'])
         if user.query_per == 1:
-            if check[-1].strip().lower().startswith('s') != 1:
-                return Response({'error': '只支持查询功能或删除不必要的空白行！'})
-            else:
+            if  v_sql.strip().lower().startswith('explain')  or v_sql.strip().lower().startswith('s') == 1:
+
                 address = json.loads(request.data['address'])
                 _c = DatabaseList.objects.filter(
                     connection_name=user.connection_name,
@@ -56,7 +59,7 @@ class search(baseview.BaseView):
                             port=_c.port,
                             db=address['basename']
                     ) as f:
-                        query_sql = replace_limit(check[-1].strip(), limit['limit'])
+                        query_sql = replace_limit(v_sql.strip(), limit['limit'])
                         data_set = f.search(sql=query_sql)
                         for l in data_set['data']:
                             for k, v in l.items():
@@ -76,6 +79,8 @@ class search(baseview.BaseView):
                 except Exception as e:
                     CUSTOM_ERROR.error(f'{e.__class__.__name__}: {e}')
                     return Response({'error': e})
+            else:
+                return Response({'error': '只支持查询功能或删除不必要的空白行！'})
         else:
             return Response({'error': '已超过申请时限请刷新页面后重新提交申请'})
 

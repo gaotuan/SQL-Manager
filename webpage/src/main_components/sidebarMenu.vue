@@ -67,6 +67,7 @@
           'indexedit': '',
           'view-dml': '',
           'serach-sql': '1',
+          'online-query': '1',
           'management-user': '',
           'management-database': '',
           'audit-audit': '1',

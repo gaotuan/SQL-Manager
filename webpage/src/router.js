@@ -130,6 +130,15 @@ export const appRouter = [
     component: Index,
     children: [
       {
+        path: 'online-query',
+        name: 'online-query',
+        title: '线上查询',
+        'icon': 'podium',
+        component: resolve => {
+          require(['./components/Search/OnlineQuery.vue'], resolve)
+        }
+      },
+      {
         path: 'view-dml',
         name: 'view-dml',
         title: '数据库字典',
