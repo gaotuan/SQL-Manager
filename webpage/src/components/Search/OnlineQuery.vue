@@ -16,15 +16,6 @@
             <div id="showImage" class="margin-bottom-10">
 
               <Form ref="formItem" :model="formItem" :rules="ruleValidate" :label-width="70">
-                <Alert style="height: 190px">
-                提示信息：
-                <template slot="desc">
-                  <p>1.下拉框没有需要查询的DB时，联系DBA申请查询权限</p>
-                  <p>2.select没有使用limit时，默认会自动添加limit 100的限制</p>
-                  <p>3.select limit N,当N大于100时，自动替换为limit 100</p>
-                  <p>4.文本框有多条SQL时，只执行最后一条</p>
-                </template>
-              </Alert>
                 <FormItem label="机房:" prop="computer_room">
                   <Select v-model="formItem.computer_room" @on-change="Connection_Name">
                     <Option v-for="i in datalist.computer_roomlist" :key="i" :value="i">{{i}}</Option>
@@ -44,6 +35,16 @@
                     <Option v-for="item in datalist.basenamelist" :value="item" :key="item">{{ item }}</Option>
                   </Select>
                 </FormItem>
+                <Alert  type="error" style="height: 250px;">
+                  提示信息：
+                <template slot="desc">
+                  <p>1.下拉框没有需要查询的DB时，联系DBA申请查询权限</p>
+                  <p>2.select没有使用limit时，默认会自动添加limit {{ limit_num }} 的限制</p>
+                  <p>3.select limit N,当N大于{{ limit_num }}时，自动替换为limit {{ limit_num }}</p>
+                  <p>4.文本框有多条SQL时，只执行最后一条</p>
+                  <p>5.所有的<b>查询、导出</b>操作，均会记录到审计日志</p>
+                </template>
+              </Alert>
               </Form>
             </div>
           </div>
@@ -59,6 +60,7 @@
           <br>
           <Button type="error" icon="trash-a" @click.native="ClearForm()">清除</Button>
           <Button type="info" icon="paintbucket" @click.native="beautify()">美化</Button>
+          <Button type="warning" icon="ios-download" @click.native="exportdata()" v-if="export_data">导出查询数据</Button>
           <Button type="primary" icon="ios-cloud-download" @click.native="Search_sql('1')" >执行计划 </Button>
           <Button type="success" icon="ios-redo" @click.native="Search_sql('2')">查询</Button>
           <br>
@@ -76,7 +78,35 @@
   import ICol from '../../../node_modules/iview/src/components/grid/col.vue'
   import axios from 'axios'
   import util from '../../libs/util'
+  import Csv from '../../../node_modules/iview/src/utils/csv'
+  import ExportCsv from '../../../node_modules/iview/src/components/table/export-csv'
 
+  const exportcsv = function exportCsv (params) {
+    if (params.filename) {
+      if (params.filename.indexOf('.csv') === -1) {
+        params.filename += '.csv'
+      }
+    } else {
+      params.filename = 'table.csv'
+    }
+
+    let columns = []
+    let datas = []
+    if (params.columns && params.data) {
+      columns = params.columns
+      datas = params.data
+    } else {
+      columns = this.columns
+      if (!('original' in params)) params.original = true
+      datas = params.original ? this.data : this.rebuildData
+    }
+
+    let noHeader = false
+    if ('noHeader' in params) noHeader = params.noHeader
+    const data = Csv(columns, datas, params, noHeader)
+    if (params.callback) params.callback(data)
+    else ExportCsv.download(params.filename, data)
+  }
   export default {
     components: {
       ICol,
@@ -129,7 +159,9 @@
           base: '',
           connection_name: '',
           computer_room: ''
-        }
+        },
+        export_data: true,
+        limit_num: ''
       }
     },
     methods: {
@@ -287,6 +319,21 @@
       ClearForm () {
         this.formItem.textarea = ''
       },
+      exportdata () {
+        this.$refs['formItem'].validate((valid) => {
+          if (valid) {
+            true
+          } else {
+            this.$Message.error('请先执行SQL语句!')
+          }
+        })
+        exportcsv({
+          filename: 'SQL审核_Data',
+          original: false,
+          data: this.allsearchdata,
+          columns: this.columnsName
+        })
+      },
       Search_sql (v) {
         let address = {
           'basename': this.put_info.base,
@@ -330,6 +377,7 @@
           this.item = res.data['connection']
           this.assigned = res.data['assigend']
           this.datalist.computer_roomlist = res.data['custom']
+          this.limit_num = res.data['limit_num']
         })
         .catch(error => {
           this.$Message.error('没有权限请联系管理员！')

@@ -83,7 +83,8 @@ class addressing(baseview.BaseView):
                         'dic': dic,
                         'assigend': assigned.permissions['person'],
                         'custom': custom_com['con_room'],
-                        'multi': custom_com['multi']
+                        'multi': custom_com['multi'],
+                        'limit_num': custom_com['limit']
                     }
                 )
             except Exception as e:
