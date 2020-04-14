@@ -34,11 +34,13 @@ class search(baseview.BaseView):
     def post(self, request, args=None):
         un_init = util.init_conf()
         limit = ast.literal_eval(un_init['other'])
-        sql = request.data['sql']
-        check = str(sql).strip().split(';\n')
-        v_sql = check[-1]
-        if check[0].startswith('explain') and len(check)>1:
-            v_sql = 'explain '+ check[-1]
+        sql = request.data['sql'].replace('\n',' ').strip()
+        if sql[-1] != ';':
+            sql += ';'
+        check = str(sql).strip().split(';')
+        v_sql = check[-2]
+        if check[0].startswith('explain') and len(check)>2:
+            v_sql = 'explain '+ check[-2]
 
         # user = query_order.objects.filter(username=request.user).order_by('-id').first()
         un_init = util.init_conf()
