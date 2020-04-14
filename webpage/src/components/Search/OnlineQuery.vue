@@ -60,15 +60,15 @@
           <br>
           <Button type="error" icon="trash-a" @click.native="ClearForm()">清除</Button>
           <Button type="info" icon="paintbucket" @click.native="beautify()">美化</Button>
-          <Button type="warning" icon="ios-download" @click.native="exportdata()" v-if="export_data">导出查询数据</Button>
-          <Button type="primary" icon="ios-cloud-download" @click.native="Search_sql('1')" >执行计划 </Button>
-          <Button type="success" icon="ios-redo" @click.native="Search_sql('2')">查询</Button>
+          <Button type="warning" icon="ios-download" :disabled="this.validate_gen" @click.native="exportdata()" v-if="export_data">导出查询数据</Button>
+          <Button type="primary" icon="ios-cloud-download" :disabled="this.validate_gen" @click.native="Search_sql('1')" >执行计划 </Button>
+          <Button type="success" icon="ios-redo" :disabled="this.validate_gen" @click.native="Search_sql('2')">查询</Button>
           <br>
           <br>
           <p>查询结果:</p>
           <Table :columns="columnsName" :data="Testresults" highlight-row ref="table"></Table>
           <br>
-          <Page :total="total" show-total @on-change="splice_arr" ref="totol"></Page>
+          <Page :total="total" show-total  show-elevator @on-change="splice_arr"  :page-size="10"  ref="totol"></Page>
         </Card>
       </Col>
     </Row>
@@ -116,7 +116,7 @@
     data () {
       return {
         data1: [],
-        validate_gen: true,
+        validate_gen: false,
         formItem: {
           textarea: '',
           computer_room: '',
@@ -161,10 +161,14 @@
           computer_room: ''
         },
         export_data: true,
-        limit_num: ''
+        limit_num: '',
+        pagenumber: 1
       }
     },
     methods: {
+      splice_arr (page) {
+        this.Testresults = this.allsearchdata.slice(page * 10 - 10, page * 10)
+      },
       ChangeDB (v) {
         this.put_info.base = v
       },
@@ -340,6 +344,7 @@
           'connection_name': this.put_info.connection_name,
           'computer_room': this.put_info.computer_room
         }
+        this.validate_gen = true
         this.$refs['formItem'].validate((valid) => {
           if (valid) {
             let Vsql = '';
@@ -352,6 +357,7 @@
               'sql': Vsql,
               'address': JSON.stringify(address)
             }).then(res => {
+              this.validate_gen = false
             if (res.data['error']) {
               this.$Message.error(res.data['error'])
               util.err_notice(res.data['error'])
@@ -360,6 +366,7 @@
               this.allsearchdata = res.data['data']
               this.Testresults = this.allsearchdata.slice(0, 10)
               this.total = res.data['len']
+              this.pagenumber = this.total / 10
             }
           })
             .catch(error => {
