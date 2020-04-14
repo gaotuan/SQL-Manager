@@ -16,12 +16,13 @@
             <div id="showImage" class="margin-bottom-10">
 
               <Form ref="formItem" :model="formItem" :rules="ruleValidate" :label-width="70">
-                <Alert style="height: 170px">
+                <Alert style="height: 190px">
                 提示信息：
                 <template slot="desc">
                   <p>1.下拉框没有需要查询的DB时，联系DBA申请查询权限</p>
                   <p>2.select没有使用limit时，默认会自动添加limit 100的限制</p>
                   <p>3.select limit N,当N大于100时，自动替换为limit 100</p>
+                  <p>4.文本框有多条SQL时，只执行最后一条</p>
                 </template>
               </Alert>
                 <FormItem label="机房:" prop="computer_room">
@@ -58,8 +59,8 @@
           <br>
           <Button type="error" icon="trash-a" @click.native="ClearForm()">清除</Button>
           <Button type="info" icon="paintbucket" @click.native="beautify()">美化</Button>
-          <Button type="primary" icon="ios-cloud-download" @click.native="Explain_sql()" >执行计划 </Button>
-          <Button type="success" icon="ios-redo" @click.native="Search_sql()">查询</Button>
+          <Button type="primary" icon="ios-cloud-download" @click.native="Search_sql('1')" >执行计划 </Button>
+          <Button type="success" icon="ios-redo" @click.native="Search_sql('2')">查询</Button>
           <br>
           <br>
           <p>查询结果:</p>
@@ -286,7 +287,7 @@
       ClearForm () {
         this.formItem.textarea = ''
       },
-      Search_sql () {
+      Search_sql (v) {
         let address = {
           'basename': this.put_info.base,
           'connection_name': this.put_info.connection_name,
@@ -294,12 +295,18 @@
         }
         this.$refs['formItem'].validate((valid) => {
           if (valid) {
+            let Vsql = '';
+            if (v === '2') {
+              Vsql = this.formItem.textarea;
+            } else {
+               Vsql = 'explain ' + this.formItem.textarea;
+            }
             axios.post(`${util.url}/search`, {
-              'sql': this.formItem.textarea,
+              'sql': Vsql,
               'address': JSON.stringify(address)
-            })
-              .then(res => {
+            }).then(res => {
             if (res.data['error']) {
+              this.$Message.error(res.data['error'])
               util.err_notice(res.data['error'])
             } else {
               this.columnsName = res.data['title']
@@ -308,38 +315,8 @@
               this.total = res.data['len']
             }
           })
-              .catch(error => {
-            util.err_notice(error)
-          })
-          } else {
-            this.$Message.error('请选择相关的数据库!')
-          }
-        })
-    },
-      Explain_sql () {
-        let address = {
-          'basename': this.put_info.base,
-          'connection_name': this.put_info.connection_name,
-          'computer_room': this.put_info.computer_room
-        }
-        this.$refs['formItem'].validate((valid) => {
-          if (valid) {
-            axios.post(`${util.url}/search`, {
-              'sql': 'explain ' + this.formItem.textarea,
-              'address': JSON.stringify(address)
-            })
-              .then(res => {
-            if (res.data['error']) {
-              util.err_notice(res.data['error'])
-            } else {
-              this.columnsName = res.data['title']
-              this.allsearchdata = res.data['data']
-              this.Testresults = this.allsearchdata.slice(0, 10)
-              this.total = res.data['len']
-            }
-          })
-              .catch(error => {
-            util.err_notice(error)
+            .catch(error => {
+              util.err_notice(error)
           })
           } else {
             this.$Message.error('请选择相关的数据库!')

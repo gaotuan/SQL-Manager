@@ -45,7 +45,8 @@ class search(baseview.BaseView):
         custom_com = ast.literal_eval(un_init['other'])
         # if user.query_per == 1:
         if True :
-            if  v_sql.strip().lower().startswith('explain')  or v_sql.strip().lower().startswith('s') == 1:
+            if  v_sql.strip().lower().startswith('explain')  or v_sql.strip().lower().startswith('select') == 1 \
+                    or v_sql.strip().lower().startswith('desc') == 1 or v_sql.strip().lower().startswith('show') == 1 :
 
                 address = json.loads(request.data['address'])
                 _c = DatabaseList.objects.filter(
@@ -81,7 +82,7 @@ class search(baseview.BaseView):
                         return HttpResponse(simplejson.dumps(data_set, cls=DateEncoder, bigint_as_string=True))
                 except Exception as e:
                     CUSTOM_ERROR.error(f'{e.__class__.__name__}: {e}')
-                    return Response({'error': e})
+                    return Response({'error': e.args[1]})
             else:
                 return Response({'error': '只支持查询功能或删除不必要的空白行！'})
         else:
@@ -119,26 +120,31 @@ def replace_limit(sql, limit):
 
     '''
 
-    if sql[-1] != ';':
-        sql += ';'
-    if sql.startswith('show') == -1:
-        return sql
-    sql_re = re.search(r'limit\s.*\d.*;', sql.lower())
-    length = ''
-    if sql_re is not None:
-        c = re.search(r'\d.*', sql_re.group())
-        if c is not None:
-            if c.group().find(',') != -1:
-                length = c.group()[-2]
+    if sql.lower().startswith('select'):
+        if sql[-1] != ';':
+            sql += ';'
+        # if sql.startswith('show') == 1:
+        #     return sql
+        sql_re = re.search(r'limit\s.*\d.*;', sql.lower())
+        length = ''
+        if sql_re is not None:
+            c = re.search(r'\d.*', sql_re.group())
+            if c is not None:
+                if c.group().find(',') != -1:
+                    length = c.group()[-2]
+                else:
+                    length = c.group().rstrip(';')
+            if int(length) <= int(limit):
+                return sql
             else:
-                length = c.group().rstrip(';')
-        if int(length) <= int(limit):
-            return sql
+                sql = re.sub(r'limit\s.*\d.*;', 'limit %s;' % limit, sql)
+                return sql
         else:
-            sql = re.sub(r'limit\s.*\d.*;', 'limit %s;' % limit, sql)
+            sql = sql.rstrip(';') + ' limit %s;' % limit
             return sql
     else:
-        sql = sql.rstrip(';') + ' limit %s;' % limit
+        if sql[-1] != ';':
+            sql += ';'
         return sql
 
 
