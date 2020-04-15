@@ -9,7 +9,8 @@ from core.models import (
     DatabaseList,
     Account,
     grained,
-    SqlDictionary
+    SqlDictionary,
+    querypermissions
 )
 from libs.serializers import (
     Area,
@@ -34,6 +35,7 @@ class addressing(baseview.BaseView):
         if args == 'connection':
             try:
                 assigned = grained.objects.filter(username=request.user).first()
+                last_query = querypermissions.objects.filter(username=request.user).order_by('-id').first()
                 un_init = util.init_conf()
                 custom_com = ast.literal_eval(un_init['other'])
                 if request.data['permissions_type'] == 'user' or request.data['permissions_type'] == 'own_space':
@@ -84,7 +86,9 @@ class addressing(baseview.BaseView):
                         'assigend': assigned.permissions['person'],
                         'custom': custom_com['con_room'],
                         'multi': custom_com['multi'],
-                        'limit_num': custom_com['limit']
+                        'limit_num': custom_com['limit'],
+                        'last_query': ast.literal_eval(last_query.db_info) if last_query else {},
+                        'last_sql': last_query.statements if last_query else ""
                     }
                 )
             except Exception as e:

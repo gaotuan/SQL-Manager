@@ -15,7 +15,6 @@ from core.models import DatabaseList, Account, querypermissions, query_order, gl
 
 CUSTOM_ERROR = logging.getLogger('Yearning.core.views')
 
-
 class DateEncoder(simplejson.JSONEncoder):  # 感谢的凉夜贡献
 
     def default(self, o):
@@ -74,12 +73,12 @@ class search(baseview.BaseView):
                                     if k == i:
                                         for n in range(data_set['len']):
                                             data_set['data'][n].update({k: '********'})
-
+                        db_info = address
                         querypermissions.objects.create(
                             work_id=datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S' ),
                             username=request.user,
                             statements=query_sql,
-                            db_info=address['computer_room']+':'+address['computer_room']+':'+address['basename']
+                            db_info=db_info
                         )
                         return HttpResponse(simplejson.dumps(data_set, cls=DateEncoder, bigint_as_string=True))
                 except Exception as e:

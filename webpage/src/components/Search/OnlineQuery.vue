@@ -7,7 +7,7 @@
   <div>
     <Row>
       <Col span="4">
-        <Card>
+        <Card >
           <p slot="title">
             <Icon type="ios-redo"></Icon>
             选择数据库
@@ -17,7 +17,7 @@
 
               <Form ref="formItem" :model="formItem" :rules="ruleValidate" :label-width="70">
                 <FormItem label="机房:" prop="computer_room">
-                  <Select v-model="formItem.computer_room" @on-change="Connection_Name">
+                  <Select v-model="formItem.computer_room" @on-change="Connection_Name" placeholder="请选择机房">
                     <Option v-for="i in datalist.computer_roomlist" :key="i" :value="i">{{i}}</Option>
                   </Select>
                 </FormItem>
@@ -31,11 +31,11 @@
                 </FormItem>
 
                 <FormItem label="库名:" prop="basename">
-                  <Select v-model="formItem.basename" filterable @on-change="ChangeDB(formItem.basename)">
+                  <Select v-model="formItem.basename" filterable @on-change="ChangeDB">
                     <Option v-for="item in datalist.basenamelist" :value="item" :key="item">{{ item }}</Option>
                   </Select>
                 </FormItem>
-                <Alert  type="error" style="height: 250px;">
+                <Alert  type="error" style="height: 250px">
                   提示信息：
                 <template slot="desc">
                   <p>1.下拉框没有需要查询的DB时，联系DBA申请查询权限</p>
@@ -55,7 +55,7 @@
           <p slot="title">
             <Icon type="ios-crop-strong"></Icon>填写sql语句
           </p>
-          <b>当前选择的库:{{ put_info.base }}</b>
+          <b>当前选择的库:{{ formItem.basename }}</b>
           <editor v-model="formItem.textarea" @init="editorInit"></editor>
           <br>
           <Button type="error" icon="trash-a" @click.native="ClearForm()">清除</Button>
@@ -156,7 +156,7 @@
         id: null,
         assigned: [],
         put_info: {
-          base: '',
+          basename: '',
           connection_name: '',
           computer_room: ''
         },
@@ -170,17 +170,17 @@
         this.Testresults = this.allsearchdata.slice(page * 10 - 10, page * 10)
       },
       ChangeDB (v) {
-        this.put_info.base = v
+        // this.formItem.basename = v
       },
       Getbasename (vl) {
         for (let i of this.data1[0].children) {
           for (let c of i.children) {
             if (c.title === vl[0].title && c.nodeKey === vl[0].nodeKey) {
-              this.put_info.base = i.title
+              this.put_info.basename = i.title
             }
           }
         }
-        axios.put(`${util.url}/search`, {'base': this.put_info.base, 'table': vl[0].title})
+        axios.put(`${util.url}/search`, {'base': this.put_info.basename, 'table': vl[0].title})
           .then(res => {
             if (res.data['error']) {
               util.err_notice(res.data['error'])
@@ -243,83 +243,6 @@
             })
         }
       },
-      test_sql () {
-        let ddl = ['select', 'alter', 'drop', 'create']
-        let createtable = this.formItem.textarea.replace(/(;|；)$/gi, '').replace(/\s/g, ' ').replace(/；/g, ';').split(';')
-        for (let i of createtable) {
-          for (let c of ddl) {
-            i = i.replace(/(^\s*)|(\s*$)/g, '')
-            if (i.toLowerCase().indexOf(c) === 0) {
-              this.$Message.error('不可提交非DML语句!')
-              return false
-            }
-          }
-        }
-        this.$refs['formItem'].validate((valid) => {
-          if (valid) {
-            if (this.formItem.textarea) {
-              let tmp = this.formItem.textarea.replace(/(;|；)$/gi, '').replace(/；/g, ';')
-              axios.put(`${util.url}/sqlsyntax/test`, {
-                'id': this.id[0].id,
-                'base': this.formItem.basename,
-                'sql': tmp
-              })
-                .then(res => {
-                  if (res.data.status === 200) {
-                    this.Testresults = res.data.result
-                    let gen = 0
-                    this.Testresults.forEach(vl => {
-                      if (vl.errlevel !== 0) {
-                        gen += 1
-                      }
-                    })
-                    if (gen === 0) {
-                      this.validate_gen = false
-                    } else {
-                      this.validate_gen = true
-                    }
-                  }
-                })
-                .catch(() => {
-                  util.err_notice('无法连接到Inception!')
-                })
-            } else {
-              this.$Message.error('请填写sql语句后再测试!')
-            }
-          }
-        })
-      },
-      SubmitSQL () {
-        this.$refs['formItem'].validate((valid) => {
-          if (valid) {
-            if (this.formItem.textarea) {
-              this.datalist.sqllist = this.formItem.textarea.replace(/(;|；)$/gi, '').replace(/\s/g, ' ').replace(/；/g, ';').split(';')
-              axios.post(`${util.url}/sqlsyntax/`, {
-                'data': JSON.stringify(this.formItem),
-                'sql': JSON.stringify(this.datalist.sqllist),
-                'user': sessionStorage.getItem('user'),
-                'type': 1,
-                'id': this.id[0].id
-              })
-                .then(res => {
-                  this.$Notice.success({
-                    title: '成功',
-                    desc: res.data
-                  })
-                  this.ClearForm()
-                })
-                .catch(error => {
-                  util.err_notice(error)
-                })
-            } else {
-              this.$Message.error('请填写sql语句后再提交!')
-            }
-            this.validate_gen = true
-          } else {
-            this.$Message.error('表单验证失败!')
-          }
-        })
-      },
       ClearForm () {
         this.formItem.textarea = ''
       },
@@ -340,9 +263,9 @@
       },
       Search_sql (v) {
         let address = {
-          'basename': this.put_info.base,
-          'connection_name': this.put_info.connection_name,
-          'computer_room': this.put_info.computer_room
+          'basename': this.formItem.basename,
+          'connection_name': this.formItem.connection_name,
+          'computer_room': this.formItem.computer_room
         }
         this.validate_gen = true
         this.$refs['formItem'].validate((valid) => {
@@ -379,12 +302,37 @@
     }
     },
     mounted () {
-      axios.put(`${util.url}/workorder/connection`, {'permissions_type': 'query'})
+       axios.put(`${util.url}/workorder/connection`, {'permissions_type': 'query'})
         .then(res => {
           this.item = res.data['connection']
           this.assigned = res.data['assigend']
           this.datalist.computer_roomlist = res.data['custom']
           this.limit_num = res.data['limit_num']
+          // this.$set(this.formItem, 'textarea', res.data['last_sql']);
+        //   this.formItem = {
+        //   textarea: res.data['last_sql'],
+        //   computer_room: res.data['last_query']['computer_room'],
+        //   connection_name: res.data['last_query']['connection_name'],
+        //   basename: res.data['last_query']['basename'],
+        //   text: '',
+        //   backup: '0',
+        //   assigned: '',
+        //   delay: 0
+        // }
+          // this.$set(this.formItem, 'basename', res.data['last_query']['basename'])
+          // this.formItem.basename = res.data['last_query']['basename']
+          // const formItem = {
+          //   textarea: res.data['last_sql'],
+          //   computer_room: res.data['last_query']['computer_room'],
+          //   basename: res.data['last_query']['basename']
+          // }
+          this.formItem.computer_room = 'x'
+          this.formItem.connection_name = 'conn'
+          this.formItem.basename = 'basename'
+          this.formItem.textarea = 'sql'
+          // this.formItem = Object.assign(this.formItem, formItem);
+          // this.$set(this.formItem, 'computer_room', res.data['last_query']['computer_room']);
+          // this.formItem.computer_room = res.data['last_query']['computer_room']
         })
         .catch(error => {
           this.$Message.error('没有权限请联系管理员！')
