@@ -45,7 +45,17 @@
           <Icon type="ios-crop-strong"></Icon>
           系统用户表
         </p>
-        <Input suffix="ios-search" search enter-button placeholder="输入 用户名..." />
+          <Form   @submit.native="searchuser" >
+                      <FormItem  >
+                        <Input v-model="searchanme1" style="width: 400px">
+                            <Select  slot="prepend" style="width: 80px" placeholder="用户名">
+                                <Option value="day">用户名</Option>
+                                <Option value="month">邮箱</Option>
+                            </Select>
+                            <Button slot="append"   icon="ios-search" @click.native="searchuser" >serach</Button>
+                        </Input>
+                      </FormItem>
+          </Form>
         <div class="edittable-con-1">
           <Table border :columns="columns6" :data="data5" stripe height="550"></Table>
         </div>
@@ -288,6 +298,7 @@
         }
       }
       return {
+        searchanme1: '',
         percent: 0,
         permission: {
           ddl: '0',
@@ -308,28 +319,7 @@
           {
             title: '用户名',
             key: 'username',
-            sortable: true,
-            // filters: [
-            //             {
-            //                 label: 'Greater than 25',
-            //                 value: 1
-            //             },
-            //             {
-            //                 label: 'Less than 25',
-            //                 value: 2
-            //             }
-            //         ],
-            //         filterMultiple: true,
-            //         filterMethod (value, row) {
-            //             if (value === 1) {
-            //                 return row.username === 'tuan';
-            //             } else if (value === 2) {
-            //                 return row.age < 25;
-            //             }
-            //         }
-            filter: {
-              type: 'Input'
-            }
+            sortable: true
           },
           {
             title: '权限',
@@ -339,7 +329,25 @@
           {
             title: '部门',
             key: 'department',
-            sortable: true
+            sortable: true,
+                        filters: [
+                        {
+                            label: 'api',
+                            value: 1
+                        },
+                        {
+                            label: 'vcm',
+                            value: 2
+                        }
+                    ],
+            filterMultiple: false,
+            filterMethod (value, row) {
+                        if (value === 1) {
+                            return row.department === 'api';
+                        } else if (value === 2) {
+                            return row.department === 'vcm';
+                        }
+                    }
           },
           {
             title: 'email',
@@ -574,6 +582,16 @@
       }
     },
     methods: {
+      searchuser () {
+        console.log('usr:' + this.searchanme1)
+        axios.get(`${util.url}/userinfo/one?username=${this.searchanme1}`)
+          .then(res => {
+            this.data5 = res.data.data
+          })
+          .catch(error => {
+            util.err_notice(error)
+          })
+      },
       edituser (index) {
         this.editPasswordModal = true
         this.username = this.data5[index].username

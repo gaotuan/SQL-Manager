@@ -80,7 +80,20 @@ class userinfo(baseview.BaseView):
                 except Exception as e:
                     CUSTOM_ERROR.error(f'{e.__class__.__name__}: {e}')
                     return HttpResponse(e)
-
+        elif args == 'one':
+            try:
+                username = request.GET.get('username')
+            except KeyError as e:
+                CUSTOM_ERROR.error(f'{e.__class__.__name__}: {e}')
+                return HttpResponse(status=500)
+            else:
+                try:
+                    info = Account.objects.filter(username__contains = username)
+                    serializers = UserINFO(info, many=True)
+                    return Response({'data': serializers.data})
+                except Exception as e:
+                    CUSTOM_ERROR.error(f'{e.__class__.__name__}: {e}')
+                    return HttpResponse(e)
         elif args == 'permissions':
             user = request.GET.get('user')
             user = grained.objects.filter(username=user).first()
