@@ -52,7 +52,7 @@
                                 <Option value="day">用户名</Option>
                                 <Option value="month">邮箱</Option>
                             </Select>
-                            <Button slot="append"   icon="ios-search" @click.native="searchuser" >serach</Button>
+                            <Button slot="append"  type="warning" icon="ios-search" @click.native="searchuser" >serach</Button>
                         </Input>
                       </FormItem>
           </Form>

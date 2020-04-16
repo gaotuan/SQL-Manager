@@ -206,7 +206,6 @@
           })
       },
       Connection_Name (val) {
-        console.log('=====', val);
         this.datalist.connection_name_list = []
         this.datalist.basenamelist = []
         this.formItem.connection_name = ''
@@ -221,7 +220,7 @@
           if (item.computer_room === val) {
             return item
           }
-        })
+        });
       },
       DataBaseName (index) {
         if (index) {
@@ -314,11 +313,11 @@
           this.datalist.computer_roomlist = res.data['custom']
           this.limit_num = res.data['limit_num']
           this.formItem.computer_room = res.data['last_query']['computer_room'];
-          this.$refs.computer_room_ref.$emit('on-change', res.data['last_query']['computer_room']);
+          // this.$refs.computer_room_ref.$emit('on-change', res.data['last_query']['computer_room']);
           // this.$emit('on-change', value)
           setTimeout(() => {
             this.formItem.connection_name = res.data['last_query']['connection_name'];
-            this.$refs.connection_name_ref.$emit('on-change', res.data['last_query']['connection_name']);
+            // this.$refs.connection_name_ref.$emit('on-change', res.data['last_query']['connection_name']);
           }, 200)
           setTimeout(() => {
             this.formItem.basename = res.data['last_query']['basename'];
