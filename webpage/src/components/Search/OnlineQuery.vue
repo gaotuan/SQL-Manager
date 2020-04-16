@@ -269,6 +269,11 @@
         this.$refs['formItem'].validate((valid) => {
           if (valid) {
             let Vsql = '';
+            if (Object.keys(this.formItem.textarea).length === 0) {
+              this.$Message.error('SQL内容不能为空!')
+              this.validate_gen = false
+              return
+            }
             if (v === '2') {
               Vsql = this.formItem.textarea;
             } else {
@@ -291,6 +296,7 @@
             }
           })
             .catch(error => {
+              this.validate_gen = false
               util.err_notice(error)
           })
           } else {
