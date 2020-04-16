@@ -21,15 +21,13 @@
                     <Option v-for="i in datalist.computer_roomlist" :key="i" :value="i">{{i}}</Option>
                   </Select>
                 </FormItem>
-
                 <FormItem label="连接名:" prop="connection_name">
-                  <Select v-model="formItem.connection_name" @on-change="DataBaseName" filterable>
+                  <Select v-model="formItem.connection_name" @on-change="DataBaseName" filterable >
                     <Option v-for="i in datalist.connection_name_list" :value="i.connection_name"
                             :key="i.connection_name">{{ i.connection_name }}
                     </Option>
                   </Select>
                 </FormItem>
-
                 <FormItem label="库名:" prop="basename">
                   <Select v-model="formItem.basename" filterable @on-change="ChangeDB">
                     <Option v-for="item in datalist.basenamelist" :value="item" :key="item">{{ item }}</Option>
@@ -308,31 +306,16 @@
           this.assigned = res.data['assigend']
           this.datalist.computer_roomlist = res.data['custom']
           this.limit_num = res.data['limit_num']
-          // this.$set(this.formItem, 'textarea', res.data['last_sql']);
-        //   this.formItem = {
-        //   textarea: res.data['last_sql'],
-        //   computer_room: res.data['last_query']['computer_room'],
-        //   connection_name: res.data['last_query']['connection_name'],
-        //   basename: res.data['last_query']['basename'],
-        //   text: '',
-        //   backup: '0',
-        //   assigned: '',
-        //   delay: 0
-        // }
-          // this.$set(this.formItem, 'basename', res.data['last_query']['basename'])
-          // this.formItem.basename = res.data['last_query']['basename']
-          // const formItem = {
-          //   textarea: res.data['last_sql'],
-          //   computer_room: res.data['last_query']['computer_room'],
-          //   basename: res.data['last_query']['basename']
-          // }
-          this.formItem.computer_room = 'x'
-          this.formItem.connection_name = 'conn'
-          this.formItem.basename = 'basename'
-          this.formItem.textarea = 'sql'
-          // this.formItem = Object.assign(this.formItem, formItem);
-          // this.$set(this.formItem, 'computer_room', res.data['last_query']['computer_room']);
-          // this.formItem.computer_room = res.data['last_query']['computer_room']
+          this.formItem.computer_room = res.data['last_query']['computer_room'];
+          setTimeout(() => {
+            this.formItem.connection_name = res.data['last_query']['connection_name'];
+          }, 100)
+          setTimeout(() => {
+            this.formItem.basename = res.data['last_query']['basename'];
+          }, 200)
+          setTimeout(() => {
+            this.formItem.textarea = res.data['last_sql'];
+          }, 300)
         })
         .catch(error => {
           this.$Message.error('没有权限请联系管理员！')
