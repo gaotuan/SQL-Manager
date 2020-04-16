@@ -318,10 +318,10 @@
           }, 100)
           setTimeout(() => {
             this.formItem.basename = res.data['last_query']['basename'];
-          }, 200)
+          }, 300)
           setTimeout(() => {
             this.formItem.textarea = res.data['last_sql'];
-          }, 300)
+          }, 500)
         })
         .catch(error => {
           this.$Message.error('没有权限请联系管理员！')
