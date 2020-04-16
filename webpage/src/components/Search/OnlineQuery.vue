@@ -17,19 +17,19 @@
 
               <Form ref="formItem" :model="formItem" :rules="ruleValidate" :label-width="70">
                 <FormItem label="机房:" prop="computer_room">
-                  <Select v-model="formItem.computer_room" @on-change="Connection_Name" placeholder="请选择机房">
+                  <Select ref="computer_room_ref" v-model="formItem.computer_room" @on-change="Connection_Name" placeholder="请选择机房">
                     <Option v-for="i in datalist.computer_roomlist" :key="i" :value="i">{{i}}</Option>
                   </Select>
                 </FormItem>
                 <FormItem label="连接名:" prop="connection_name">
-                  <Select v-model="formItem.connection_name" @on-change="DataBaseName" filterable >
+                  <Select ref="connection_name_ref" v-model="formItem.connection_name" @on-change="DataBaseName" filterable >
                     <Option v-for="i in datalist.connection_name_list" :value="i.connection_name"
                             :key="i.connection_name">{{ i.connection_name }}
                     </Option>
                   </Select>
                 </FormItem>
                 <FormItem label="库名:" prop="basename">
-                  <Select v-model="formItem.basename" filterable @on-change="ChangeDB">
+                  <Select ref="basename_ref" v-model="formItem.basename" filterable @on-change="ChangeDB">
                     <Option v-for="item in datalist.basenamelist" :value="item" :key="item">{{ item }}</Option>
                   </Select>
                 </FormItem>
@@ -206,6 +206,7 @@
           })
       },
       Connection_Name (val) {
+        console.log('=====', val);
         this.datalist.connection_name_list = []
         this.datalist.basenamelist = []
         this.formItem.connection_name = ''
@@ -313,15 +314,18 @@
           this.datalist.computer_roomlist = res.data['custom']
           this.limit_num = res.data['limit_num']
           this.formItem.computer_room = res.data['last_query']['computer_room'];
+          this.$refs.computer_room_ref.$emit('on-change', res.data['last_query']['computer_room']);
+          // this.$emit('on-change', value)
           setTimeout(() => {
             this.formItem.connection_name = res.data['last_query']['connection_name'];
-          }, 100)
+            this.$refs.connection_name_ref.$emit('on-change', res.data['last_query']['connection_name']);
+          }, 200)
           setTimeout(() => {
             this.formItem.basename = res.data['last_query']['basename'];
-          }, 300)
+          }, 400)
           setTimeout(() => {
             this.formItem.textarea = res.data['last_sql'];
-          }, 500)
+          }, 600)
         })
         .catch(error => {
           this.$Message.error('没有权限请联系管理员！')
