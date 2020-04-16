@@ -45,6 +45,7 @@
           <Icon type="ios-crop-strong"></Icon>
           系统用户表
         </p>
+        <Input suffix="ios-search" search enter-button placeholder="输入 用户名..." />
         <div class="edittable-con-1">
           <Table border :columns="columns6" :data="data5" stripe height="550"></Table>
         </div>
@@ -307,7 +308,28 @@
           {
             title: '用户名',
             key: 'username',
-            sortable: true
+            sortable: true,
+            // filters: [
+            //             {
+            //                 label: 'Greater than 25',
+            //                 value: 1
+            //             },
+            //             {
+            //                 label: 'Less than 25',
+            //                 value: 2
+            //             }
+            //         ],
+            //         filterMultiple: true,
+            //         filterMethod (value, row) {
+            //             if (value === 1) {
+            //                 return row.username === 'tuan';
+            //             } else if (value === 2) {
+            //                 return row.age < 25;
+            //             }
+            //         }
+            filter: {
+              type: 'Input'
+            }
           },
           {
             title: '权限',
@@ -732,4 +754,3 @@
     }
   }
 </script>
-<!-- reder put request  render_group put request  remove delete request-->
