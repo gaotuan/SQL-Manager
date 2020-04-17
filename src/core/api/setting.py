@@ -11,8 +11,8 @@ CUSTOM_ERROR = logging.getLogger('Yearning.core.views')
 class setting_view(baseview.SuperUserpermissions):
 
     def get(self, request, args: str = None):
-        user_id = Account.objects.filter(username=request.user).first().id
-        if user_id == 1:
+        is_superuser = Account.objects.filter(username=request.user).first().is_superuser
+        if is_superuser == 1:
             setting = globalpermissions.objects.filter(authorization='global').first()
             return Response(
                 {
