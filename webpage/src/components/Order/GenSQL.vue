@@ -71,7 +71,7 @@
           </p>
           <div class="edittable-table-height-con">
             <Tabs :value="tabs">
-              <TabPane label="手动模式" name="order1" icon="edit">
+              <TabPane label="手动模式--输入变更sql:" name="order1" icon="edit">
                 <Form>
                   <FormItem>
                     <editor v-model="formDynamic" @init="editorInit"></editor>
@@ -113,6 +113,7 @@
           </div>
         </Card>
       </Col>
+
     </Row>
 
     <Modal v-model="openswitch" @on-ok="commitorder" :ok-text="'提交工单'" width="800">
