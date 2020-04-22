@@ -15,7 +15,8 @@ from core.models import (
 from libs.serializers import (
     Area,
     UserINFO,
-    query_con
+    query_con,
+    QueryPermissions
 )
 
 CUSTOM_ERROR = logging.getLogger('Yearning.core.views')
@@ -78,10 +79,13 @@ class addressing(baseview.BaseView):
                     dic = ''
                 info = Account.objects.filter(group='admin').all()
                 serializers = UserINFO(info, many=True)
+                history = querypermissions.objects.filter(username=request.user).order_by('-id')[0:10]
+                serializer_his = QueryPermissions(history, many=True)
                 return Response(
                     {
                         'connection': con_name,
                         'person': serializers.data,
+                        'history': serializer_his.data,
                         'dic': dic,
                         'assigend': assigned.permissions['person'],
                         'custom': custom_com['con_room'],

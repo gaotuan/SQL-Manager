@@ -87,28 +87,28 @@
                   </FormItem>
                 </Form>
               </TabPane>
-<!--              <TabPane label="生成添加字段" name="order3" icon="plus">-->
-<!--                <Table stripe :columns="addcolums" :data="add_row" height="385" border></Table>-->
-<!--                <div style="margin-top: 5%">-->
-<!--                  <Input v-model="Add_tmp.Field" placeholder="字段名" style="width: 10%"></Input>-->
-<!--                  <Select v-model="Add_tmp.Species" style="width: 15%" transfer placeholder="字段类型">-->
-<!--                    <Option v-for="i in optionData" :key="i" :value="i">{{i}}</Option>-->
-<!--                  </Select>-->
-<!--                  <Input v-model="Add_tmp.Len" placeholder="字段长度" style="width: 10%"></Input>-->
-<!--                  <Select v-model="Add_tmp.Null" style="width: 15%" placeholder="字段可以为空" transfer>-->
-<!--                    <Option value="YES">YES</Option>-->
-<!--                    <Option value="NO">NO</Option>-->
-<!--                  </Select>-->
-<!--                  <Input v-model="Add_tmp.Default" placeholder="默认值" style="width: 15%"></Input>-->
-<!--                  <Input v-model="Add_tmp.Extra" placeholder="字段备注" style="width: 15%"></Input>-->
-<!--                  <Button type="warning" @click.native="ClearColumns">清空</Button>-->
-<!--                  <Button type="info" @click.native="AddColumns()">添加</Button>-->
-<!--                </div>-->
-<!--              </TabPane>-->
-<!--              <TabPane label="生成修改&删除字段" name="order4" icon="edit">-->
-<!--                <edittable refs="table2" v-model="TableDataNew" :columns-list="tabcolumns" @index="remove"-->
-<!--                           @on-change="cell_change"></edittable>-->
-<!--              </TabPane>-->
+              <TabPane label="生成添加字段" name="order3" icon="plus">
+                <Table stripe :columns="addcolums" :data="add_row" height="385" border></Table>
+                <div style="margin-top: 5%">
+                  <Input v-model="Add_tmp.Field" placeholder="字段名" style="width: 10%"></Input>
+                  <Select v-model="Add_tmp.Species" style="width: 15%" transfer placeholder="字段类型">
+                    <Option v-for="i in optionData" :key="i" :value="i">{{i}}</Option>
+                  </Select>
+                  <Input v-model="Add_tmp.Len" placeholder="字段长度" style="width: 10%"></Input>
+                  <Select v-model="Add_tmp.Null" style="width: 15%" placeholder="字段可以为空" transfer>
+                    <Option value="YES">YES</Option>
+                    <Option value="NO">NO</Option>
+                  </Select>
+                  <Input v-model="Add_tmp.Default" placeholder="默认值" style="width: 15%"></Input>
+                  <Input v-model="Add_tmp.Extra" placeholder="字段备注" style="width: 15%"></Input>
+                  <Button type="warning" @click.native="ClearColumns">清空</Button>
+                  <Button type="info" @click.native="AddColumns()">添加</Button>
+                </div>
+              </TabPane>
+              <TabPane label="生成修改&删除字段" name="order4" icon="edit">
+                <edittable refs="table2" v-model="TableDataNew" :columns-list="tabcolumns" @index="remove"
+                           @on-change="cell_change"></edittable>
+              </TabPane>
             </Tabs>
           </div>
         </Card>

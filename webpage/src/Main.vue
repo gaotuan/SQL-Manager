@@ -34,7 +34,7 @@
             <img height="300" width="300" src="./assets/alipay.jpg"/>
             <img height="300" width="300" src="./assets/wechat.jpg"/>
           </Modal>
-          <a href="https://cookiey.github.io/Yearning-document/used/" target="_Blank">使用说明</a>
+          <a href="http://wiki.xiaoying.tv/pages/viewpage.action?pageId=18652171" target="_Blank">使用说明</a>
           <div @click="handleFullScreen" v-if="showFullScreenBtn" class="full-screen-btn-con">
             <Tooltip :content="isFullScreen ? '退出全屏' : '全屏'" placement="bottom">
               <Icon :type="isFullScreen ? 'arrow-shrink' : 'arrow-expand'" :size="23"></Icon>
