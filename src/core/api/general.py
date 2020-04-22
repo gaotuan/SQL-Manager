@@ -15,7 +15,8 @@ from core.models import (
 from libs.serializers import (
     Area,
     UserINFO,
-    query_con
+    query_con,
+    QueryPermissions
 )
 
 CUSTOM_ERROR = logging.getLogger('Yearning.core.views')
@@ -78,10 +79,13 @@ class addressing(baseview.BaseView):
                     dic = ''
                 info = Account.objects.filter(group='admin').all()
                 serializers = UserINFO(info, many=True)
+                history = querypermissions.objects.filter(username=request.user).order_by('-id')[0:10]
+                serializer_his = QueryPermissions(history, many=True)
                 return Response(
                     {
                         'connection': con_name,
                         'person': serializers.data,
+                        'history': serializer_his.data,
                         'dic': dic,
                         'assigend': assigned.permissions['person'],
                         'custom': custom_com['con_room'],
@@ -186,3 +190,46 @@ class addressing(baseview.BaseView):
                 except Exception as e:
                     CUSTOM_ERROR.error(f'{e.__class__.__name__}: {e}')
                     return Response(e)
+
+
+class ops(baseview.BaseView):
+    '''
+    :argument   sql查询接口, 过滤非查询语句并返回查询结果。
+                可以自由limit数目 当limit数目超过配置文件规定的最大数目时将会采用配置文件的最大数目
+
+    '''
+
+    def post(self, request, args=None):
+
+        try:
+            if args == 'star':
+                querypermissions.objects.filter(id=request.data['id']).update(is_love=1)
+                return HttpResponse({'ok': '1'})
+            elif args == 'unstar':
+                querypermissions.objects.filter(id=request.data['id']).update(is_love=0)
+                return HttpResponse({'ok': '1'})
+            elif args == 'fav':
+                my = querypermissions.objects.filter(username=request.user , is_love=1 ).order_by('-id')
+                serializer_my = QueryPermissions(my, many=True)
+                return Response(
+                    {
+                        'data': serializer_my.data,
+                        'len': len(my)
+                    }
+                )
+            elif args == 'his':
+                history = querypermissions.objects.filter(username=request.user).order_by('-id')[0:10]
+                serializer_his = QueryPermissions(history, many=True)
+                return Response(
+                    {
+                        'history': serializer_his.data
+                    }
+                )
+        except Exception as e:
+            CUSTOM_ERROR.error(f'{e.__class__.__name__}: {e}')
+            return Response({'error': e.args[1]})
+
+
+
+    def put(self, request, args: str = None):
+        return Response({'error': '已超过申请时限请刷新页面后重新提交申请'})

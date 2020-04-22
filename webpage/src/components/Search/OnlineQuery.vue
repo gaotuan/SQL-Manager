@@ -58,15 +58,29 @@
           <br>
           <Button type="error" icon="trash-a" @click.native="ClearForm()">清除</Button>
           <Button type="info" icon="paintbucket" @click.native="beautify()">美化</Button>
-          <Button type="warning" icon="ios-download" :disabled="this.validate_gen" @click.native="exportdata()" v-if="export_data">导出查询数据</Button>
+          <Button type="warning" icon="ios-download" :disabled="this.validate_exp" @click.native="exportdata()" v-if="export_data">导出查询数据</Button>
           <Button type="primary" icon="ios-cloud-download" :disabled="this.validate_gen" @click.native="Search_sql('1')" >执行计划 </Button>
-          <Button type="success" icon="ios-redo" :disabled="this.validate_gen" @click.native="Search_sql('2')">查询</Button>
+          <Button type="success" icon="ios-redo" :loading="this.load" :disabled="this.validate_gen" @click.native="Search_sql('2')">查询</Button>
           <br>
           <br>
-          <p>查询结果:</p>
-          <Table :columns="columnsName" :data="Testresults" highlight-row ref="table"></Table>
+            <template>
+              <Tabs type="card" closable  v-model="select_tab"  @on-click="MyFavite">
+                  <TabPane label="查询历史"  :key="1" name="his">
+                    <Table border stripe :columns="this.his_cols" :data="this.his_res" highlight-row ref="table"></Table>
+                  </TabPane>
+                 <TabPane label="我的收藏" :key="2"  :closable="false" name="fav">
+                    <Table border stripe :columns="this.his_cols" :data="this.my_tmp_res" highlight-row ref="table"></Table>
+                    <Page :total="my_total" show-total  show-elevator @on-change="splice_my"  :page-size="10"  ref="totol"></Page>
+                 </TabPane>
+                  <TabPane label="查询耗时" :key="3">SQL执行耗时: {{ this.query_time }} s</TabPane>
+                  <TabPane label="查询结果" :key="4" :closable="false" name="res">
+                    <Table border stripe :columns="columnsName" :data="Testresults" highlight-row ref="table"></Table>
+                    <Page :total="total" show-total  show-elevator @on-change="splice_arr"  :page-size="10"  ref="totol"></Page>
+                  </TabPane>
+              </Tabs>
+            </template>
+
           <br>
-          <Page :total="total" show-total  show-elevator @on-change="splice_arr"  :page-size="10"  ref="totol"></Page>
         </Card>
       </Col>
     </Row>
@@ -113,7 +127,121 @@
     name: 'OnlineQuery',
     data () {
       return {
+        load: false,
+        query_time: 0,
+        select_tab: 'his',
+        his_cols: [
+          {
+            title: '操作',
+            key: 'action',
+            width: 120,
+            align: 'center',
+            render: (h, params) => {
+              if (params.row.is_love === 0) {
+                return h('div', [
+                  h('Tooltip', {
+                  props: {
+                    content: '添加收藏'
+                  }
+                }, [
+                  h('Button', {
+                    props: {
+                      size: 'small',
+                      icon: 'ios-star-outline'
+                    },
+                    style: {
+                      marginRight: '5px'
+                    },
+                    on: {
+                      click: () => { this.Star(params.row) }
+                    }
+                  }, '')
+                  ]),
+                  h('Button', {
+                    props: {
+                      type: 'success',
+                      size: 'small'
+                    },
+                    style: {
+                      marginRight: '5px'
+                    },
+                    on: {
+                      click: () => {
+                        this.Exe_sql(params.index)
+                      }
+                    }
+                  }, '查询')
+                ])
+              } else {
+            return h('div', [
+                  h('Tooltip', {
+                    props: {
+                      content: '取消收藏'
+                    }
+                  },
+                    [h('Button', {
+                    props: {
+                      size: 'small',
+                      icon: 'ios-star'
+                    },
+                    style: {
+                      marginRight: '5px'
+                    },
+                    on: {
+                      click: () => {
+                        this.Unstar(params.row)
+                      }
+                    }
+                  }, '')
+                  ]),
+                  h('Button', {
+                    props: {
+                      type: 'success',
+                      size: 'small'
+                    },
+                    style: {
+                      marginRight: '5px'
+                    },
+                    on: {
+                      click: () => {
+                        this.Exe_sql(params.index)
+                      }
+                    }
+                  }, '查询')
+                ])
+              }
+            }
+          },
+                    {
+                        title: 'SQL语句',
+                        key: 'statements'
+                    },
+                    {
+                        title: '执行时间',
+                        key: 'work_id',
+                        width: 150
+                    },
+                    {
+                        title: '机房:连接名:DB名',
+                        key: 'dbinfo',
+                        render: (h, params) => {
+                return h('div', [
+                  h('leb', '机房:' + params.row.db_info['computer_room'] + ' 连接名:' + params.row.db_info['connection_name'] + ' DB名:' + params.row.db_info['basename'])
+                ])
+            }
+                    },
+                    {
+                        title: 'id',
+                        key: 'id',
+                        width: 60
+                    }
+      ],
+        his_res: [],
+        my_res: [],
+        my_tmp_res: [],
+        my_pagenumber: 1,
         data1: [],
+        validate_exp: true,
         validate_gen: false,
         formItem: {
           textarea: '',
@@ -127,6 +255,7 @@
         },
         columnsName: [],
         Testresults: [],
+        allsearchdata: [],
         item: {},
         datalist: {
           connection_name_list: [],
@@ -166,6 +295,9 @@
     methods: {
       splice_arr (page) {
         this.Testresults = this.allsearchdata.slice(page * 10 - 10, page * 10)
+      },
+      splice_my (page) {
+        this.my_tmp_res = this.my_res.slice(page * 10 - 10, page * 10)
       },
       ChangeDB (v) {
         // this.formItem.basename = v
@@ -265,7 +397,13 @@
           'connection_name': this.formItem.connection_name,
           'computer_room': this.formItem.computer_room
         }
+        this.Testresults = ''
+        this.columnsName = ''
+        this.allsearchdata = ''
+        this.select_tab = 'res'
         this.validate_gen = true
+        this.load = true
+        this.validate_exp = true
         this.$refs['formItem'].validate((valid) => {
           if (valid) {
             let Vsql = '';
@@ -283,11 +421,72 @@
               'sql': Vsql,
               'address': JSON.stringify(address)
             }).then(res => {
+              this.load = false
               this.validate_gen = false
             if (res.data['error']) {
               this.$Message.error(res.data['error'])
               util.err_notice(res.data['error'])
             } else {
+              this.validate_exp = false
+              this.query_time = res.data['query_time']
+              this.columnsName = res.data['title']
+              this.allsearchdata = res.data['data']
+              this.Testresults = this.allsearchdata.slice(0, 10)
+              this.total = res.data['len']
+              this.pagenumber = this.total / 10
+            }
+          })
+            .catch(error => {
+              this.load = false
+              this.validate_gen = false
+              util.err_notice(error)
+          })
+          } else {
+            this.$Message.error('请选择相关的数据库!')
+          }
+        })
+    },
+      Exe_sql (index) {
+        this.columnsName = []
+        this.Testresults = []
+        this.allsearchdata = []
+        this.select_tab = 'res'
+        this.validate_gen = true
+        this.validate_exp = true
+        this.load = true
+        this.formItem.textarea = this.his_res[index].statements
+        this.beautify()
+        // let a = this.his_res[index].db_info
+        // this.formItem.computer_room = JSON.parse(a.replace(/'/g, '"'))['computer_room']
+        setTimeout(() => {
+        this.formItem.computer_room = this.his_res[index].db_info['computer_room']
+          }, 100)
+        setTimeout(() => {
+        this.formItem.connection_name = this.his_res[index].db_info['connection_name']
+          }, 200)
+        setTimeout(() => {
+            this.formItem.basename = this.his_res[index].db_info['basename']
+          }, 300)
+        // this.formItem.basename = this.his_res[index].db_info['basename']
+        this.$refs['formItem'].validate((valid) => {
+          if (valid) {
+            if (Object.keys(this.formItem.textarea).length === 0) {
+              this.$Message.error('SQL内容不能为空!')
+              this.validate_gen = false
+              return
+            }
+            axios.post(`${util.url}/search`, {
+              'sql': this.formItem.textarea,
+              'address': JSON.stringify(this.his_res[index].db_info)
+            }).then(res => {
+              this.validate_gen = false
+              this.load = false
+            if (res.data['error']) {
+              this.$Message.error(res.data['error'])
+              util.err_notice(res.data['error'])
+            } else {
+              this.validate_exp = false
+              this.query_time = res.data['query_time']
               this.columnsName = res.data['title']
               this.allsearchdata = res.data['data']
               this.Testresults = this.allsearchdata.slice(0, 10)
@@ -297,19 +496,89 @@
           })
             .catch(error => {
               this.validate_gen = false
-              util.err_notice(error)
+              util.err_notice('aa:', error)
           })
           } else {
+            this.validate_gen = false
             this.$Message.error('请选择相关的数据库!')
           }
-        })
-    }
+        }
+      )
+      },
+      Star (index) {
+        axios.post(`${util.url}/ops/star`, {
+              'id': index.id
+        }).then(res => {
+            if (res.data['error']) {
+              util.err_notice('SQL收藏 失败')
+            } else {
+              util.notice('SQL收藏 成功')
+            }
+          })
+        setTimeout(() => {
+          this.Refresh_his()
+          this.Refresh_my
+          }, 200)
+      },
+      Unstar (index) {
+        axios.post(`${util.url}/ops/unstar`, {
+              'id': index.id
+        }).then(res => {
+            if (res.data['error']) {
+              util.err_notice('取消SQL收藏 失败')
+            } else {
+              util.notice('取消SQL收藏 成功')
+            }
+          })
+        setTimeout(() => {
+          this.Refresh_his()
+          this.Refresh_my()
+          }, 200)
+      },
+      MyFavite (name) {
+        if (name === 'fav') {
+          this.Refresh_my()
+        }
+        if (name === 'his') {
+          this.Refresh_his()
+        }
+      },
+      Refresh_my () {
+            axios.post(`${util.url}/ops/fav`)
+            .then(res => {
+            if (res.data['error']) {
+              util.err_notice(res.data['error'])
+            } else {
+              this.my_res = res.data['data']
+              this.my_tmp_res = this.my_res.slice(0, 10)
+              this.my_total = res.data['len']
+              this.my_pagenumber = this.my_total / 10
+            }
+          })
+            .catch(error => {
+              util.err_notice('aa:', error)
+          })
+      },
+      Refresh_his () {
+        axios.post(`${util.url}/ops/his`)
+            .then(res => {
+            if (res.data['error']) {
+              util.err_notice(res.data['error'])
+            } else {
+              this.his_res = res.data['history']
+            }
+          })
+            .catch(error => {
+              util.err_notice('aa:', error)
+          })
+      }
     },
     mounted () {
        axios.put(`${util.url}/workorder/connection`, {'permissions_type': 'query'})
         .then(res => {
           this.item = res.data['connection']
           this.assigned = res.data['assigend']
+          this.his_res = res.data['history']
           this.datalist.computer_roomlist = res.data['custom']
           this.limit_num = res.data['limit_num']
           this.formItem.computer_room = res.data['last_query']['computer_room'];

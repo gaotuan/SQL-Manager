@@ -8,6 +8,7 @@ cookie
 '''
 
 import pymysql
+import datetime
 
 
 class SQLgo(object):
@@ -18,6 +19,9 @@ class SQLgo(object):
         self.db = db
         self.port = int(port)
         self.con = object
+        self.start = None
+        self.end = None
+        self.cost = 0
 
     @staticmethod
     def addDic(theIndex, word, value):
@@ -32,9 +36,12 @@ class SQLgo(object):
             charset='utf8mb4',
             port=self.port
         )
+        self.start = datetime.datetime.now()
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
+        self.end = datetime.datetime.now()
+        self.cost = (self.end - self.start).total_seconds()
         self.con.close()
 
     def execute(self, sql=None):
@@ -59,7 +66,7 @@ class SQLgo(object):
                 else:
                     data_dict.append({'title': field[0], "key": field[0], "width": 200})
             len = cursor.rowcount
-        return {'data': result, 'title': data_dict, 'len': len}
+        return {'data': result, 'title': data_dict, 'len': len,'query_time':''}
 
     def dic_data(self, sql=None):
         with self.con.cursor(cursor=pymysql.cursors.DictCursor) as cursor:
