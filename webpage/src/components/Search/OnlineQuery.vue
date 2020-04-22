@@ -496,7 +496,7 @@
           })
             .catch(error => {
               this.validate_gen = false
-              util.err_notice('aa:', error)
+              util.err_notice('Error:', error)
           })
           } else {
             this.validate_gen = false
@@ -556,7 +556,7 @@
             }
           })
             .catch(error => {
-              util.err_notice('aa:', error)
+              util.err_notice('Error:', error)
           })
       },
       Refresh_his () {
@@ -569,7 +569,7 @@
             }
           })
             .catch(error => {
-              util.err_notice('aa:', error)
+              util.err_notice('Error:', error)
           })
       }
     },
