@@ -68,7 +68,10 @@
                   <TabPane label="查询历史" name="his">
                     <Table border stripe :columns="this.his_cols" :data="this.his_res" highlight-row ref="table"></Table>
                   </TabPane>
-                 <TabPane label="我的收藏">收藏的sql</TabPane>
+                 <TabPane label="我的收藏">
+                    <Table border stripe :columns="this.my_cols" :data="this.my_res" highlight-row ref="table"></Table>
+                    <Page :total="total" show-total  show-elevator @on-change="splice_arr"  :page-size="10"  ref="totol"></Page>
+                 </TabPane>
                   <TabPane label="查询耗时">SQL执行耗时: {{ this.query_time }} s</TabPane>
                   <TabPane label="查询结果" name="res">
                     <Table border stripe :columns="columnsName" :data="Testresults" highlight-row ref="table"></Table>
@@ -127,6 +130,102 @@
         load: false,
         query_time: 0,
         select_tab: 'his',
+        my_cols: [
+          {
+            title: '操作',
+            key: 'action',
+            width: 150,
+            align: 'center',
+            render: (h, params) => {
+              if (params.row.is_love === 0) {
+                return h('div', [
+                  h('Button', {
+                    props: {
+                      type: 'primary',
+                      size: 'small'
+                    },
+                    style: {
+                      marginRight: '5px'
+                    },
+                    on: {
+                      click: () => { this.Star(params.row) }
+                    }
+                  }, '添加收藏'),
+                  h('Button', {
+                    props: {
+                      type: 'success',
+                      size: 'small'
+                    },
+                    style: {
+                      marginRight: '5px'
+                    },
+                    on: {
+                      click: () => {
+                        this.Exe_sql(params.index)
+                      }
+                    }
+                  }, '查询')
+                ])
+              } else {
+            return h('div', [
+                  h('Button', {
+                    props: {
+                      type: 'warning',
+                      icon: 'ios-star-outline',
+                      size: 'small'
+                    },
+                    style: {
+                      marginRight: '5px'
+                    },
+                    on: {
+                      click: () => {
+                        this.Unstar(params.row)
+                      }
+                    }
+                  }, '取消收藏'),
+                  h('Button', {
+                    props: {
+                      type: 'success',
+                      size: 'small'
+                    },
+                    style: {
+                      marginRight: '5px'
+                    },
+                    on: {
+                      click: () => {
+                        this.Exe_sql(params.index)
+                      }
+                    }
+                  }, '查询')
+                ])
+              }
+            }
+          },
+                    {
+                        title: 'SQL语句',
+                        key: 'statements'
+                    },
+                    {
+                        title: '执行时间',
+                        key: 'work_id',
+                        width: 150
+                    },
+                    {
+                        title: '机房:连接名:DB名',
+                        key: 'dbinfo',
+                        render: (h, params) => {
+                return h('div', [
+                  h('leb', '机房:' + params.row.db_info['computer_room'] + ' 连接名:' + params.row.db_info['connection_name'] + ' DB名:' + params.row.db_info['basename'])
+                ])
+            }
+                    },
+                    {
+                        title: 'id',
+                        key: 'id',
+                        width: 60
+                    }
+      ],
+        my_res: [],
         his_cols: [
           {
             title: '操作',
@@ -139,17 +238,15 @@
                   h('Button', {
                     props: {
                       type: 'primary',
-                      icon: 'ios-star',
                       size: 'small'
                     },
                     style: {
                       marginRight: '5px'
                     },
                     on: {
-                      click: () => { this.star(params.index) },
-                      mouse: () => { this.star(params.index) }
+                      click: () => { this.Star(params.row) }
                     }
-                  }, ''),
+                  }, '添加收藏'),
                   h('Button', {
                     props: {
                       type: 'success',
@@ -163,14 +260,13 @@
                         this.Exe_sql(params.index)
                       }
                     }
-                  }, '执行查询')
+                  }, '查询')
                 ])
               } else {
             return h('div', [
                   h('Button', {
                     props: {
-                      type: 'primary',
-                      icon: 'ios-star-outline',
+                      type: 'warning',
                       size: 'small'
                     },
                     style: {
@@ -178,10 +274,10 @@
                     },
                     on: {
                       click: () => {
-                        this.unstar(params.index)
+                        this.Unstar(params.row)
                       }
                     }
-                  }, ''),
+                  }, '取消收藏'),
                   h('Button', {
                     props: {
                       type: 'success',
@@ -195,7 +291,7 @@
                         this.Exe_sql(params.index)
                       }
                     }
-                  }, '执行查询')
+                  }, '查询')
                 ])
               }
             }
@@ -240,7 +336,7 @@
         },
         columnsName: [],
         Testresults: [],
-        HisResults: [],
+        allsearchdata: [],
         item: {},
         datalist: {
           connection_name_list: [],
@@ -429,11 +525,15 @@
         })
     },
       Exe_sql (index) {
+        this.columnsName = []
+        this.Testresults = []
+        this.allsearchdata = []
         this.select_tab = 'res'
         this.validate_gen = true
         this.validate_exp = true
         this.load = true
         this.formItem.textarea = this.his_res[index].statements
+        this.beautify()
         // let a = this.his_res[index].db_info
         // this.formItem.computer_room = JSON.parse(a.replace(/'/g, '"'))['computer_room']
         setTimeout(() => {
@@ -481,7 +581,31 @@
             this.$Message.error('请选择相关的数据库!')
           }
         }
-)
+      )
+      },
+      Star (index) {
+        axios.post(`${util.url}/ops/star`, {
+              'id': index.id,
+              'address': JSON.stringify(index.db_info)
+            }).then(res => {
+            if (res.data['error']) {
+              util.err_notice('SQL收藏 失败')
+            } else {
+              util.notice('SQL收藏 成功')
+            }
+          })
+      },
+      Unstar (index) {
+        axios.post(`${util.url}/ops/unstar`, {
+              'id': index.id,
+              'address': JSON.stringify(index.db_info)
+            }).then(res => {
+            if (res.data['error']) {
+              util.err_notice('取消SQL收藏 失败')
+            } else {
+              util.notice('取消SQL收藏 成功')
+            }
+          })
       }
     },
     mounted () {

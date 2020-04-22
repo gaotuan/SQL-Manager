@@ -190,3 +190,40 @@ class addressing(baseview.BaseView):
                 except Exception as e:
                     CUSTOM_ERROR.error(f'{e.__class__.__name__}: {e}')
                     return Response(e)
+
+
+class ops(baseview.BaseView):
+    '''
+    :argument   sql查询接口, 过滤非查询语句并返回查询结果。
+                可以自由limit数目 当limit数目超过配置文件规定的最大数目时将会采用配置文件的最大数目
+
+    '''
+
+    def post(self, request, args=None):
+
+        address = json.loads(request.data['address'])
+        _c = DatabaseList.objects.filter(
+            connection_name=address['connection_name'],
+            computer_room=address['computer_room']
+        ).first()
+        try:
+            with con_database.SQLgo(
+                    ip=_c.ip,
+                    password=_c.password,
+                    user=_c.username,
+                    port=_c.port,
+                    db=address['basename']
+            ) as f:
+                if args == 'star':
+                    querypermissions.objects.filter(id=request.data['id']).update(is_love=1)
+                elif args == 'unstar':
+                    querypermissions.objects.filter(id=request.data['id']).update(is_love=0)
+            return HttpResponse({'ok': '1'})
+        except Exception as e:
+            CUSTOM_ERROR.error(f'{e.__class__.__name__}: {e}')
+            return Response({'error': e.args[1]})
+
+
+
+    def put(self, request, args: str = None):
+        return Response({'error': '已超过申请时限请刷新页面后重新提交申请'})

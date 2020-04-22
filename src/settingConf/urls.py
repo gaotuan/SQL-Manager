@@ -41,7 +41,7 @@ from core.api.serachsql import search, query_worklf, Query_order
 from core.api.osc import osc_step
 from core.api.myorder import order
 from core.api.gensql import gen_sql
-from core.api.general import addressing
+from core.api.general import addressing,ops
 from core.api.setting import *
 
 urlpatterns = [
@@ -73,5 +73,7 @@ urlpatterns = [
     url(r'^api/v1/osc/(.*)', osc_step.as_view()),
     url(r'^api/v1/download', downloadFile),
     url(r'^api-token-auth/', login_auth.as_view()),
+    url(r'^api/v1/ops/(.*)', ops.as_view()),
+
 ]
 urlpatterns = format_suffix_patterns(urlpatterns)
