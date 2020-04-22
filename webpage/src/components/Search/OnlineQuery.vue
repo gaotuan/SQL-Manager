@@ -64,16 +64,16 @@
           <br>
           <br>
             <template>
-              <Tabs type="card"  v-model="select_tab">
-                  <TabPane label="查询历史" name="his">
+              <Tabs type="card" closable  v-model="select_tab"  @on-click="MyFavite">
+                  <TabPane label="查询历史"  :key="1" name="his">
                     <Table border stripe :columns="this.his_cols" :data="this.his_res" highlight-row ref="table"></Table>
                   </TabPane>
-                 <TabPane label="我的收藏">
-                    <Table border stripe :columns="this.my_cols" :data="this.my_res" highlight-row ref="table"></Table>
-                    <Page :total="total" show-total  show-elevator @on-change="splice_arr"  :page-size="10"  ref="totol"></Page>
+                 <TabPane label="我的收藏" :key="2"  :closable="false" name="fav">
+                    <Table border stripe :columns="this.his_cols" :data="this.my_tmp_res" highlight-row ref="table"></Table>
+                    <Page :total="my_total" show-total  show-elevator @on-change="splice_my"  :page-size="10"  ref="totol"></Page>
                  </TabPane>
-                  <TabPane label="查询耗时">SQL执行耗时: {{ this.query_time }} s</TabPane>
-                  <TabPane label="查询结果" name="res">
+                  <TabPane label="查询耗时" :key="3">SQL执行耗时: {{ this.query_time }} s</TabPane>
+                  <TabPane label="查询结果" :key="4" :closable="false" name="res">
                     <Table border stripe :columns="columnsName" :data="Testresults" highlight-row ref="table"></Table>
                     <Page :total="total" show-total  show-elevator @on-change="splice_arr"  :page-size="10"  ref="totol"></Page>
                   </TabPane>
@@ -130,115 +130,24 @@
         load: false,
         query_time: 0,
         select_tab: 'his',
-        my_cols: [
-          {
-            title: '操作',
-            key: 'action',
-            width: 150,
-            align: 'center',
-            render: (h, params) => {
-              if (params.row.is_love === 0) {
-                return h('div', [
-                  h('Button', {
-                    props: {
-                      type: 'primary',
-                      size: 'small'
-                    },
-                    style: {
-                      marginRight: '5px'
-                    },
-                    on: {
-                      click: () => { this.Star(params.row) }
-                    }
-                  }, '添加收藏'),
-                  h('Button', {
-                    props: {
-                      type: 'success',
-                      size: 'small'
-                    },
-                    style: {
-                      marginRight: '5px'
-                    },
-                    on: {
-                      click: () => {
-                        this.Exe_sql(params.index)
-                      }
-                    }
-                  }, '查询')
-                ])
-              } else {
-            return h('div', [
-                  h('Button', {
-                    props: {
-                      type: 'warning',
-                      icon: 'ios-star-outline',
-                      size: 'small'
-                    },
-                    style: {
-                      marginRight: '5px'
-                    },
-                    on: {
-                      click: () => {
-                        this.Unstar(params.row)
-                      }
-                    }
-                  }, '取消收藏'),
-                  h('Button', {
-                    props: {
-                      type: 'success',
-                      size: 'small'
-                    },
-                    style: {
-                      marginRight: '5px'
-                    },
-                    on: {
-                      click: () => {
-                        this.Exe_sql(params.index)
-                      }
-                    }
-                  }, '查询')
-                ])
-              }
-            }
-          },
-                    {
-                        title: 'SQL语句',
-                        key: 'statements'
-                    },
-                    {
-                        title: '执行时间',
-                        key: 'work_id',
-                        width: 150
-                    },
-                    {
-                        title: '机房:连接名:DB名',
-                        key: 'dbinfo',
-                        render: (h, params) => {
-                return h('div', [
-                  h('leb', '机房:' + params.row.db_info['computer_room'] + ' 连接名:' + params.row.db_info['connection_name'] + ' DB名:' + params.row.db_info['basename'])
-                ])
-            }
-                    },
-                    {
-                        title: 'id',
-                        key: 'id',
-                        width: 60
-                    }
-      ],
-        my_res: [],
         his_cols: [
           {
             title: '操作',
             key: 'action',
-            width: 150,
+            width: 120,
             align: 'center',
             render: (h, params) => {
               if (params.row.is_love === 0) {
                 return h('div', [
+                  h('Tooltip', {
+                  props: {
+                    content: '添加收藏'
+                  }
+                }, [
                   h('Button', {
                     props: {
-                      type: 'primary',
-                      size: 'small'
+                      size: 'small',
+                      icon: 'ios-star-outline'
                     },
                     style: {
                       marginRight: '5px'
@@ -246,7 +155,8 @@
                     on: {
                       click: () => { this.Star(params.row) }
                     }
-                  }, '添加收藏'),
+                  }, '')
+                  ]),
                   h('Button', {
                     props: {
                       type: 'success',
@@ -264,10 +174,15 @@
                 ])
               } else {
             return h('div', [
-                  h('Button', {
+                  h('Tooltip', {
                     props: {
-                      type: 'warning',
-                      size: 'small'
+                      content: '取消收藏'
+                    }
+                  },
+                    [h('Button', {
+                    props: {
+                      size: 'small',
+                      icon: 'ios-star'
                     },
                     style: {
                       marginRight: '5px'
@@ -277,7 +192,8 @@
                         this.Unstar(params.row)
                       }
                     }
-                  }, '取消收藏'),
+                  }, '')
+                  ]),
                   h('Button', {
                     props: {
                       type: 'success',
@@ -321,6 +237,9 @@
                     }
       ],
         his_res: [],
+        my_res: [],
+        my_tmp_res: [],
+        my_pagenumber: 1,
         data1: [],
         validate_exp: true,
         validate_gen: false,
@@ -376,6 +295,9 @@
     methods: {
       splice_arr (page) {
         this.Testresults = this.allsearchdata.slice(page * 10 - 10, page * 10)
+      },
+      splice_my (page) {
+        this.my_tmp_res = this.my_res.slice(page * 10 - 10, page * 10)
       },
       ChangeDB (v) {
         // this.formItem.basename = v
@@ -585,26 +507,69 @@
       },
       Star (index) {
         axios.post(`${util.url}/ops/star`, {
-              'id': index.id,
-              'address': JSON.stringify(index.db_info)
-            }).then(res => {
+              'id': index.id
+        }).then(res => {
             if (res.data['error']) {
               util.err_notice('SQL收藏 失败')
             } else {
               util.notice('SQL收藏 成功')
             }
           })
+        setTimeout(() => {
+          this.Refresh_his()
+          this.Refresh_my
+          }, 200)
       },
       Unstar (index) {
         axios.post(`${util.url}/ops/unstar`, {
-              'id': index.id,
-              'address': JSON.stringify(index.db_info)
-            }).then(res => {
+              'id': index.id
+        }).then(res => {
             if (res.data['error']) {
               util.err_notice('取消SQL收藏 失败')
             } else {
               util.notice('取消SQL收藏 成功')
             }
+          })
+        setTimeout(() => {
+          this.Refresh_his()
+          this.Refresh_my()
+          }, 200)
+      },
+      MyFavite (name) {
+        if (name === 'fav') {
+          this.Refresh_my()
+        }
+        if (name === 'his') {
+          this.Refresh_his()
+        }
+      },
+      Refresh_my () {
+            axios.post(`${util.url}/ops/fav`)
+            .then(res => {
+            if (res.data['error']) {
+              util.err_notice(res.data['error'])
+            } else {
+              this.my_res = res.data['data']
+              this.my_tmp_res = this.my_res.slice(0, 10)
+              this.my_total = res.data['len']
+              this.my_pagenumber = this.my_total / 10
+            }
+          })
+            .catch(error => {
+              util.err_notice('aa:', error)
+          })
+      },
+      Refresh_his () {
+        axios.post(`${util.url}/ops/his`)
+            .then(res => {
+            if (res.data['error']) {
+              util.err_notice(res.data['error'])
+            } else {
+              this.his_res = res.data['history']
+            }
+          })
+            .catch(error => {
+              util.err_notice('aa:', error)
           })
       }
     },

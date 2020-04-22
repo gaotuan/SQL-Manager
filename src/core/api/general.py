@@ -201,24 +201,30 @@ class ops(baseview.BaseView):
 
     def post(self, request, args=None):
 
-        address = json.loads(request.data['address'])
-        _c = DatabaseList.objects.filter(
-            connection_name=address['connection_name'],
-            computer_room=address['computer_room']
-        ).first()
         try:
-            with con_database.SQLgo(
-                    ip=_c.ip,
-                    password=_c.password,
-                    user=_c.username,
-                    port=_c.port,
-                    db=address['basename']
-            ) as f:
-                if args == 'star':
-                    querypermissions.objects.filter(id=request.data['id']).update(is_love=1)
-                elif args == 'unstar':
-                    querypermissions.objects.filter(id=request.data['id']).update(is_love=0)
-            return HttpResponse({'ok': '1'})
+            if args == 'star':
+                querypermissions.objects.filter(id=request.data['id']).update(is_love=1)
+                return HttpResponse({'ok': '1'})
+            elif args == 'unstar':
+                querypermissions.objects.filter(id=request.data['id']).update(is_love=0)
+                return HttpResponse({'ok': '1'})
+            elif args == 'fav':
+                my = querypermissions.objects.filter(username=request.user , is_love=1 ).order_by('-id')
+                serializer_my = QueryPermissions(my, many=True)
+                return Response(
+                    {
+                        'data': serializer_my.data,
+                        'len': len(my)
+                    }
+                )
+            elif args == 'his':
+                history = querypermissions.objects.filter(username=request.user).order_by('-id')[0:10]
+                serializer_his = QueryPermissions(history, many=True)
+                return Response(
+                    {
+                        'history': serializer_his.data
+                    }
+                )
         except Exception as e:
             CUSTOM_ERROR.error(f'{e.__class__.__name__}: {e}')
             return Response({'error': e.args[1]})
