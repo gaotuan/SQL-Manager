@@ -167,7 +167,7 @@
                     },
                     on: {
                       click: () => {
-                        this.Exe_sql(params.index)
+                        this.Exe_sql(params.row)
                       }
                     }
                   }, '查询')
@@ -204,7 +204,7 @@
                     },
                     on: {
                       click: () => {
-                        this.Exe_sql(params.index)
+                        this.Exe_sql(params.row)
                       }
                     }
                   }, '查询')
@@ -459,18 +459,18 @@
         this.validate_gen = true
         this.validate_exp = true
         this.load = true
-        this.formItem.textarea = this.his_res[index].statements
+        this.formItem.textarea = index.statements
         this.beautify()
         // let a = this.his_res[index].db_info
         // this.formItem.computer_room = JSON.parse(a.replace(/'/g, '"'))['computer_room']
         setTimeout(() => {
-        this.formItem.computer_room = this.his_res[index].db_info['computer_room']
+        this.formItem.computer_room = index.db_info['computer_room']
           }, 100)
         setTimeout(() => {
-        this.formItem.connection_name = this.his_res[index].db_info['connection_name']
+        this.formItem.connection_name = index.db_info['connection_name']
           }, 200)
         setTimeout(() => {
-            this.formItem.basename = this.his_res[index].db_info['basename']
+            this.formItem.basename = index.db_info['basename']
           }, 300)
         // this.formItem.basename = this.his_res[index].db_info['basename']
         this.$refs['formItem'].validate((valid) => {
@@ -482,7 +482,7 @@
             }
             axios.post(`${util.url}/search`, {
               'sql': this.formItem.textarea,
-              'address': JSON.stringify(this.his_res[index].db_info)
+              'address': JSON.stringify(index.db_info)
             }).then(res => {
               this.validate_gen = false
               this.load = false
