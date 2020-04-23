@@ -392,6 +392,11 @@
         })
       },
       Search_sql (v) {
+        setTimeout(() => {
+          this.columnsName = []
+          this.Testresults = []
+        }, 200)
+
         let address = {
           'basename': this.formItem.basename,
           'connection_name': this.formItem.connection_name,
@@ -517,7 +522,7 @@
           })
         setTimeout(() => {
           this.Refresh_his()
-          this.Refresh_my
+          this.Refresh_my()
           }, 200)
       },
       Unstar (index) {
