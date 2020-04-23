@@ -151,6 +151,7 @@ class querypermissions(models.Model):
     statements = models.TextField()
     db_info = models.CharField(max_length=100, null=True)
     is_love = models.IntegerField(null=True,default=0)
+    alias = models.CharField(max_length=100, null=True) #收藏sql的别名
 
 
 class query_order(models.Model):

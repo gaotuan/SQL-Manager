@@ -54,7 +54,7 @@ class QueryPermissions(serializers.HyperlinkedModelSerializer):
         return ast.literal_eval(obj.db_info)
     class Meta:
         model = querypermissions
-        fields = ('id', 'work_id', 'db_info', 'statements','is_love')
+        fields = ('id', 'work_id', 'db_info', 'statements','is_love','alias')
 
 
 class SQLGeneratDic(serializers.HyperlinkedModelSerializer):

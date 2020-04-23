@@ -203,7 +203,7 @@ class ops(baseview.BaseView):
 
         try:
             if args == 'star':
-                querypermissions.objects.filter(id=request.data['id']).update(is_love=1)
+                querypermissions.objects.filter(id=request.data['id']).update(is_love=1,alias=request.data['alias'])
                 return HttpResponse({'ok': '1'})
             elif args == 'unstar':
                 querypermissions.objects.filter(id=request.data['id']).update(is_love=0)

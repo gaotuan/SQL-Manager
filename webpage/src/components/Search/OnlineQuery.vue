@@ -69,7 +69,7 @@
                     <Table border stripe :columns="this.his_cols" :data="this.his_res" highlight-row ref="table"></Table>
                   </TabPane>
                  <TabPane label="我的收藏" :key="2"  :closable="false" name="fav">
-                    <Table border stripe :columns="this.his_cols" :data="this.my_tmp_res" highlight-row ref="table"></Table>
+                    <Table border stripe :columns="this.my_cols" :data="this.my_tmp_res" highlight-row ref="table"></Table>
                     <Page :total="my_total" show-total  show-elevator @on-change="splice_my"  :page-size="10"  ref="totol"></Page>
                  </TabPane>
                   <TabPane label="查询耗时" :key="3">SQL执行耗时: {{ this.query_time }} s</TabPane>
@@ -78,8 +78,19 @@
                     <Page :total="total" show-total  show-elevator @on-change="splice_arr"  :page-size="10"  ref="totol"></Page>
                   </TabPane>
               </Tabs>
+              <Modal v-model="editstar" :closable='true' :mask-closable=true :width="400">
+                <h3 slot="header" style="color:#2D8CF0">输入SQL备注:</h3>
+                <Form :label-width="45" label-position="center">
+                  <FormItem label="备注:">
+                    <Input v-model="sql_alias"></Input>
+                  </FormItem>
+                </Form>
+                <div slot="footer">
+                  <Button type="text" @click="editstar=false">取消</Button>
+                  <Button type="warning" @click="putalias">确认</Button>
+                </div>
+              </Modal>
             </template>
-
           <br>
         </Card>
       </Col>
@@ -127,6 +138,9 @@
     name: 'OnlineQuery',
     data () {
       return {
+        editstar: false,
+        sql_alias: '',
+        sql_id: '',
         load: false,
         query_time: 0,
         select_tab: 'his',
@@ -217,9 +231,117 @@
                         key: 'statements'
                     },
                     {
+                        title: '机房:连接名:DB名',
+                        key: 'dbinfo',
+                        render: (h, params) => {
+                return h('div', [
+                  h('leb', '机房:' + params.row.db_info['computer_room'] + ' 连接名:' + params.row.db_info['connection_name'] + ' DB名:' + params.row.db_info['basename'])
+                ])
+            }
+                    },
+                    {
                         title: '执行时间',
                         key: 'work_id',
                         width: 150
+                    }
+                    // ,
+                    // {
+                    //     title: 'id',
+                    //     key: 'id',
+                    //     width: 60
+                    // }
+      ],
+        his_res: [],
+        my_cols: [
+          {
+            title: '操作',
+            key: 'action',
+            width: 120,
+            align: 'center',
+            render: (h, params) => {
+              if (params.row.is_love === 0) {
+                return h('div', [
+                  h('Tooltip', {
+                  props: {
+                    content: '添加收藏'
+                  }
+                }, [
+                  h('Button', {
+                    props: {
+                      size: 'small',
+                      icon: 'ios-star-outline'
+                    },
+                    style: {
+                      marginRight: '5px'
+                    },
+                    on: {
+                      click: () => { this.Star(params.row) }
+                    }
+                  }, '')
+                  ]),
+                  h('Button', {
+                    props: {
+                      type: 'success',
+                      size: 'small'
+                    },
+                    style: {
+                      marginRight: '5px'
+                    },
+                    on: {
+                      click: () => {
+                        this.Exe_sql(params.row)
+                      }
+                    }
+                  }, '查询')
+                ])
+              } else {
+            return h('div', [
+                  h('Tooltip', {
+                    props: {
+                      content: '取消收藏'
+                    }
+                  },
+                    [h('Button', {
+                    props: {
+                      size: 'small',
+                      icon: 'ios-star'
+                    },
+                    style: {
+                      marginRight: '5px'
+                    },
+                    on: {
+                      click: () => {
+                        this.Unstar(params.row)
+                      }
+                    }
+                  }, '')
+                  ]),
+                  h('Button', {
+                    props: {
+                      type: 'success',
+                      size: 'small'
+                    },
+                    style: {
+                      marginRight: '5px'
+                    },
+                    on: {
+                      click: () => {
+                        this.Exe_sql(params.row)
+                      }
+                    }
+                  }, '查询')
+                ])
+              }
+            }
+          },
+                    {
+                        title: '描述',
+                        key: 'alias',
+                        width: 150
+                    },
+                    {
+                        title: 'SQL语句',
+                        key: 'statements'
                     },
                     {
                         title: '机房:连接名:DB名',
@@ -231,12 +353,17 @@
             }
                     },
                     {
-                        title: 'id',
-                        key: 'id',
-                        width: 60
+                        title: '执行时间',
+                        key: 'work_id',
+                        width: 150
                     }
+                    // ,
+                    // {
+                    //     title: 'id',
+                    //     key: 'id',
+                    //     width: 60
+                    // }
       ],
-        his_res: [],
         my_res: [],
         my_tmp_res: [],
         my_pagenumber: 1,
@@ -510,9 +637,11 @@
         }
       )
       },
-      Star (index) {
+      putalias () {
+        this.editstar = false
         axios.post(`${util.url}/ops/star`, {
-              'id': index.id
+              'id': this.sql_id,
+              'alias': this.sql_alias
         }).then(res => {
             if (res.data['error']) {
               util.err_notice('SQL收藏 失败')
@@ -524,6 +653,10 @@
           this.Refresh_his()
           this.Refresh_my()
           }, 200)
+      },
+      Star (index) {
+        this.sql_id = index.id
+        this.editstar = true
       },
       Unstar (index) {
         axios.post(`${util.url}/ops/unstar`, {
