@@ -28,6 +28,7 @@ PERMISSION = {
     'diccon': [],
     'dicedit': '0',
     'user': '0',
+    'sqlopt': '0',
     'base': '0',
     'dicexport': '0',
     'person': [],

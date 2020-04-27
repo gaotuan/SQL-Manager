@@ -69,6 +69,7 @@
           'serach-sql': '',
           'online-query': '',
           'management-user': '',
+          'management-sqlopt': '',
           'management-database': '',
           'audit-audit': '1',
           'audit-record': '1',
@@ -111,6 +112,7 @@
           this.filtermenulist['online-query'] = c.query
           this.filtermenulist['view-dml'] = c.dic
           this.filtermenulist['management-user'] = c.user
+          this.filtermenulist['management-sqlopt'] = c.sqlopt
           this.filtermenulist['management-database'] = c.base
         })
     }

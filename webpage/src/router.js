@@ -232,6 +232,15 @@ export const appRouter = [
     component: Index,
     children: [
       {
+        path: 'management-sqlopt',
+        name: 'management-sqlopt',
+        title: 'SQL优化',
+        'icon': 'person-stalker',
+        component: resolve => {
+          require(['./components/Management/SqlOptimizer.vue'], resolve)
+        }
+      },
+      {
         path: 'management-user',
         name: 'management-user',
         title: '用户',

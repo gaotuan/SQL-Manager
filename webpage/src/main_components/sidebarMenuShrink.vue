@@ -77,6 +77,7 @@
           'view-dml': '',
           'serach-sql': '1',
           'management-user': '',
+          'management-sqlopt': '',
           'management-database': '',
           'audit-audit': '1',
           'audit-record': '1',
@@ -109,6 +110,7 @@
           this.filtermenulist.dmledit = c.dml
           this.filtermenulist['view-dml'] = c.dic
           this.filtermenulist['management-user'] = c.user
+          this.filtermenulist['management-sqlopt'] = c.sqlopt
           this.filtermenulist['management-database'] = c.base
         })
     }

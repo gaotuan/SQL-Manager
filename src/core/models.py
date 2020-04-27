@@ -7,6 +7,7 @@ from django.contrib.auth.models import AbstractUser
 import ast
 
 
+
 class JSONField(models.TextField):
     description = "Json"
 
@@ -151,8 +152,13 @@ class querypermissions(models.Model):
     statements = models.TextField()
     db_info = models.CharField(max_length=100, null=True)
     is_love = models.IntegerField(null=True,default=0)
-    alias = models.CharField(max_length=100, null=True) #收藏sql的别名
+    alias = models.CharField(max_length=100, null=True)
 
+class sql_optimize_his(models.Model):
+    work_id = models.CharField(max_length=50, null=True, db_index=True)
+    username = models.CharField(max_length=100, null=True, db_index=True)
+    statements = models.TextField()
+    db_info = models.CharField(max_length=100, null=True)
 
 class query_order(models.Model):
     work_id = models.CharField(max_length=50, null=True, db_index=True)
@@ -166,3 +172,12 @@ class query_order(models.Model):
     export = models.SmallIntegerField(null=True, default=0)
     audit = models.CharField(max_length=100, null=True)
     time = models.CharField(max_length=100, null=True)
+
+class Config(models.Model):
+    """
+    配置信息表
+    """
+    item = models.CharField(  max_length=190, primary_key=True)
+    value = models.CharField(  max_length=500)
+    description = models.CharField(  max_length=190, default='', blank=True)
+

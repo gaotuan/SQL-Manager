@@ -56,6 +56,20 @@ class QueryPermissions(serializers.HyperlinkedModelSerializer):
         model = querypermissions
         fields = ('id', 'work_id', 'db_info', 'statements','is_love','alias')
 
+class Sql_Optimize_His(serializers.HyperlinkedModelSerializer):
+    '''
+    查询历史信息列表serializers
+    '''
+
+    db_info = serializers.SerializerMethodField()
+
+    def get_db_info(self, obj):
+        """Returns False if listing is not mapped to a project, else returns the project info"""
+        return ast.literal_eval(obj.db_info)
+    class Meta:
+        model = querypermissions
+        fields = ('id', 'work_id', 'db_info', 'statements')
+
 
 class SQLGeneratDic(serializers.HyperlinkedModelSerializer):
     '''

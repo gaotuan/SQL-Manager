@@ -10,13 +10,13 @@ from core.models import (
     Account,
     grained,
     SqlDictionary,
-    querypermissions
+    querypermissions,sql_optimize_his
 )
 from libs.serializers import (
     Area,
     UserINFO,
     query_con,
-    QueryPermissions
+    QueryPermissions,Sql_Optimize_His
 )
 
 CUSTOM_ERROR = logging.getLogger('Yearning.core.views')
@@ -98,7 +98,53 @@ class addressing(baseview.BaseView):
             except Exception as e:
                 CUSTOM_ERROR.error(f'{e.__class__.__name__}: {e}')
                 return HttpResponse(status=500)
-
+        elif args == 'optimizer':
+            try:
+                assigned = grained.objects.filter(username=request.user).first()
+                last_query = sql_optimize_his.objects.filter(username=request.user).order_by('-id').first()
+                un_init = util.init_conf()
+                custom_com = ast.literal_eval(un_init['other'])
+                if request.data['permissions_type'] == 'user' or request.data['permissions_type'] == 'own_space':
+                    info = DatabaseList.objects.all()
+                    con_name = Area(info, many=True).data
+                    dic = SqlDictionary.objects.all().values('Name')
+                    dic.query.distinct = ['Name']
+                else:
+                    con_name = []
+                    _type = request.data['permissions_type'] + 'con'
+                    permission_spec = grained.objects.filter(username=request.user).first()
+                    for i in permission_spec.permissions[_type]:
+                        con_instance = DatabaseList.objects.filter(connection_name=i).first()
+                        if con_instance:
+                            con_name.append(
+                                {
+                                    'id': con_instance.id,
+                                    'connection_name': con_instance.connection_name,
+                                    'ip': con_instance.ip,
+                                    'computer_room': con_instance.computer_room
+                                })
+                    dic = ''
+                info = Account.objects.filter(group='admin').all()
+                serializers = UserINFO(info, many=True)
+                history = sql_optimize_his.objects.filter(username=request.user).order_by('-id')[0:10]
+                serializer_his = Sql_Optimize_His(history, many=True)
+                return Response(
+                    {
+                        'connection': con_name,
+                        'person': serializers.data,
+                        'history': serializer_his.data,
+                        'dic': dic,
+                        'assigend': assigned.permissions['person'],
+                        'custom': custom_com['con_room'],
+                        'multi': custom_com['multi'],
+                        'limit_num': custom_com['limit'],
+                        'last_query': ast.literal_eval(last_query.db_info) if last_query else {},
+                        'last_sql': last_query.statements if last_query else ""
+                    }
+                )
+            except Exception as e:
+                CUSTOM_ERROR.error(f'{e.__class__.__name__}: {e}')
+                return HttpResponse(status=500)
         elif args == "basename":
             try:
                 con_id = request.data['id']
@@ -220,6 +266,14 @@ class ops(baseview.BaseView):
             elif args == 'his':
                 history = querypermissions.objects.filter(username=request.user).order_by('-id')[0:10]
                 serializer_his = QueryPermissions(history, many=True)
+                return Response(
+                    {
+                        'history': serializer_his.data
+                    }
+                )
+            elif args == 'optimizer':
+                history = sql_optimize_his.objects.filter(username=request.user).order_by('-id')[0:10]
+                serializer_his = Sql_Optimize_His(history, many=True)
                 return Response(
                     {
                         'history': serializer_his.data

@@ -59,12 +59,13 @@ class SQLgo(object):
             sqllist = sql
             cursor.execute(sqllist)
             result = cursor.fetchall()
-            for field in cursor.description:
-                if id == 0:
-                    data_dict.append({'title': field[0], "key": field[0], "fixed": "left", "width": 150})
-                    id += 1
-                else:
-                    data_dict.append({'title': field[0], "key": field[0], "width": 200})
+            if cursor.description is not None:
+                for field in cursor.description:
+                    if id == 0:
+                        data_dict.append({'title': field[0], "key": field[0], "fixed": "left", "width": 150})
+                        id += 1
+                    else:
+                        data_dict.append({'title': field[0], "key": field[0], "width": 200})
             len = cursor.rowcount
         return {'data': result, 'title': data_dict, 'len': len,'query_time':''}
 
