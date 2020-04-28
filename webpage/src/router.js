@@ -224,6 +224,25 @@ export const appRouter = [
     ]
   },
   {
+    path: '/tools',
+    icon: 'film-marker',
+    name: 'tools',
+    title: '工具',
+    access: 0,
+    component: Index,
+    children: [
+      {
+        path: 'binlog2sql',
+        name: 'binlog2sql',
+        title: 'binlog2sql',
+        'icon': 'ios-medkit',
+        component: resolve => {
+          require(['./components/Tools/Binlog2sql.vue'], resolve)
+        }
+      }
+    ]
+  },
+  {
     path: '/management',
     icon: 'social-buffer',
     name: 'management',
@@ -235,7 +254,7 @@ export const appRouter = [
         path: 'management-sqlopt',
         name: 'management-sqlopt',
         title: 'SQL优化',
-        'icon': 'person-stalker',
+        'icon': 'ios-compose-outline',
         component: resolve => {
           require(['./components/Management/SqlOptimizer.vue'], resolve)
         }

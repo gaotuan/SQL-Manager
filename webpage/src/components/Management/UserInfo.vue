@@ -583,7 +583,6 @@
     },
     methods: {
       searchuser () {
-        console.log('usr:' + this.searchanme1)
         axios.get(`${util.url}/userinfo/one?username=${this.searchanme1}`)
           .then(res => {
             this.data5 = res.data.data

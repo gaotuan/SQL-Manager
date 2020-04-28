@@ -75,10 +75,12 @@
           'dmledit': '',
           'indexedit': '',
           'view-dml': '',
-          'serach-sql': '1',
+          'serach-sql': '',
+          'online-query': '',
           'management-user': '',
           'management-sqlopt': '',
           'management-database': '',
+          'binlog2sql': '1',
           'audit-audit': '1',
           'audit-record': '1',
           'audit-permissions': '1',
@@ -108,6 +110,7 @@
           this.filtermenulist.ddledit = c.ddl
           this.filtermenulist.indexedit = c.ddl
           this.filtermenulist.dmledit = c.dml
+          this.filtermenulist['online-query'] = c.query
           this.filtermenulist['view-dml'] = c.dic
           this.filtermenulist['management-user'] = c.user
           this.filtermenulist['management-sqlopt'] = c.sqlopt

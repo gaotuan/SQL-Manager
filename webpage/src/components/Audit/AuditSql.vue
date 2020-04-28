@@ -54,17 +54,31 @@
   <div>
     <Row>
       <Card>
-        <p slot="title">
-          <Icon type="person"></Icon>
-          工单审核
-        </p>
+          <row>
+            <Col span="1" style="width: 100px">
+          <Icon type="person"></Icon> 工单审核
+            </Col>
+    <Col>
+                  <Form>
+                      <FormItem  >
+                        <Input v-model="v_searchorder" style="width: 400px" placeholder="输入搜索内容...">
+                            <Select  v-model="v_searchmem"  slot="prepend" style="width: 80px" placeholder="工单编号">
+                                <Option value="o" >工单编号</Option>
+                                <Option value="u" >提交人</Option>
+                            </Select>
+                            <Button slot="append"  type="warning" icon="ios-search" @click.native="searchorder" ></Button>
+                        </Input>
+                      </FormItem>
+                  </Form>
+    </Col>
+          </row>
+
         <Row>
           <Col span="24">
             <Poptip
               confirm
               title="您确认删除这些工单信息吗?"
-              @on-ok="delrecordData"
-            >
+              @on-ok="delrecordData">
               <Button type="text" style="margin-left: -1%">删除记录</Button>
             </Poptip>
             <Button type="text" style="margin-left: -1%" @click.native="mou_data()">刷新</Button>
@@ -195,6 +209,8 @@
     name: 'Sqltable',
     data () {
       return {
+        v_searchorder: '',
+        v_searchmem: '',
         columns6: [
           {
             type: 'selection',
@@ -595,6 +611,29 @@
             util.notice(res.data)
           })
           .catch(error => util.err_notice(error))
+      },
+      searchorder () {
+        if (this.v_searchorder === '') {
+          let vm = this
+          this.reboot = setInterval(function () {
+           vm.mou_data(vm.$refs.page.currentPage)
+                  }, 5000)
+        } else {
+          axios.get(`${util.url}/audit_sql?page=n&opt=${this.v_searchmem}&mess=${this.v_searchorder}`)
+            .then(res => {
+              this.tmp = res.data.data
+              this.tmp.forEach((item) => {
+                (item.backup === 1) ? item.backup = '是' : item.backup = '否'
+              })
+              this.pagenumber = res.data.page
+              this.multi = res.data.multi
+              this.multi_list = res.data.multi_list
+              clearInterval(this.reboot)
+            })
+            .catch(error => {
+              util.err_notice(error)
+            })
+        }
       }
     },
     mounted () {

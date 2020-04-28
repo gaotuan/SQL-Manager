@@ -71,6 +71,7 @@
           'management-user': '',
           'management-sqlopt': '',
           'management-database': '',
+          'binlog2sql': '1',
           'audit-audit': '1',
           'audit-record': '1',
           'audit-permissions': '1',

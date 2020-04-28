@@ -6,10 +6,21 @@
   <div>
     <Row>
       <Card>
-        <p slot="title">
-          <Icon type="person"></Icon>
-          我的工单
-        </p>
+
+        <row>
+                  <Form>
+                      <FormItem  >
+                        <Input v-model="v_searchorder" style="width: 400px" placeholder="输入搜索内容...">
+                            <Select  v-model="v_searchmem"  slot="prepend" style="width: 80px" placeholder="工单编号">
+                                <Option value="o" >工单编号</Option>
+                                <Option value="u" >工单说明</Option>
+                            </Select>
+                            <Button slot="append"  type="warning" icon="ios-search" @click.native="searchorder" ></Button>
+                        </Input>
+                      </FormItem>
+                  </Form>
+          </row>
+
         <Row>
           <Col span="24">
             <Table border :columns="columns" :data="table_data" stripe size="small"></Table>
@@ -30,6 +41,8 @@
     name: 'put',
     data () {
       return {
+        v_searchmem: '',
+        v_searchorder: '',
         columns: [
           {
             title: '工单编号:',
@@ -167,6 +180,22 @@
           .catch(error => {
             util.err_notice(error)
           })
+      },
+      searchorder () {
+        this.tmp = []
+        if (this.v_searchorder === '') {
+            this.currentpage()
+        } else {
+          axios.get(`${util.url}/myorder?user=${sessionStorage.getItem('user')}&page=n&opt=${this.v_searchmem}&mess=${this.v_searchorder}`)
+            .then(res => {
+              this.table_data = res.data.data
+              this.table_data.forEach((item) => { (item.backup === 1) ? item.backup = '是' : item.backup = '否' })
+              this.page_number = parseInt(res.data.page)
+            })
+            .catch(error => {
+              util.err_notice(error)
+            })
+        }
       }
     },
     mounted () {

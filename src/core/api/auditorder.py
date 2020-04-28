@@ -39,37 +39,71 @@ class audit(baseview.SuperUserpermissions):
         :return 数据条数, 数据
 
         '''
-
         try:
-            page = request.GET.get('page')
-            username = request.GET.get('username')
-        except KeyError as e:
-            CUSTOM_ERROR.error(f'{e.__class__.__name__}: {e}')
-            return HttpResponse(status=500)
-        else:
-            try:
+            if request.GET.get('page') == 'n':
+                mess = request.GET.get('mess')
+                opt = request.GET.get('opt')
                 un_init = util.init_conf()
                 custom_com = ast.literal_eval(un_init['other'])
-                page_number = SqlOrder.objects.filter(assigned=username).count()
-                start = (int(page) - 1) * 20
-                end = int(page) * 20
-                info = SqlOrder.objects.raw(
-                    '''
-                    select core_sqlorder.*,core_databaselist.connection_name, \
-                    core_databaselist.computer_room from core_sqlorder \
-                    INNER JOIN core_databaselist on \
-                    core_sqlorder.bundle_id = core_databaselist.id where core_sqlorder.assigned = '%s'\
-                    ORDER BY core_sqlorder.id desc
-                    ''' % username
-                )[start:end]
+                if opt == 'u' :
+                    page_number = SqlOrder.objects.filter(assigned__contains = mess).count()
+                    sql = (
+                        f'select core_sqlorder.*,core_databaselist.connection_name,\n'
+                        f'core_databaselist.computer_room from core_sqlorder\n'
+                        f'INNER JOIN core_databaselist on\n'
+                        f'core_sqlorder.bundle_id = core_databaselist.id where core_sqlorder.assigned like %s\n'
+                        f'ORDER BY core_sqlorder.id desc;')
+                else:
+                    page_number = SqlOrder.objects.filter(work_id__contains = mess).count()
+                    sql = (
+                        f'select core_sqlorder.*,core_databaselist.connection_name,\n'
+                        f'core_databaselist.computer_room from core_sqlorder\n'
+                        f'INNER JOIN core_databaselist on\n'
+                        f'core_sqlorder.bundle_id = core_databaselist.id where core_sqlorder.work_id like %s\n'
+                        f'ORDER BY core_sqlorder.id desc;')
+                    # //where core_sqlorder.work_id like '%'''+mess+'''%'      ORDER BY core_sqlorder.id desc '''
+                info = SqlOrder.objects.raw(sql, ["%"+mess+"%"])
                 data = util.ser(info)
                 info = Account.objects.filter(group='perform').all()
                 ser = serializers.UserINFO(info, many=True)
                 return Response(
                     {'page': page_number, 'data': data, 'multi': custom_com['multi'], 'multi_list': ser.data})
-            except Exception as e:
-                CUSTOM_ERROR.error(f'{e.__class__.__name__}: {e}')
-                return HttpResponse(status=500)
+
+            else:
+                try:
+                    page = request.GET.get('page')
+                    username = request.GET.get('username')
+                except KeyError as e:
+                    CUSTOM_ERROR.error(f'{e.__class__.__name__}: {e}')
+                    return HttpResponse(status=500)
+                else:
+                    try:
+                        un_init = util.init_conf()
+                        custom_com = ast.literal_eval(un_init['other'])
+                        page_number = SqlOrder.objects.filter(assigned=username).count()
+                        start = (int(page) - 1) * 20
+                        end = int(page) * 20
+                        info = SqlOrder.objects.raw(
+                            '''
+                            select core_sqlorder.*,core_databaselist.connection_name, \
+                            core_databaselist.computer_room from core_sqlorder \
+                            INNER JOIN core_databaselist on \
+                            core_sqlorder.bundle_id = core_databaselist.id where core_sqlorder.assigned = '%s'\
+                            ORDER BY core_sqlorder.id desc
+                            ''' % username
+                        )[start:end]
+                        data = util.ser(info)
+                        info = Account.objects.filter(group='perform').all()
+                        ser = serializers.UserINFO(info, many=True)
+                        return Response(
+                            {'page': page_number, 'data': data, 'multi': custom_com['multi'], 'multi_list': ser.data})
+                    except Exception as e:
+                        CUSTOM_ERROR.error(f'{e.__class__.__name__}: {e}')
+                        return HttpResponse(status=500)
+        except KeyError as e:
+            CUSTOM_ERROR.error(f'{e.__class__.__name__}: {e}')
+            return HttpResponse(status=500)
+
 
     def put(self, request, args: str = None):
 
