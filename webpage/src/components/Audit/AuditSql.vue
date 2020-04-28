@@ -65,6 +65,7 @@
                             <Select  v-model="v_searchmem"  slot="prepend" style="width: 80px" placeholder="工单编号">
                                 <Option value="o" >工单编号</Option>
                                 <Option value="u" >提交人</Option>
+                                <Option value="t" >工单说明</Option>
                             </Select>
                             <Button slot="append"  type="warning" icon="ios-search" @click.native="searchorder" ></Button>
                         </Input>

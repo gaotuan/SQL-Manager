@@ -46,12 +46,20 @@ class audit(baseview.SuperUserpermissions):
                 un_init = util.init_conf()
                 custom_com = ast.literal_eval(un_init['other'])
                 if opt == 'u' :
-                    page_number = SqlOrder.objects.filter(assigned__contains = mess).count()
+                    page_number = SqlOrder.objects.filter(username__contains = mess).count()
                     sql = (
                         f'select core_sqlorder.*,core_databaselist.connection_name,\n'
                         f'core_databaselist.computer_room from core_sqlorder\n'
                         f'INNER JOIN core_databaselist on\n'
-                        f'core_sqlorder.bundle_id = core_databaselist.id where core_sqlorder.assigned like %s\n'
+                        f'core_sqlorder.bundle_id = core_databaselist.id where core_sqlorder.username like %s\n'
+                        f'ORDER BY core_sqlorder.id desc;')
+                elif opt == 't':
+                    page_number = SqlOrder.objects.filter(text__contains=mess).count()
+                    sql = (
+                        f'select core_sqlorder.*,core_databaselist.connection_name,\n'
+                        f'core_databaselist.computer_room from core_sqlorder\n'
+                        f'INNER JOIN core_databaselist on\n'
+                        f'core_sqlorder.bundle_id = core_databaselist.id where core_sqlorder.text like %s\n'
                         f'ORDER BY core_sqlorder.id desc;')
                 else:
                     page_number = SqlOrder.objects.filter(work_id__contains = mess).count()
