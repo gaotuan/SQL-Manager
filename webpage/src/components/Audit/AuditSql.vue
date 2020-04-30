@@ -616,6 +616,7 @@
       searchorder () {
         if (this.v_searchorder === '') {
           let vm = this
+          vm.mou_data(vm.$refs.page.currentPage)
           this.reboot = setInterval(function () {
            vm.mou_data(vm.$refs.page.currentPage)
                   }, 5000)

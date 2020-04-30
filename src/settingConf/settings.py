@@ -38,7 +38,8 @@ INSTALLED_APPS = [
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'core.apps.CoreConfig',
-    'rest_framework'
+    'rest_framework',
+    'django_q'
 ]
 
 MIDDLEWARE = [

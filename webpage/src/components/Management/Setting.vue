@@ -145,6 +145,9 @@
                   <FormItem label="查询最大Limit限制:">
                     <Input placeholder="查询最大的Limit数。" v-model="other.limit"></Input>
                   </FormItem>
+                  <FormItem label="Binlog2sql位置:">
+                    <Input placeholder="Binlog2sql位置:" v-model="other.Binlog2sql"></Input>
+                  </FormItem>
                   <FormItem label="自定义机房:">
                     <Tag v-for="item in other.con_room" :key="item" :name="item" type="border" closable color="blue"
                          @on-close="handleClose2">{{ item }}
@@ -161,13 +164,13 @@
                     <Input placeholder="脱敏字段设置" v-model="other.sensitive" style="width: 30%"></Input>
                     <Button icon="ios-plus-empty" type="dashed" size="small" @click="handleAdd1">添加脱敏字段</Button>
                   </FormItem>
-                  <Form-item label="多级审核开关:">
+                  <Form-item label="多级审核开关:" style="margin-top:-10px">
                     <i-switch size="large" @on-change="multi_switching" v-model="other.multi">
                       <span slot="open">开</span>
                       <span slot="close">关</span>
                     </i-switch>
                   </Form-item>
-                  <Form-item label="查询审核开关:">
+                  <Form-item label="查询审核开关:" style="margin-top:-10px">
                     <i-switch size="large" @on-change="multi_query" v-model="other.query">
                       <span slot="open">开</span>
                       <span slot="close">关</span>
@@ -245,6 +248,7 @@
           con_room: [],
           foce: '',
           multi: '',
+          Binlog2sql: '',
           query: '',
           sensitive: ''
         }

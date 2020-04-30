@@ -166,6 +166,50 @@ class addressing(baseview.BaseView):
                     CUSTOM_ERROR.error(f'{e.__class__.__name__}: {e}')
                     return HttpResponse(status=500)
 
+        elif args == "binlogs":
+            try:
+                con_id = request.data['id']
+            except KeyError as e:
+                CUSTOM_ERROR.error(f'{e.__class__.__name__}: {e}')
+                return HttpResponse(status=500)
+            else:
+                _connection = DatabaseList.objects.filter(id=con_id).first()
+                try:
+                    with con_database.SQLgo(
+                            ip=_connection.ip,
+                            user=_connection.username,
+                            password=_connection.password,
+                            port=_connection.port
+                    ) as f:
+                        res = f.binlogs()
+                        return Response(res)
+                except Exception as e:
+                    CUSTOM_ERROR.error(f'{e.__class__.__name__}: {e}')
+                    return HttpResponse(status=500)
+
+        elif args == "table_names":
+            try:
+                con_id = request.data['id']
+                db_name = request.data['db']
+            except KeyError as e:
+                CUSTOM_ERROR.error(f'{e.__class__.__name__}: {e}')
+                return HttpResponse(status=500)
+            else:
+                _connection = DatabaseList.objects.filter(id=con_id).first()
+                try:
+                    with con_database.SQLgo(
+                            ip=_connection.ip,
+                            user=_connection.username,
+                            password=_connection.password,
+                            port=_connection.port,
+                            db=db_name
+                    ) as f:
+                        res = f.table_names()
+                        return Response(res)
+                except Exception as e:
+                    CUSTOM_ERROR.error(f'{e.__class__.__name__}: {e}')
+                    return HttpResponse(status=500)
+
         elif args == 'tablename':
             try:
                 data = json.loads(request.data['data'])
@@ -236,6 +280,31 @@ class addressing(baseview.BaseView):
                 except Exception as e:
                     CUSTOM_ERROR.error(f'{e.__class__.__name__}: {e}')
                     return Response(e)
+        elif args == 'binlog2sql':
+            try:
+                assigned = grained.objects.filter(username=request.user).first()
+                un_init = util.init_conf()
+                custom_com = ast.literal_eval(un_init['other'])
+                if request.data['permissions_type'] == 'admin' :
+                    info = DatabaseList.objects.all()
+                    con_name = Area(info, many=True).data
+
+                info = Account.objects.filter(group='admin').all()
+                serializers = UserINFO(info, many=True)
+                history = querypermissions.objects.filter(username=request.user).order_by('-id')[0:10]
+                serializer_his = QueryPermissions(history, many=True)
+                return Response(
+                    {
+                        'connection': con_name,
+                        'person': serializers.data,
+                        'assigend': assigned.permissions['person'],
+                        'custom': custom_com['con_room'],
+                    }
+                )
+            except Exception as e:
+                CUSTOM_ERROR.error(f'{e.__class__.__name__}: {e}')
+                return HttpResponse(status=500)
+
 
 
 class ops(baseview.BaseView):

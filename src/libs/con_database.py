@@ -132,6 +132,18 @@ class SQLgo(object):
             data = [c for i in result for c in i]
             return data
 
+    def binlogs(self):
+        with self.con.cursor() as cursor:
+            cursor.execute('show binary logs;')
+            result = cursor.fetchall()
+            return result
+
+    def table_names(self):
+        with self.con.cursor() as cursor:
+            cursor.execute('show tables;')
+            result = cursor.fetchall()
+            return result
+
     def index(self, table_name):
         with self.con.cursor() as cursor:
             cursor.execute('show keys from %s' % table_name)

@@ -429,26 +429,6 @@
       ChangeDB (v) {
         // this.formItem.basename = v
       },
-      Getbasename (vl) {
-        for (let i of this.data1[0].children) {
-          for (let c of i.children) {
-            if (c.title === vl[0].title && c.nodeKey === vl[0].nodeKey) {
-              this.put_info.basename = i.title
-            }
-          }
-        }
-        axios.put(`${util.url}/search`, {'base': this.put_info.basename, 'table': vl[0].title})
-          .then(res => {
-            if (res.data['error']) {
-              util.err_notice(res.data['error'])
-            } else {
-              this.columnsName = res.data['title']
-              this.allsearchdata = res.data['data']
-              this.Testresults = this.allsearchdata.slice(0, 10)
-              this.total = res.data['len']
-            }
-          })
-      },
       editorInit: function () {
         require('brace/mode/mysql')
         require('brace/theme/xcode')
