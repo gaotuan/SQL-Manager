@@ -27,6 +27,8 @@ class Binlog2sql(baseview.BaseView):
         binlog2sql = Binlog2Sql()
         starttime = '' if data['start_date']=='' else (data['start_date']+' '+ ('00:00:00' if data['start_time'] == '' else  data['start_time']))
         stoptime =  '' if data['end_date']=='' else (data['end_date']+' '+ ('00:00:00' if data['end_time'] == '' else  data['end_time']))
+        starttime=starttime.replace('/','-')
+        stoptime=stoptime.replace('/','-')
 
         # 准备参数
         args = {"conn_options": fr"-h{db.ip} -u{db.username} -p'{db.password}' -P{db.port} ",

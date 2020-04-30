@@ -67,12 +67,12 @@
                   <InputNumber  size="small" v-model="formItem.end_pos" style="width: 170px" type="number" placeholder="终止解析位置(可选):"></InputNumber>
                 </FormItem>
                 <FormItem style="margin-top:-25px">
-                  <DatePicker size="small" v-model="formItem.start_date"  type="date" placeholder="起始日期(不建议)" @on-change="Val_starttime"></DatePicker>
-                  <TimePicker size="small" v-model="formItem.start_time"  type="time" placeholder="起始时间(不建议)" :disabled="this.val_starttime" ></TimePicker>
+                  <DatePicker size="small" v-model="start_date"  type="date" placeholder="起始日期(不建议)" @on-change="Val_starttime"></DatePicker>
+                  <TimePicker size="small" v-model="formItem.start_time"  type="time" placeholder="起始时间(不建议)" :disabled="this.v_starttime" ></TimePicker>
                 </FormItem>
                 <FormItem style="margin-top:-25px">
-                  <DatePicker size="small" v-model="formItem.end_date" type="date" placeholder="终止日期(可选)" @on-change="Val_endtime"></DatePicker>
-                  <TimePicker size="small" v-model="formItem.end_time" type="time" placeholder="终止时间(可选)" :disabled="this.val_endtime"></TimePicker>
+                  <DatePicker size="small" v-model="end_date" type="date" placeholder="终止日期(可选)" @on-change="Val_endtime"></DatePicker>
+                  <TimePicker size="small" v-model="formItem.end_time" type="time" placeholder="终止时间(可选)" :disabled="this.v_endtime"></TimePicker>
                 </FormItem>
                 <FormItem style="margin-top:-20px">
                   <b>对象过滤:</b>
@@ -158,8 +158,8 @@
     data () {
       return {
         my_pagenumber: 1,
-        val_starttime: true,
-        val_endtime: true,
+        v_starttime: true,
+        v_endtime: true,
         res_data: [],
         res_tmp_data: [],
         res_col: [{
@@ -175,6 +175,8 @@
         commit_load: false,
         commit_val: true,
         ops_type: ['Insert', 'Update', 'Delete'],
+        start_date: '',
+        end_date: '',
         formItem: {
           id: null,
           computer_room: '',
@@ -238,11 +240,11 @@
         this.commit_val = false
       },
       Val_starttime () {
-        this.val_starttime = false
-        // this.formItem.start_file = this.formItem.start_file.
+        this.v_starttime = false
+        console.log('this.start_date::', this.start_date)
       },
       Val_endtime () {
-        this.val_endtime = false
+        this.v_endtime = false
       },
       GetTables () {
         axios.put(`${util.url}/workorder/table_names`, {
@@ -319,22 +321,28 @@
         })
       },
       Submmit () {
-        console.log('xxx:', this.formItem)
         if ((this.formItem.is_fk === true) && (this.formItem.is_pk === true)) {
           util.err_notice('解析模式flashbak 和 no pk不能同时使用！')
           return
         }
-        if ((this.formItem.end_date !== '') && (this.formItem.start_date > this.formItem.end_date)) {
-          util.err_notice('解析结束日期不能早于开始日期！')
-          return
+        // if ((this.end_date !== '') && (this.formItem.start_date > this.formItem.end_date)) {
+        //   util.err_notice('解析结束日期不能早于开始日期！')
+        //   return
+        // }
+        // if ((this.end_date !== '') && (this.formItem.start_date === this.formItem.end_date)) {
+        //   if (this.formItem.start_time > this.formItem.end_time) {
+        //    util.err_notice('解析结束日期不能早于开始日期！')
+        //   return
+        //   }
+        // }
+        // this.commit_load = true
+        if (this.start_date !== '') {
+          this.formItem.start_date = this.start_date.toLocaleDateString().replace(/-/g, '-')
         }
-        if ((this.formItem.end_date !== '') && (this.formItem.start_date === this.formItem.end_date)) {
-          if (this.formItem.start_time > this.formItem.end_time) {
-           util.err_notice('解析结束日期不能早于开始日期！')
-          return
-          }
+        if (this.end_date !== '') {
+          this.formItem.end_date = this.end_date.toLocaleDateString().replace(/-/g, '-')
         }
-        this.commit_load = true
+
         axios.post(`${util.url}/binlog2sql`, {
             'data': this.formItem
           })
