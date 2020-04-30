@@ -241,7 +241,6 @@
       },
       Val_starttime () {
         this.v_starttime = false
-        console.log('this.start_date::', this.start_date)
       },
       Val_endtime () {
         this.v_endtime = false
@@ -302,7 +301,6 @@
             .catch(() => {
               util.err_notice('无法连接数据库!请检查网络')
             })
-          console.log('this.binlogfiles::', this.binlogfiles)
         }
       },
       exportdata () {
@@ -335,7 +333,7 @@
         //   return
         //   }
         // }
-        // this.commit_load = true
+        this.commit_load = true
         if (this.start_date !== '') {
           this.formItem.start_date = this.start_date.toLocaleDateString().replace(/-/g, '-')
         }
