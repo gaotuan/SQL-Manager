@@ -1,7 +1,3 @@
-<p align="center">
-        <img width="300" src="logo.png">
-</p>
-
 #SQL审核平台
 
 ![](https://img.shields.io/badge/build-release-brightgreen.svg)  
@@ -11,7 +7,7 @@
 ![](https://img.shields.io/badge/python-3.6-brightgreen.svg)
 ![](https://img.shields.io/badge/Django-2.0-brightgreen.svg)
 
-##### 基于Inception的企业级web Yearning的第二开发  SQL审核平台。
+##### 基于Inception的企业级web Yearning的二次开发  SQL审核平台。
 
 ## SQL Manager新增功能
 - SQL查询
