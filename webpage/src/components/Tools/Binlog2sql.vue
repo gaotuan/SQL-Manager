@@ -164,7 +164,8 @@
         res_tmp_data: [],
         res_col: [{
           title: 'binlog信息',
-          key: 'binlog_info'
+          key: 'binlog_info',
+          width: 300
         }, {
           title: 'SQL信息',
           key: 'sql'
@@ -173,7 +174,7 @@
         tables: [],
         binlogfiles: [],
         commit_load: false,
-        commit_val: true,
+        commit_val: false,
         ops_type: ['Insert', 'Update', 'Delete'],
         start_date: '',
         end_date: '',
@@ -323,24 +324,18 @@
           util.err_notice('解析模式flashbak 和 no pk不能同时使用！')
           return
         }
-        // if ((this.end_date !== '') && (this.formItem.start_date > this.formItem.end_date)) {
-        //   util.err_notice('解析结束日期不能早于开始日期！')
-        //   return
-        // }
-        // if ((this.end_date !== '') && (this.formItem.start_date === this.formItem.end_date)) {
-        //   if (this.formItem.start_time > this.formItem.end_time) {
-        //    util.err_notice('解析结束日期不能早于开始日期！')
-        //   return
-        //   }
-        // }
-        this.commit_load = true
+        // this.commit_load = true
         if (this.start_date !== '') {
           this.formItem.start_date = this.start_date.toLocaleDateString().replace(/-/g, '-')
         }
         if (this.end_date !== '') {
           this.formItem.end_date = this.end_date.toLocaleDateString().replace(/-/g, '-')
         }
-
+        console.log('xxx:', this.formItem)
+        this.formItem.id = 1
+this.formItem.computer_room = 'Other'
+this.formItem.connection_name = 'test'
+this.formItem.start_file = 'on.000028'
         axios.post(`${util.url}/binlog2sql`, {
             'data': this.formItem
           })
@@ -358,6 +353,17 @@
               util.err_notice('Binlog2sql 失败，请联系管理员！')
               this.commit_load = false
             })
+      },
+      Format_dis (v) {
+        v = [ {fname: 'Johnndfdfdsfdffdsfd', lname: 'sfdsdfsdfsdfds', age: 25}, {fname: 'Johnndfdfdsfdffdsfd', lname: 'sfdsdfsdfsdfds', age: 25} ]
+        var dict
+        var ite
+        for (dict in v) {
+          for (ite in dict.items) {
+            dict[ite]
+          }
+          console.log(dict)
+        }
       }
     },
     mounted () {

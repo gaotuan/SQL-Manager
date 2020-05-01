@@ -11,13 +11,25 @@
 ![](https://img.shields.io/badge/python-3.6-brightgreen.svg)
 ![](https://img.shields.io/badge/Django-2.0-brightgreen.svg)
 
-##### 基于Inception的企业级web SQL审核平台。
+##### 基于Inception的企业级web Yearning的第二开发  SQL审核平台。
 
-## Website 官网
+## SQL Manager新增功能
+- SQL查询
+    - 实际公司需求查询线上数据 有查询权限即可 无需查询申请
+    - 添加查询历史 
+    - 添加sql收藏 
+    - 查询耗时
+    - 自动填充最后一次sql的执行信息
+    - 可以从查询历史，我的收藏等地方直接执行sql
+    - 查询报错到审计
+- SQL优化
+    - 基于profiling的优化
+    - 其他第三方优化功能
+- 工具
+    - 基于binlog2sql界面操作     
 
-[www.yearning.io](http://yearning.io)
 
-## Feature 功能
+## Yearing Feature 功能
 
 - 数据库字典自动生成
 - SQL查询
@@ -70,6 +82,9 @@
    QQ:279264044
    
    E-mail: 
+ 
+## 注意
+1、使用原始inception时要替换connection.py和cursor.py文件
 
 ## Snapshot 效果展示
 
