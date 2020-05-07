@@ -288,3 +288,61 @@ class submit_push_messages(threading.Thread):
                     put_mess.send_mail(mail_data=mess_info, type=99)
                 except Exception as e:
                     CUSTOM_ERROR.error(f'{e.__class__.__name__}--邮箱推送失败: {e}')
+class forward_push_messages(threading.Thread):
+    '''
+
+    :argument 提交工单调用该方法异步处理数据
+
+    '''
+
+    def __init__(self, workId, user, addr_ip, text, assigned, id):
+        super().__init__()
+        self.workId = workId
+        self.user = user
+        self.addr_ip = addr_ip
+        self.text = text
+        self.assigned = assigned
+        self.id = id
+
+    def run(self):
+        self.submit()
+
+    def submit(self):
+        '''
+
+        :argument 更改该工单SqlOrder表中的status
+
+        :param
+                self.workId
+                self.user
+                self.addr_ip
+                self.text
+                self.assigned
+                self.id
+        :return: none
+
+        '''
+        content = DatabaseList.objects.filter(id=self.id).first()
+        mail = Account.objects.filter(username=self.assigned).first()
+        tag = globalpermissions.objects.filter(authorization='global').first()
+        if tag.message['ding']:
+            if content.url:
+                try:
+                    util.dingding(
+                        content='工单转发通知\n工单编号:%s\n发起人:%s\n当前审批人:%s\n地址:%s\n工单说明:%s\n状态:已提交\n备注:%s'
+                                % (self.workId, self.user,self.assigned, self.addr_ip, self.text, content.before), url=content.url)
+                except Exception as e:
+                    CUSTOM_ERROR.error(f'{e.__class__.__name__}--钉钉推送失败: {e}')
+        if tag.message['mail']:
+            if mail.email:
+                mess_info = {
+                    'workid': self.workId,
+                    'to_user': self.user,
+                    'addr': self.addr_ip,
+                    'text': self.text,
+                    'note': content.before}
+                try:
+                    put_mess = send_email.send_email(to_addr=mail.email)
+                    put_mess.send_mail(mail_data=mess_info, type=99)
+                except Exception as e:
+                    CUSTOM_ERROR.error(f'{e.__class__.__name__}--邮箱推送失败: {e}')

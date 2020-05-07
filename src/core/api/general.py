@@ -4,14 +4,14 @@ import ast
 from django.http import HttpResponse
 from rest_framework.response import Response
 from libs import baseview, con_database, util
-from core.task import grained_permissions
+from core.task import grained_permissions,forward_push_messages
 from core.models import (
     DatabaseList,
     Account,
     grained,
     SqlOrder,
     SqlDictionary,
-    querypermissions,sql_optimize_his
+    querypermissions,sql_optimize_his,Usermessage
 )
 from libs.serializers import (
     Area,
@@ -21,7 +21,8 @@ from libs.serializers import (
 )
 
 CUSTOM_ERROR = logging.getLogger('Yearning.core.views')
-
+conf = util.conf_path()
+addr_ip = conf.ipaddress
 
 class addressing(baseview.BaseView):
     '''
@@ -359,6 +360,28 @@ class ops(baseview.BaseView):
                 )
             elif args == 'put_assigned':
                 SqlOrder.objects.filter(id=request.data['id']).update(assigned=request.data['forward_assigne'])
+                sqlorder = SqlOrder.objects.filter(id=request.data['id']).first()
+                title = '工单:' + sqlorder.work_id + '转发通知'
+                # 记录转发消息
+                Usermessage.objects.create(
+                    from_user=sqlorder.username,
+                    time=util.date(),
+                    title=title,
+                    content=sqlorder.text,
+                    to_user=sqlorder.assigned,
+                    state='unread'
+                )
+
+
+                # 异步发送消息：
+                forward_push_messages(
+                    workId=sqlorder.work_id,
+                    user=sqlorder.username,
+                    addr_ip=addr_ip,
+                    text=sqlorder.text,
+                    assigned=sqlorder.assigned,
+                    id=sqlorder.bundle_id
+                ).start()
                 return Response('put_assigned ok!'
                 )
         except Exception as e:
