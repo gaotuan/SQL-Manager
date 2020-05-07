@@ -7,7 +7,7 @@ from rest_framework.response import Response
 from django.http import HttpResponse
 from core.models import (
     DatabaseList,
-    SqlOrder
+    SqlOrder,Usermessage
 )
 
 CUSTOM_ERROR = logging.getLogger('Yearning.core.views')
@@ -95,6 +95,15 @@ class sqlorder(baseview.BaseView):
                     bundle_id=id,
                     assigned=data['assigned'],
                     delay=data['delay']
+                )
+                # 记录转发消息
+                Usermessage.objects.create(
+                    from_user=sqlorder.username,
+                    time=util.date(),
+                    title='工单:'+workId+' 提交通知',
+                    content=sqlorder.text,
+                    to_user=sqlorder.assigned,
+                    state='unread'
                 )
                 submit_push_messages(
                     workId=workId,
