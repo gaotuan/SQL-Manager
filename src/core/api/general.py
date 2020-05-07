@@ -293,14 +293,13 @@ class addressing(baseview.BaseView):
 
                 info = Account.objects.filter(group='admin').all()
                 serializers = UserINFO(info, many=True)
-                history = querypermissions.objects.filter(username=request.user).order_by('-id')[0:10]
-                serializer_his = QueryPermissions(history, many=True)
                 return Response(
                     {
                         'connection': con_name,
                         'person': serializers.data,
                         'assigend': assigned.permissions['person'],
                         'custom': custom_com['con_room'],
+                        'sql_display': custom_com['sql_display'],
                     }
                 )
             except Exception as e:

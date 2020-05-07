@@ -143,7 +143,10 @@
                 <p slot="title">其他</p>
                 <Form :label-width="120">
                   <FormItem label="查询最大Limit限制:">
-                    <Input placeholder="查询最大的Limit数。" v-model="other.limit"></Input>
+                    <InputNumber placeholder="查询最大的Limit数。" v-model="other.limit"></InputNumber>
+                  </FormItem>
+                  <FormItem label="默认展示的sql长度:">
+                    <InputNumber placeholder="默认展示的sql长度" v-model="other.sql_display"></InputNumber>
                   </FormItem>
                   <FormItem label="Binlog2sql位置:">
                     <Input placeholder="Binlog2sql位置:" v-model="other.Binlog2sql"></Input>
@@ -245,6 +248,7 @@
         other: {
           sensitive_list: [],
           limit: '',
+          sql_display: '',
           con_room: [],
           foce: '',
           multi: '',

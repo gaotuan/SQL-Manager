@@ -106,7 +106,7 @@
       <Col span="20" class="padding-left-10">
         <card>
               <TabPane label="查询结果" :key="4" :closable="false" name="res">
-                    <Table border stripe :columns="this.res_col" :data="this.res_tmp_data" highlight-row ref="table"></Table>
+                    <Table border stripe :columns="this.res_col" :data="this.res_format_data" highlight-row ref="table"></Table>
                     <Page :total="my_total" show-total  show-elevator @on-change="Splice_res"  :page-size="10"  ref="totol"></Page>
               </TabPane>
         </card>
@@ -162,7 +162,60 @@
         v_endtime: true,
         res_data: [],
         res_tmp_data: [],
-        res_col: [{
+        res_format_data: [],
+        res_col: [
+          {
+          title: '操作',
+            key: 'op',
+          width: 60,
+            align: 'center',
+            render: (h, params) => {
+              if (this.res_format_data[params.index]['op'] === 0) {
+                return h('div', [
+                  h('Tooltip', {
+                  props: {
+                    content: '展开完整sql'
+                  }
+                }, [
+                  h('Button', {
+                    props: {
+                      size: 'small',
+                      icon: 'plus-round'
+                    },
+                    style: {
+                      marginRight: '5px'
+                    },
+                    on: {
+                      click: () => { this.Sql_full(params.index) }
+                    }
+                  }, '')
+                  ])
+                ])
+              } else {
+            return h('div', [
+                  h('Tooltip', {
+                    props: {
+                      content: '收缩sql'
+                    }
+                  },
+                    [h('Button', {
+                    props: {
+                      size: 'small',
+                      icon: 'minus-round'
+                    },
+                    style: {
+                      marginRight: '5px'
+                    },
+                    on: {
+                      click: () => { this.Sql_format(params.index) }
+                    }
+                  }, '')
+                  ])
+                ])
+              }
+            }
+
+        }, {
           title: 'binlog信息',
           key: 'binlog_info',
           width: 300
@@ -234,8 +287,25 @@
       }
     },
     methods: {
+      Sql_full (v) {
+        setTimeout(() => {
+          this.res_format_data[v]['sql'] = this.res_tmp_data[v]['sql']
+          this.res_format_data[v]['op'] = '1'
+                  }, 200)
+      },
+      Sql_format (v) {
+        this.res_format_data[v]['op'] = '0'
+        setTimeout(() => {
+          if (this.res_tmp_data[v]['sql'].length > this.sql_display) {
+               this.res_format_data[v]['sql'] = this.res_tmp_data[v]['sql'].substr(0, this.sql_display) + '...'
+             } else {
+          this.res_format_data[v]['sql'] = this.res_tmp_data[v]['sql']
+          }
+                  }, 500)
+      },
       Splice_res (page) {
         this.res_tmp_data = this.res_data.slice(page * 10 - 10, page * 10)
+        this.Format_dis(this.res_tmp_data)
       },
       VailedButton () {
         this.commit_val = false
@@ -324,18 +394,13 @@
           util.err_notice('解析模式flashbak 和 no pk不能同时使用！')
           return
         }
-        // this.commit_load = true
+        this.commit_load = true
         if (this.start_date !== '') {
           this.formItem.start_date = this.start_date.toLocaleDateString().replace(/-/g, '-')
         }
         if (this.end_date !== '') {
           this.formItem.end_date = this.end_date.toLocaleDateString().replace(/-/g, '-')
         }
-        console.log('xxx:', this.formItem)
-        this.formItem.id = 1
-this.formItem.computer_room = 'Other'
-this.formItem.connection_name = 'test'
-this.formItem.start_file = 'on.000028'
         axios.post(`${util.url}/binlog2sql`, {
             'data': this.formItem
           })
@@ -344,6 +409,7 @@ this.formItem.start_file = 'on.000028'
               this.my_pagenumber = this.my_total / 10
               this.res_data = res.data['data']
               this.res_tmp_data = this.res_data.slice(0, 10)
+              this.Format_dis(this.res_tmp_data)
               this.commit_load = false
               if (this.formItem.is_sync === true) {
                util.notice('解析完成,完整文件请查看后台文件！')
@@ -355,23 +421,30 @@ this.formItem.start_file = 'on.000028'
             })
       },
       Format_dis (v) {
-        v = [ {fname: 'Johnndfdfdsfdffdsfd', lname: 'sfdsdfsdfsdfds', age: 25}, {fname: 'Johnndfdfdsfdffdsfd', lname: 'sfdsdfsdfsdfds', age: 25} ]
-        var dict
-        var ite
-        for (dict in v) {
-          for (ite in dict.items) {
-            dict[ite]
-          }
-          console.log(dict)
+        var NewArr = []
+        for (var dict in v) {
+           var NewDic = {}
+           for (var ite in v[dict]) {
+             if (v[dict][ite].length > this.sql_display) {
+               NewDic[ite] = v[dict][ite].substr(0, this.sql_display) + '...'
+             } else {
+               NewDic[ite] = v[dict][ite]
+             }
+            }
+           NewDic['op'] = 0
+        NewArr.push(NewDic)
         }
+        this.res_format_data = NewArr
       }
     },
     mounted () {
+      this.commit_val = true
        axios.put(`${util.url}/workorder/binlog2sql`, {'permissions_type': 'admin'})
         .then(res => {
           this.item = res.data['connection']
           this.assigned = res.data['assigend']
           this.datalist.computer_roomlist = res.data['custom']
+          this.sql_display = res.data['sql_display']
         })
         .catch(error => {
           this.$Message.error('没有权限请联系管理员！')

@@ -98,11 +98,11 @@ class sqlorder(baseview.BaseView):
                 )
                 # 记录转发消息
                 Usermessage.objects.create(
-                    from_user=sqlorder.username,
+                    from_user=user,
                     time=util.date(),
                     title='工单:'+workId+' 提交通知',
-                    content=sqlorder.text,
-                    to_user=sqlorder.assigned,
+                    content=data['text'],
+                    to_user=data['assigned'],
                     state='unread'
                 )
                 submit_push_messages(
