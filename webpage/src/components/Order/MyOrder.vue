@@ -30,6 +30,21 @@
         <Page :total="page_number" show-elevator @on-change="currentpage" :page-size="20"></Page>
       </Card>
     </Row>
+          <Modal v-model="editforward" :closable='true' :mask-closable=true :width="350">
+                <h3 slot="header" style="color:#2D8CF0">工单转发:</h3>
+                <Form :label-width="80" label-position="center">
+                  <FormItem label="当前审核人:"> {{ this.cur_assigne }}</FormItem>
+                  <FormItem label="转交审核人:">
+                    <Select v-model="forward_assigne" filterable  clearable  placeholder="请选择新的审核人">
+                    <Option v-for="i in this.forwares" :key="i" :value="i">{{i}}</Option>
+                  </Select>
+                  </FormItem>
+                </Form>
+                <div slot="footer">
+                  <Button type="text" @click="editforward=false">取消</Button>
+                  <Button type="warning" @click="PutForward">确认</Button>
+                </div>
+          </Modal>
   </div>
 </template>
 <script>
@@ -41,6 +56,11 @@
     name: 'put',
     data () {
       return {
+        editforward: false,
+        cur_assigne: '',
+        id: '',
+        forward_assigne: '',
+        forwares: [],
         v_searchmem: '',
         v_searchorder: '',
         columns: [
@@ -63,8 +83,8 @@
             sortable: true
           },
           {
-            title: '提交人',
-            key: 'username',
+            title: '审核人',
+            key: 'assigned',
             sortable: true
           },
           {
@@ -140,6 +160,7 @@
             key: 'action',
             align: 'center',
             render: (h, params) => {
+              if (params.row.status === 2) {
               return h('div', [
                 h('Button', {
                   props: {
@@ -159,8 +180,39 @@
                       })
                     }
                   }
-                }, '详细信息')
+                }, '详细信息'),
+                h('Button', {
+                  props: {
+                    size: 'small',
+                    type: 'text'
+                  },
+                  on: {
+                    click: () => { this.Forward(params.row) }
+                  }
+                }, '转发')
               ])
+              } else {
+                return h('div', [
+                h('Button', {
+                  props: {
+                    size: 'small',
+                    type: 'text'
+                  },
+                  on: {
+                    click: () => {
+                      this.$router.push({
+                        name: 'orderlist',
+                        query: {
+                          workid: params.row.work_id,
+                          id: params.row.id,
+                          status: params.row.status,
+                          type: params.row.type
+                        }
+                      })
+                    }
+                  }
+                }, '详细信息')])
+              }
             }
           }
         ],
@@ -170,6 +222,36 @@
       }
     },
     methods: {
+      Forward (v) {
+        this.editforward = true
+        this.cur_assigne = v.assigned
+        this.id = v.id
+        axios.post(`${util.url}/ops/get_assigned`, {
+              'username': v.username
+        }).then(res => {
+            if (res.data['error']) {
+              this.$Message.error(res.data['error'])
+              util.err_notice(res.data['error'])
+            } else {
+              this.forwares = res.data['assigned']
+            }
+        })
+      },
+      PutForward () {
+        this.editforward = false
+        axios.post(`${util.url}/ops/put_assigned`, {'id': this.id, 'forward_assigne': this.forward_assigne
+        }).then(res => {
+            if (res.data['error']) {
+              this.$Message.error(res.data['error'])
+              util.err_notice(res.data['error'])
+            } else {
+              util.notice('转发成功！')
+            }
+        })
+        setTimeout(() => {
+            this.currentpage();
+          }, 500)
+      },
       currentpage (vl = 1) {
         axios.get(`${util.url}/myorder/?user=${sessionStorage.getItem('user')}&page=${vl}`)
           .then(res => {

@@ -232,6 +232,15 @@ export const appRouter = [
     component: Index,
     children: [
       {
+        path: 'management-sqlopt',
+        name: 'management-sqlopt',
+        title: 'SQL优化',
+        'icon': 'ios-compose-outline',
+        component: resolve => {
+          require(['./components/Management/SqlOptimizer.vue'], resolve)
+        }
+      },
+      {
         path: 'binlog2sql',
         name: 'binlog2sql',
         title: 'binlog2sql',
@@ -250,15 +259,6 @@ export const appRouter = [
     access: 0,
     component: Index,
     children: [
-      {
-        path: 'management-sqlopt',
-        name: 'management-sqlopt',
-        title: 'SQL优化',
-        'icon': 'ios-compose-outline',
-        component: resolve => {
-          require(['./components/Management/SqlOptimizer.vue'], resolve)
-        }
-      },
       {
         path: 'management-user',
         name: 'management-user',

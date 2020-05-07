@@ -9,6 +9,7 @@ from core.models import (
     DatabaseList,
     Account,
     grained,
+    SqlOrder,
     SqlDictionary,
     querypermissions,sql_optimize_his
 )
@@ -347,6 +348,18 @@ class ops(baseview.BaseView):
                     {
                         'history': serializer_his.data
                     }
+                )
+            elif args == 'get_assigned':
+                gr = grained.objects.filter(username=request.data['username']).first()
+                assignes= gr.permissions['person']
+                return Response(
+                    {
+                        'assigned':  assignes
+                    }
+                )
+            elif args == 'put_assigned':
+                SqlOrder.objects.filter(id=request.data['id']).update(assigned=request.data['forward_assigne'])
+                return Response('put_assigned ok!'
                 )
         except Exception as e:
             CUSTOM_ERROR.error(f'{e.__class__.__name__}: {e}')
