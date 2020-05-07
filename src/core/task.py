@@ -150,9 +150,9 @@ class order_push_message(threading.Thread):
             try:
                 if content.url:
                     util.dingding(
-                        content='工单执行通知\n工单编号:%s\n发起人:%s\n地址:%s\n工单备注:%s\n状态:已执行\n备注:%s'
+                        content='工单执行通知\n工单编号:%s\n发起人:%s\n审核人:%s\n地址:%s\n工单备注:%s\n状态:已执行\n备注:%s'
                                 % (
-                                self.order.work_id, self.order.username, self.addr_ip, self.order.text, content.after),
+                                self.order.work_id, self.order.username,self.order.assigned, self.addr_ip, self.order.text, content.after),
                         url=content.url)
             except Exception as e:
                 CUSTOM_ERROR.error(f'{e.__class__.__name__}--钉钉推送失败: {e}')
@@ -179,12 +179,13 @@ class rejected_push_messages(threading.Thread):
 
     '''
 
-    def __init__(self, _tmpData, to_user, addr_ip, text):
+    def __init__(self, _tmpData, to_user,from_user, addr_ip, text):
         super().__init__()
         self.to_user = to_user
         self._tmpData = _tmpData
         self.addr_ip = addr_ip
         self.text = text
+        self.from_user = from_user
 
     def run(self):
         self.execute()
@@ -211,8 +212,8 @@ class rejected_push_messages(threading.Thread):
             try:
                 if content.url:
                     util.dingding(
-                        content='工单驳回通知\n工单编号:%s\n发起人:%s\n地址:%s\n驳回说明:%s\n状态:驳回'
-                                % (self._tmpData['work_id'], self.to_user, self.addr_ip, self.text), url=content.url)
+                        content='工单驳回通知\n工单编号:%s\n发起人:%s\n操作人:%s\n地址:%s\n驳回说明:%s\n状态:驳回'
+                                % (self._tmpData['work_id'], self.to_user,self.from_user, self.addr_ip, self.text), url=content.url)
             except Exception as e:
                 CUSTOM_ERROR.error(f'{e.__class__.__name__}--钉钉推送失败: {e}')
         if tag.message['mail']:
@@ -270,8 +271,8 @@ class submit_push_messages(threading.Thread):
             if content.url:
                 try:
                     util.dingding(
-                        content='工单提交通知\n工单编号:%s\n发起人:%s\n地址:%s\n工单说明:%s\n状态:已提交\n备注:%s'
-                                % (self.workId, self.user, self.addr_ip, self.text, content.before), url=content.url)
+                        content='工单提交通知\n工单编号:%s\n发起人:%s\n审批人:%s\n地址:%s\n工单说明:%s\n状态:已提交\n备注:%s'
+                                % (self.workId, self.user,self.assigned, self.addr_ip, self.text, content.before), url=content.url)
                 except Exception as e:
                     CUSTOM_ERROR.error(f'{e.__class__.__name__}--钉钉推送失败: {e}')
         if tag.message['mail']:

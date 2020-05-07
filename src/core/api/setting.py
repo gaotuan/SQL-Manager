@@ -43,7 +43,7 @@ class setting_view(baseview.SuperUserpermissions):
                     return Response('ldap连接失败!')
             elif args == '2':
                 ding = request.data['ding']
-                util.dingding('yearning webhook测试', ding)
+                util.dingding('SQL审核平台测试', ding)
                 return Response('已发送测试消息，请在钉钉中查看')
 
             else:

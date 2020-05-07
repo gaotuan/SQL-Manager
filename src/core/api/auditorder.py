@@ -155,7 +155,7 @@ class audit(baseview.SuperUserpermissions):
                             to_user=to_user,
                             state='unread'
                         )
-                        rejected_push_messages(_tmpData, to_user, addr_ip, text).start()
+                        rejected_push_messages(_tmpData, to_user,from_user, addr_ip, text).start()
                         return Response('操作成功，该请求已驳回！')
                     except Exception as e:
                         CUSTOM_ERROR.error(f'{e.__class__.__name__}: {e}')
