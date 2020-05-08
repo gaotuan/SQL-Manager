@@ -8,7 +8,6 @@ from django.conf import settings
 from django.http import HttpResponse
 from rest_framework.response import Response
 import simplejson as json
-import traceback
 from django_q.tasks import async_task
 from core.utils.extend_json_encoder import ExtendJSONEncoder
 
