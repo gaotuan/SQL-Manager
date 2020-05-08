@@ -167,10 +167,11 @@
           {
           title: '操作',
             key: 'op',
-          width: 60,
+          width: 70,
+            fixed: 'left',
             align: 'center',
             render: (h, params) => {
-              if (this.res_format_data[params.index]['op'] === 0) {
+              if (String(this.res_format_data[params.index]['op']) === '0') {
                 return h('div', [
                   h('Tooltip', {
                   props: {
@@ -291,17 +292,17 @@
         setTimeout(() => {
           this.res_format_data[v]['sql'] = this.res_tmp_data[v]['sql']
           this.res_format_data[v]['op'] = '1'
-                  }, 200)
+                  }, 100)
       },
       Sql_format (v) {
-        this.res_format_data[v]['op'] = '0'
         setTimeout(() => {
+          this.res_format_data[v]['op'] = '0'
           if (this.res_tmp_data[v]['sql'].length > this.sql_display) {
                this.res_format_data[v]['sql'] = this.res_tmp_data[v]['sql'].substr(0, this.sql_display) + '...'
              } else {
           this.res_format_data[v]['sql'] = this.res_tmp_data[v]['sql']
           }
-                  }, 500)
+                  }, 100)
       },
       Splice_res (page) {
         this.res_tmp_data = this.res_data.slice(page * 10 - 10, page * 10)
@@ -390,6 +391,7 @@
         })
       },
       Submmit () {
+        this.res_format_data = []
         if ((this.formItem.is_fk === true) && (this.formItem.is_pk === true)) {
           util.err_notice('解析模式flashbak 和 no pk不能同时使用！')
           return
@@ -425,7 +427,7 @@
         for (var dict in v) {
            var NewDic = {}
            for (var ite in v[dict]) {
-             if (v[dict][ite].length > this.sql_display) {
+             if (v[dict][ite] !== null && v[dict][ite].length > this.sql_display) {
                NewDic[ite] = v[dict][ite].substr(0, this.sql_display) + '...'
              } else {
                NewDic[ite] = v[dict][ite]

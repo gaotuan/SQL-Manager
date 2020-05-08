@@ -74,7 +74,7 @@
                  </TabPane>
                   <TabPane label="查询耗时" :key="3">SQL执行耗时: {{ this.query_time }} s</TabPane>
                   <TabPane label="查询结果" :key="4" :closable="false" name="res">
-                    <Table border stripe :columns="columnsName" :data="Testresults" highlight-row ref="table"></Table>
+                    <Table border stripe :columns="columnsName" :data="this.res_format_data" highlight-row ref="table"></Table>
                     <Page :total="total" show-total  show-elevator @on-change="splice_arr"  :page-size="10"  ref="totol"></Page>
                   </TabPane>
               </Tabs>
@@ -367,6 +367,62 @@
         my_res: [],
         my_tmp_res: [],
         my_pagenumber: 1,
+        res_format_data: [],
+        sql_display: 50,
+        tmp_col: [
+          {
+          title: '操作',
+            key: 'op',
+            width: 70,
+            fixed: 'left',
+            align: 'center',
+            render: (h, params) => {
+              if (String(this.res_format_data[params.index]['op']) === '0') {
+                return h('div', [
+                  h('Tooltip', {
+                  props: {
+                    content: '展开完整sql'
+                  }
+                }, [
+                  h('Button', {
+                    props: {
+                      size: 'small',
+                      icon: 'plus-round'
+                    },
+                    style: {
+                      marginRight: '5px'
+                    },
+                    on: {
+                      click: () => { this.Sql_full(params.index) }
+                    }
+                  }, '')
+                  ])
+                ])
+              } else {
+            return h('div', [
+                  h('Tooltip', {
+                    props: {
+                      content: '收缩sql'
+                    }
+                  },
+                    [h('Button', {
+                    props: {
+                      size: 'small',
+                      icon: 'minus-round'
+                    },
+                    style: {
+                      marginRight: '5px'
+                    },
+                    on: {
+                      click: () => { this.Sql_format(params.index) }
+                    }
+                  }, '')
+                  ])
+                ])
+              }
+            }
+
+        }],
         data1: [],
         validate_exp: true,
         validate_gen: false,
@@ -420,8 +476,29 @@
       }
     },
     methods: {
+      Sql_full (v) {
+        setTimeout(() => {
+          for (var ite in this.Testresults[v]) {
+               this.res_format_data[v][ite] = this.Testresults[v][ite]
+            }
+          this.res_format_data[v]['op'] = '1'
+                  }, 100)
+      },
+      Sql_format (v) {
+        setTimeout(() => {
+          for (var ite in this.Testresults[v]) {
+             if (this.Testresults[v][ite] !== null && this.Testresults[v][ite].length > this.sql_display) {
+               this.res_format_data[v][ite] = this.Testresults[v][ite].substr(0, this.sql_display) + '...'
+             } else {
+               this.res_format_data[v][ite] = this.Testresults[v][ite]
+             }
+            }
+          this.res_format_data[v]['op'] = '0'
+                  }, 100)
+      },
       splice_arr (page) {
         this.Testresults = this.allsearchdata.slice(page * 10 - 10, page * 10)
+        this.Format_dis(this.Testresults)
       },
       splice_my (page) {
         this.my_tmp_res = this.my_res.slice(page * 10 - 10, page * 10)
@@ -541,9 +618,10 @@
             } else {
               this.validate_exp = false
               this.query_time = res.data['query_time']
-              this.columnsName = res.data['title']
+              this.Format_col(res.data['title'])
               this.allsearchdata = res.data['data']
               this.Testresults = this.allsearchdata.slice(0, 10)
+              this.Format_dis(this.Testresults)
               this.total = res.data['len']
               this.pagenumber = this.total / 10
             }
@@ -599,9 +677,10 @@
             } else {
               this.validate_exp = false
               this.query_time = res.data['query_time']
-              this.columnsName = res.data['title']
+              this.Format_col(res.data['title'])
               this.allsearchdata = res.data['data']
               this.Testresults = this.allsearchdata.slice(0, 10)
+              this.Format_dis(this.Testresults)
               this.total = res.data['len']
               this.pagenumber = this.total / 10
             }
@@ -661,6 +740,25 @@
           this.Refresh_his()
         }
       },
+      Format_dis (v) {
+        var NewArr = []
+        for (var dict in v) {
+           var NewDic = {}
+           for (var ite in v[dict]) {
+             if (v[dict][ite] !== null && v[dict][ite].length > this.sql_display) {
+               NewDic[ite] = v[dict][ite].substr(0, this.sql_display) + '...'
+             } else {
+               NewDic[ite] = v[dict][ite]
+             }
+            }
+           NewDic['op'] = 0
+        NewArr.push(NewDic)
+        }
+        this.res_format_data = NewArr
+      },
+      Format_col (v) {
+        this.columnsName = this.tmp_col.concat(v)
+      },
       Refresh_my () {
             axios.post(`${util.url}/ops/fav`)
             .then(res => {
@@ -699,6 +797,7 @@
           this.his_res = res.data['history']
           this.datalist.computer_roomlist = res.data['custom']
           this.limit_num = res.data['limit_num']
+          this.sql_display = res.data['sql_display']
           this.formItem.computer_room = res.data['last_query']['computer_room'];
           // this.$refs.computer_room_ref.$emit('on-change', res.data['last_query']['computer_room']);
           // this.$emit('on-change', value)

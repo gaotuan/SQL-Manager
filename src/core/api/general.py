@@ -93,6 +93,7 @@ class addressing(baseview.BaseView):
                         'custom': custom_com['con_room'],
                         'multi': custom_com['multi'],
                         'limit_num': custom_com['limit'],
+                        'sql_display': custom_com['sql_display'],
                         'last_query': ast.literal_eval(last_query.db_info) if last_query else {},
                         'last_sql': last_query.statements if last_query else ""
                     }
