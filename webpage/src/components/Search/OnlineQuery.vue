@@ -29,7 +29,7 @@
                   </Select>
                 </FormItem>
                 <FormItem label="库名:" prop="basename">
-                  <Select ref="basename_ref" v-model="formItem.basename" filterable @on-change="ChangeDB">
+                  <Select ref="basename_ref" v-model="formItem.basename" filterable @on-change="GetTables">
                     <Option v-for="item in datalist.basenamelist" :value="item" :key="item">{{ item }}</Option>
                   </Select>
                 </FormItem>
@@ -44,6 +44,9 @@
                 </template>
               </Alert>
               </Form>
+              <div >
+                <Tree :data="this.tables" @empty-text="数据加载中"></Tree>
+              </div>
             </div>
           </div>
         </Card>
@@ -426,6 +429,11 @@
         data1: [],
         validate_exp: true,
         validate_gen: false,
+        tables: [{
+          title: '表列表:',
+          expand: false,
+          children: []
+        }],
         formItem: {
           textarea: '',
           computer_room: '',
@@ -503,8 +511,24 @@
       splice_my (page) {
         this.my_tmp_res = this.my_res.slice(page * 10 - 10, page * 10)
       },
-      ChangeDB (v) {
-        // this.formItem.basename = v
+      GetTables () {
+        this.tables[0]['children'] = []
+        setTimeout(() => {
+          axios.put(`${util.url}/workorder/table_names`, {
+            'id': this.id[0].id,
+            'db': this.formItem.basename
+          })
+            .then(res => {
+              for (var i in res.data) {
+              var NewDic = {}
+              NewDic['title'] = String(res.data[i])
+                this.tables[0]['children'].push(NewDic)
+              }
+            })
+            .catch(() => {
+              util.err_notice('无法连接数据库!请检查网络')
+            })
+        }, 200)
       },
       editorInit: function () {
         require('brace/mode/mysql')
