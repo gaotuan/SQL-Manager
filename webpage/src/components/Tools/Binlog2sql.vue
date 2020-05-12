@@ -291,16 +291,22 @@
       Sql_full (v) {
         setTimeout(() => {
           this.res_format_data[v]['sql'] = this.res_tmp_data[v]['sql']
+          this.res_format_data[v]['binlog_info'] = this.res_tmp_data[v]['binlog_info']
           this.res_format_data[v]['op'] = '1'
                   }, 100)
       },
       Sql_format (v) {
         setTimeout(() => {
           this.res_format_data[v]['op'] = '0'
-          if (this.res_tmp_data[v]['sql'].length > this.sql_display) {
+          if (this.res_tmp_data[v]['sql'] !== null && this.res_tmp_data[v]['sql'].length > this.sql_display) {
                this.res_format_data[v]['sql'] = this.res_tmp_data[v]['sql'].substr(0, this.sql_display) + '...'
              } else {
           this.res_format_data[v]['sql'] = this.res_tmp_data[v]['sql']
+          }
+          if (this.res_tmp_data[v]['binlog_info'] !== null && this.res_tmp_data[v]['binlog_info'].length > this.sql_display) {
+               this.res_format_data[v]['binlog_info'] = this.res_tmp_data[v]['binlog_info'].substr(0, this.sql_display) + '...'
+             } else {
+          this.res_format_data[v]['binlog_info'] = this.res_tmp_data[v]['binlog_info']
           }
                   }, 100)
       },
@@ -392,6 +398,7 @@
       },
       Submmit () {
         this.res_format_data = []
+        this.res_data = []
         if ((this.formItem.is_fk === true) && (this.formItem.is_pk === true)) {
           util.err_notice('解析模式flashbak 和 no pk不能同时使用！')
           return
