@@ -33,21 +33,19 @@
                     <Option v-for="item in datalist.basenamelist" :value="item" :key="item">{{ item }}</Option>
                   </Select>
                 </FormItem>
-                <Alert  type="error" style="height: 250px">
-                  提示信息：
-                <template slot="desc">
+                <Card style="height: 200px; overflow: auto;background-color: #FDECE8; font-size: 10px" >
+                  <b>提示信息:</b>
                   <p>1.下拉框没有需要查询的DB时，联系DBA申请查询权限</p>
                   <p>2.select没有使用limit时，默认会自动添加limit {{ limit_num }} 的限制</p>
                   <p>3.select limit N,当N大于{{ limit_num }}时，自动替换为limit {{ limit_num }}</p>
                   <p>4.文本框有多条SQL时，只执行最后一条</p>
                   <p>5.所有的<b>查询、导出</b>操作，均会记录到审计日志</p>
-                </template>
-              </Alert>
+                </Card>
               </Form>
-              <div >
-                <Tree :data="this.tables" @empty-text="数据加载中"></Tree>
-              </div>
             </div>
+            <Card style="height: 300px; overflow: auto" >
+            <Tree :data="this.tables" @empty-text="数据加载中"></Tree>
+            </Card>
           </div>
         </Card>
       </Col>
@@ -431,7 +429,7 @@
         validate_gen: false,
         tables: [{
           title: '表列表:',
-          expand: false,
+          expand: true,
           children: []
         }],
         formItem: {
