@@ -511,7 +511,10 @@
       },
       GetTables () {
         this.tables[0]['children'] = []
-        setTimeout(() => {
+        if (this.formItem.basename === '') {
+          return
+        }
+        // setTimeout(() => {
           axios.put(`${util.url}/workorder/table_names`, {
             'id': this.id[0].id,
             'db': this.formItem.basename
@@ -526,7 +529,7 @@
             .catch(() => {
               util.err_notice('无法连接数据库!请检查网络')
             })
-        }, 200)
+        // }, 200)
       },
       editorInit: function () {
         require('brace/mode/mysql')
