@@ -604,8 +604,7 @@
         setTimeout(() => {
           this.columnsName = []
           this.Testresults = []
-        }, 200)
-
+        }, 10)
         let address = {
           'basename': this.formItem.basename,
           'connection_name': this.formItem.connection_name,
