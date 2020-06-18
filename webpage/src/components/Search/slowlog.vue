@@ -459,7 +459,7 @@
       }
     },
     mounted () {
-      this.commit_val = false
+      this.commit_val = true
        axios.put(`${util.url}/workorder/slowlog`, {'permissions_type': 'query'})
         .then(res => {
           this.item = res.data['connection']
