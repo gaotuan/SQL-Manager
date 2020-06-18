@@ -40,7 +40,7 @@ class Slowlog(baseview.BaseView):
 
 
     def fetch(self,data):
-        client = AcsClient(data['access_key_id'], data['access_key_secret'], data['zone'])
+        client = AcsClient(data['access_key_id'], data['access_key_secret'])
         request = DescribeSlowLogRecordsRequest()
         request.set_accept_format('json')
 
