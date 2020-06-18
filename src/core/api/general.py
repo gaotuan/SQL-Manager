@@ -306,6 +306,39 @@ class addressing(baseview.BaseView):
             except Exception as e:
                 CUSTOM_ERROR.error(f'{e.__class__.__name__}: {e}')
                 return HttpResponse(status=500)
+        elif args == 'slowlog':
+            try:
+                assigned = grained.objects.filter(username=request.user).first()
+                un_init = util.init_conf()
+                custom_com = ast.literal_eval(un_init['other'])
+                if request.data['permissions_type'] == 'query':
+                    con_name = []
+                    _type = request.data['permissions_type'] + 'con'
+                    permission_spec = grained.objects.filter(username=request.user).first()
+                    for i in permission_spec.permissions[_type]:
+                        con_instance = DatabaseList.objects.filter(connection_name=i).first()
+                        if con_instance:
+                            con_name.append(
+                                {
+                                    'id': con_instance.id,
+                                    'connection_name': con_instance.connection_name,
+                                    'ip': con_instance.ip,
+                                    'computer_room': con_instance.computer_room
+                                })
+                    dic = ''
+                info = Account.objects.filter(group='admin').all()
+                serializers = UserINFO(info, many=True)
+                return Response(
+                    {
+                        'connection': con_name,
+                        'assigend': assigned.permissions['person'],
+                        'custom': custom_com['con_room'],
+                        'sql_display': custom_com['sql_display'],
+                    }
+                )
+            except Exception as e:
+                CUSTOM_ERROR.error(f'{e.__class__.__name__}: {e}')
+                return HttpResponse(status=500)
 
 
 

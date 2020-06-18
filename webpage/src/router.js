@@ -139,6 +139,15 @@ export const appRouter = [
         }
       },
       {
+        path: 'slowlog',
+        name: 'slowlog',
+        title: '慢日志查询',
+        'icon': 'android-film',
+        component: resolve => {
+          require(['./components/Search/slowlog.vue'], resolve)
+        }
+      },
+      {
         path: 'view-dml',
         name: 'view-dml',
         title: '数据库字典',

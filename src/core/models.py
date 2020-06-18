@@ -5,6 +5,7 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 import ast
+from core.utils.models import BaseModel
 
 
 
@@ -84,6 +85,50 @@ class DatabaseList(models.Model):
     before = models.TextField(null=True)  # 提交工单 钉钉webhook发送内容
     after = models.TextField(null=True)  # 工单执行成功后 钉钉webhook发送内容
     url = models.TextField(blank=True)  # 钉钉webhook url地址
+
+class Database_metadata(models.Model):
+    '''
+    数据库元数据信息
+    '''
+    ZoneId = models.CharField(null=True,max_length=50)  #区域
+    account_id = models.CharField(null=True,max_length=20)  #account_id
+    rds_id = models.CharField(null=True,max_length=50)  #实例id
+    instance_name = models.CharField(null=True,max_length=50)  #实例名字
+    DBInstanceClass = models.CharField(null=True,max_length=30)  #类
+    dbname = models.CharField(null=True,max_length=50)  #db name
+    inner_addr = models.CharField(null=True,max_length=50)  #内网地址
+    outer_addr = models.CharField(null=True,max_length=50)  #外网地址
+    inner_port = models.IntegerField(null=True) #端口
+    outer_port = models.IntegerField(null=True) #端口
+    user = models.CharField(null=True,max_length=50)  #用户名
+    password = models.TextField(null=True)  #密码
+    publicKey = models.TextField(null=True)  #公钥
+    CreateTime = models.DateTimeField(null=True)  #创建时间
+    ExpireTime = models.DateTimeField(null=True)  #过期时间
+    level = models.CharField(null=True,max_length=5)  #level
+    dblist_id = models.IntegerField(null=True,unique=True) #dblist表的主键id
+
+# class SQLSlowRecord(models.Model):
+#     '''
+#     慢查询记录
+#     '''
+#     querytimes= models.IntegerField(null=True)
+#     executionstarttime = models.DateTimeField(null=True)
+#     returnrowcounts =  models.IntegerField(null=True)
+#     locktimes =  models.IntegerField(null=True)
+#     dbname = models.CharField(null=True,max_length=50)
+#     parserowcounts = models.IntegerField(null=True)
+#     hostaddress = models.CharField(null=True,max_length=50)
+#     querytimems = models.IntegerField(null=True)
+#     sqltext = models.TextField(null=True)
+
+class CloudAccount(BaseModel):
+    account = models.CharField(null=True,max_length=50)
+    access_key_id = models.CharField(null=True,max_length=50, verbose_name='access_key')
+    access_key_secret = models.CharField(null=True,max_length=50, verbose_name='access_key_secret')
+    account_alias = models.CharField(null=True,max_length=50, blank=True, verbose_name='账号别名')
+    cloud_account_origin_id = models.CharField(null=True,max_length=50, verbose_name='云厂商厂家ID')
+    cloud_provide_id = models.IntegerField(null=True,verbose_name='云厂商ID')
 
 
 class SqlRecord(models.Model):

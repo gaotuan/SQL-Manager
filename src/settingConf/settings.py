@@ -82,7 +82,8 @@ DATABASES = {
         'USER': CONF_DATA.username,
         "PORT": CONF_DATA.port,
         "PASSWORD": CONF_DATA.password,
-        "HOST": CONF_DATA.address
+        "HOST": CONF_DATA.address,
+        "OPTIONS": {'charset': 'utf8mb4'}
     }
 }
 

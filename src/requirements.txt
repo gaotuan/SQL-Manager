@@ -14,3 +14,5 @@ gunicorn==19.8.1
 mysqlclient==1.4.6
 wheel==0.29.0
 mysql-replication==0.13
+aliyun-python-sdk-core
+aliyun-python-sdk-rds
