@@ -404,9 +404,14 @@
         })
       },
       Submmit () {
+        if (this.formItem.start_date > this.formItem.end_date) {
+          util.err_notice('终止时间不能早于开始时间！！！')
+          return
+        }
         this.commit_load = true
         this.res_format_data = []
         this.res_data = []
+
         const options = { year: 'numeric', month: '2-digit', day: '2-digit' };
         let parameter = { 'id': this.formItem.id,
           'start_date': this.formItem.start_date.toLocaleDateString('ko-KR', options).replace(/\. /g, '-').replace(/\./g, ''),
