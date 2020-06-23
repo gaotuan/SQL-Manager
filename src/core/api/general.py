@@ -369,9 +369,9 @@ class addressing(baseview.BaseView):
                                     'ip': con_instance.ip,
                                     'computer_room': con_instance.computer_room
                                 })
-                        data_set=Event.get_data(self,con_instance)
-                        for i in data_set['data']:
-                            res_data.append(i)
+                        # data_set=Event.get_data(self,con_instance)
+                        # for i in data_set['data']:
+                        #     res_data.append(i)
                 total=len(res_data)
                 res = {  'connection': con_name,
                         'custom': custom_com['con_room'],

@@ -43,7 +43,7 @@
               </Form>
         </Card>
       <Card>
-                    <Table  border stripe :columns="this.res_col" :data="this.res_format_data" ref="table" ></Table>
+                    <Table  border stripe :columns="this.res_col" :data="this.res_format_data" no-filtered-data-text="请选择数据库实例！" ref="table" ></Table>
                     <Page  :total="my_total" show-total  show-elevator  @on-change="splice_arr"  :page-size=this.my_pagesize ></Page>
       </card>
     </div>
