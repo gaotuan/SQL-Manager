@@ -3,8 +3,6 @@
 from libs import baseview
 from aliyunsdkcore.client import AcsClient
 import logging
-from aliyunsdkcore.acs_exception.exceptions import ClientException
-from aliyunsdkcore.acs_exception.exceptions import ServerException
 from aliyunsdkrds.request.v20140815.DescribeSlowLogRecordsRequest import DescribeSlowLogRecordsRequest
 from core.models import Database_metadata,CloudAccount
 import  json

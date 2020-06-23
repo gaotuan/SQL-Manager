@@ -78,6 +78,7 @@
           'serach-sql': '',
           'online-query': '',
           'slowlog': '',
+          'event': '',
           'management-user': '',
           'management-sqlopt': '',
           'management-database': '',
@@ -113,6 +114,7 @@
           this.filtermenulist.dmledit = c.dml
           this.filtermenulist['online-query'] = c.query
           this.filtermenulist['slowlog'] = c.query
+          this.filtermenulist['event'] = c.query
           this.filtermenulist['view-dml'] = c.dic
           this.filtermenulist['management-user'] = c.user
           this.filtermenulist['management-sqlopt'] = c.sqlopt

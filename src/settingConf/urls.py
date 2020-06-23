@@ -39,6 +39,7 @@ from core.api.applygrained import (
 from core.api.sqlorder import sqlorder
 from core.api.serachsql import search, query_worklf, Query_order
 from core.api.binlog2sql import Binlog2sql
+from core.api.events import Event
 from core.api.slowlog import Slowlog
 from core.api.osc import osc_step
 from core.api.myorder import order
@@ -51,6 +52,7 @@ urlpatterns = [
     url(r'^api/v1/setting/(.*)', setting_view.as_view()),
     url(r'^api/v1/binlog2sql', Binlog2sql.as_view()),
     url(r'^api/v1/slowlog', Slowlog.as_view()),
+    url(r'^api/v1/event', Event.as_view()),
     url(r'^api/v1/query_order', Query_order.as_view()),
     url(r'^api/v1/query_worklf', query_worklf.as_view()),
     url(r'^api/v1/userinfo/(.*)', userinfo.as_view()),

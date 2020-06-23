@@ -189,10 +189,10 @@
           title: '数据库名',
           key: 'DBName'
         }, {
-          title: '执行时长',
+          title: '执行时长(s)',
           key: 'QueryTimes'
         }, {
-          title: '锁定时长',
+          title: '锁定时长(s)',
           key: 'LockTimes'
         }, {
           title: '解析行数',

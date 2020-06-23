@@ -1,7 +1,7 @@
 import json
 import logging
 import ast
-from django.http import HttpResponse
+from django.http import HttpResponse,JsonResponse
 from rest_framework.response import Response
 from libs import baseview, con_database, util
 from core.task import grained_permissions,forward_push_messages
@@ -19,7 +19,18 @@ from libs.serializers import (
     query_con,
     QueryPermissions,Sql_Optimize_His
 )
+from core.api.events import  Event
+import simplejson
+import datetime
+import logging
+from rest_framework.response import Response
 
+class DateEncoder(simplejson.JSONEncoder):  # 感谢的凉夜贡献
+
+    def default(self, o):
+        if isinstance(o, datetime.datetime) or isinstance(o, datetime.date) or isinstance(o, datetime.time):
+            return o.__str__()
+        return simplejson.JSONEncoder.default(self, o)
 CUSTOM_ERROR = logging.getLogger('Yearning.core.views')
 conf = util.conf_path()
 addr_ip = conf.ipaddress
@@ -339,6 +350,40 @@ class addressing(baseview.BaseView):
             except Exception as e:
                 CUSTOM_ERROR.error(f'{e.__class__.__name__}: {e}')
                 return HttpResponse(status=500)
+        elif args == 'events':
+            try:
+                un_init = util.init_conf()
+                custom_com = ast.literal_eval(un_init['other'])
+                if request.data['permissions_type'] == 'query':
+                    con_name = []
+                    res_data = []
+                    _type = request.data['permissions_type'] + 'con'
+                    permission_spec = grained.objects.filter(username=request.user).first()
+                    for i in permission_spec.permissions[_type]:
+                        con_instance = DatabaseList.objects.filter(connection_name=i).first()
+                        if con_instance:
+                            con_name.append(
+                                {
+                                    'id': con_instance.id,
+                                    'connection_name': con_instance.connection_name,
+                                    'ip': con_instance.ip,
+                                    'computer_room': con_instance.computer_room
+                                })
+                        data_set=Event.get_data(self,con_instance)
+                        for i in data_set['data']:
+                            res_data.append(i)
+                total=len(res_data)
+                res = {  'connection': con_name,
+                        'custom': custom_com['con_room'],
+                        'sql_display': custom_com['sql_display'],
+                        'data': res_data,
+                        'total': total }
+
+                return HttpResponse(simplejson.dumps(res, cls=DateEncoder, bigint_as_string=True))
+            except Exception as e:
+                CUSTOM_ERROR.error(f'{e.__class__.__name__}: {e}')
+                return HttpResponse(status=500)
+
 
 
 

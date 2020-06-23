@@ -148,6 +148,15 @@ export const appRouter = [
         }
       },
       {
+        path: 'event',
+        name: 'event',
+        title: '数据清理查询',
+        'icon': 'android-time',
+        component: resolve => {
+          require(['./components/Search/event.vue'], resolve)
+        }
+      },
+      {
         path: 'view-dml',
         name: 'view-dml',
         title: '数据库字典',
