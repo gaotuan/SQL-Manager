@@ -38,8 +38,8 @@ class  Event(baseview.BaseView):
         if db == '':
             sql = '''select '%s' room,'%s' instance_name,
                       EVENT_SCHEMA db,
-                    EVENT_SCHEMA name,
-                    EVENT_SCHEMA body,
+                    EVENT_NAME name,
+                    EVENT_DEFINITION body,
                  definer,
               execute_at,
           interval_value,
@@ -57,8 +57,8 @@ class  Event(baseview.BaseView):
         else:
             sql = '''select '%s' room,'%s' instance_name,
                               EVENT_SCHEMA db,
-                            EVENT_SCHEMA name,
-                            EVENT_SCHEMA body,
+                            EVENT_NAME name,
+                            EVENT_DEFINITION body,
                          definer,
                       execute_at,
                   interval_value,
