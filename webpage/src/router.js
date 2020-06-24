@@ -132,7 +132,7 @@ export const appRouter = [
       {
         path: 'online-query',
         name: 'online-query',
-        title: '线上查询',
+        title: '线上数据',
         'icon': 'podium',
         component: resolve => {
           require(['./components/Search/OnlineQuery.vue'], resolve)
@@ -141,7 +141,7 @@ export const appRouter = [
       {
         path: 'slowlog',
         name: 'slowlog',
-        title: '慢日志查询',
+        title: '慢日志',
         'icon': 'android-film',
         component: resolve => {
           require(['./components/Search/slowlog.vue'], resolve)
@@ -150,7 +150,7 @@ export const appRouter = [
       {
         path: 'event',
         name: 'event',
-        title: '数据清理查询',
+        title: '数据清理任务',
         'icon': 'android-time',
         component: resolve => {
           require(['./components/Search/event.vue'], resolve)

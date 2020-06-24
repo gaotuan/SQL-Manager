@@ -48,6 +48,9 @@
     },
     methods: {
       closePage (event, name) {
+        if (name === 'online-query') {
+          localStorage.removeItem('textarea_his')
+        }
         this.$store.commit('removeTag', name)
         if (this.currentPageName === name) {
           let lastPageName = ''
@@ -72,6 +75,7 @@
       },
       handleTagsOption (type) {
         if (type === 'clearAll') {
+          localStorage.removeItem('textarea_his')
           this.$store.commit('clearAllTags')
           this.$router.push({
             name: 'home_index'

@@ -482,6 +482,9 @@
       }
     },
     methods: {
+      Set_textarea_his () {
+        localStorage.setItem('textarea_his', this.formItem.textarea)
+      },
       Sql_full (v) {
         setTimeout(() => {
           for (var ite in this.Testresults[v]) {
@@ -813,6 +816,11 @@
           })
       }
     },
+    watch: {
+    'formItem.textarea' (newVal, oldVal) {
+            localStorage.setItem('textarea_his', newVal)
+        }
+  },
     mounted () {
        axios.put(`${util.url}/workorder/connection`, {'permissions_type': 'query'})
         .then(res => {
@@ -832,9 +840,13 @@
           setTimeout(() => {
             this.formItem.basename = res.data['last_query']['basename'];
           }, 400)
-          setTimeout(() => {
+          if (localStorage.getItem('textarea_his') === null) {
+            setTimeout(() => {
             this.formItem.textarea = res.data['last_sql'];
           }, 600)
+          } else {
+            this.formItem.textarea = localStorage.getItem('textarea_his')
+          }
         })
         .catch(error => {
           this.$Message.error('没有权限请联系管理员！')
