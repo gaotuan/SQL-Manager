@@ -279,17 +279,21 @@
     methods: {
       Sql_full (v) {
         setTimeout(() => {
-          this.res_format_data[v]['body'] = this.res_data[v]['body']
+          for (var ite in this.res_data[v]) {
+               this.res_format_data[v][ite] = this.res_data[v][ite]
+            }
           this.res_format_data[v]['op'] = '1'
                   }, 100)
       },
       Sql_format (v) {
         setTimeout(() => {
           this.res_format_data[v]['op'] = '0'
-          if (this.res_data[v]['body'] !== null && this.res_data[v]['body'].length > this.sql_display) {
-               this.res_format_data[v]['body'] = this.res_data[v]['body'].substr(0, this.sql_display) + '...'
+          for (var ite in this.res_data[v]) {
+          if (this.res_data[v][ite] !== null && this.res_data[v][ite].length > this.sql_display) {
+               this.res_format_data[v][ite] = this.res_data[v][ite].substr(0, this.sql_display) + '...'
              } else {
-          this.res_format_data[v]['body'] = this.res_data[v]['body']
+          this.res_format_data[v][ite] = this.res_data[v][ite]
+          }
           }
         }, 100)
       },
