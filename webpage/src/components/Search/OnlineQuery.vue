@@ -71,12 +71,12 @@
                   </TabPane>
                  <TabPane label="我的收藏" :key="2"  :closable="false" name="fav">
                     <Table border stripe :columns="this.my_cols" :data="this.my_tmp_res" highlight-row ref="table"></Table>
-                    <Page :total="my_total" show-total  show-elevator @on-change="splice_my"  :page-size="10"  ref="totol"></Page>
+                    <Page :total="my_total" show-total  show-sizer show-elevator @on-change="splice_my"  @on-page-size-change="Set_my_pagesize"	:page-size=this.my_pagesize :page-size-opts="[10,20,30,40,50,70,100]"    ref="totol"></Page>
                  </TabPane>
                   <TabPane label="查询耗时" :key="3">SQL执行耗时: {{ this.query_time }} s</TabPane>
                   <TabPane label="查询结果" :key="4" :closable="false" name="res">
                     <Table border stripe :columns="columnsName" :data="this.res_format_data" highlight-row ref="table"></Table>
-                    <Page :total="total" show-total  show-elevator @on-change="splice_arr"  :page-size="10"  ref="totol"></Page>
+                    <Page :total="total" show-total show-sizer  show-elevator @on-change="splice_arr"  @on-page-size-change="Set_pagesize"	:page-size=this.pagesize :page-size-opts="[10,20,30,40,50,70,100]"  ref="totol"></Page>
                   </TabPane>
               </Tabs>
               <Modal v-model="editstar" :closable='true' :mask-closable=true :width="400">
@@ -139,6 +139,8 @@
     name: 'OnlineQuery',
     data () {
       return {
+        my_pagesize: 10,
+        pagesize: 10,
         editstar: false,
         sql_alias: '',
         sql_id: '',
@@ -482,6 +484,17 @@
       }
     },
     methods: {
+      Set_pagesize (v) {
+        this.pagesize = v
+        this.Testresults = this.allsearchdata.slice(0, this.pagesize)
+        this.Format_dis(this.Testresults)
+        this.pagenumber = this.total / this.pagesize
+      },
+      Set_my_pagesize (v) {
+        this.my_pagesize = v
+        this.my_tmp_res = this.my_res.slice(0, this.my_pagesize)
+        this.my_pagenumber = this.total / this.pagesize
+      },
       Set_textarea_his () {
         localStorage.setItem('textarea_his', this.formItem.textarea)
       },
@@ -506,11 +519,11 @@
                   }, 100)
       },
       splice_arr (page) {
-        this.Testresults = this.allsearchdata.slice(page * 10 - 10, page * 10)
+        this.Testresults = this.allsearchdata.slice(page * this.pagesize - this.pagesize, page * this.pagesize)
         this.Format_dis(this.Testresults)
       },
       splice_my (page) {
-        this.my_tmp_res = this.my_res.slice(page * 10 - 10, page * 10)
+        this.my_tmp_res = this.my_res.slice(page * this.my_pagesize - this.my_pagesize, page * this.my_pagesize)
       },
       GetTables () {
         this.tables[0]['children'] = []
@@ -647,10 +660,10 @@
               this.query_time = res.data['query_time']
               this.Format_col(res.data['title'])
               this.allsearchdata = res.data['data']
-              this.Testresults = this.allsearchdata.slice(0, 10)
+              this.Testresults = this.allsearchdata.slice(0, this.pagesize)
               this.Format_dis(this.Testresults)
               this.total = res.data['len']
-              this.pagenumber = this.total / 10
+              this.pagenumber = this.total / this.pagesize
             }
           })
             .catch(error => {
@@ -706,10 +719,10 @@
               this.query_time = res.data['query_time']
               this.Format_col(res.data['title'])
               this.allsearchdata = res.data['data']
-              this.Testresults = this.allsearchdata.slice(0, 10)
+              this.Testresults = this.allsearchdata.slice(0, this.pagesize)
               this.Format_dis(this.Testresults)
               this.total = res.data['len']
-              this.pagenumber = this.total / 10
+              this.pagenumber = this.total / this.pagesize
             }
           })
             .catch(error => {
@@ -793,9 +806,9 @@
               util.err_notice(res.data['error'])
             } else {
               this.my_res = res.data['data']
-              this.my_tmp_res = this.my_res.slice(0, 10)
+              this.my_tmp_res = this.my_res.slice(0, this.my_pagesize)
               this.my_total = res.data['len']
-              this.my_pagenumber = this.my_total / 10
+              this.my_pagenumber = this.my_total / this.my_pagesize
             }
           })
             .catch(error => {

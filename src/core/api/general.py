@@ -92,7 +92,7 @@ class addressing(baseview.BaseView):
                     dic = ''
                 info = Account.objects.filter(group='admin').all()
                 serializers = UserINFO(info, many=True)
-                history = querypermissions.objects.filter(username=request.user).order_by('-id')[0:10]
+                history = querypermissions.objects.filter(username=request.user).order_by('-id')[0:20]
                 serializer_his = QueryPermissions(history, many=True)
                 return Response(
                     {
