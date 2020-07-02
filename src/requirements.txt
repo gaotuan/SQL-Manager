@@ -2,6 +2,7 @@ Django==2.0.1
 django-q==1.0.2
 django-redis==4.10.0
 django-cors-headers==2.1.0
+django-crontab
 djangorestframework==3.7.7
 djangorestframework-jwt==1.11.0
 PyMySQL==0.8.0
@@ -16,3 +17,4 @@ wheel==0.29.0
 mysql-replication==0.13
 aliyun-python-sdk-core
 aliyun-python-sdk-rds
+aliyun-python-sdk-cms

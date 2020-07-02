@@ -21,7 +21,7 @@ import configparser
 import ast
 
 _conf = configparser.ConfigParser()
-_conf.read('deploy.conf')
+_conf.read('/Users/gaoshaopang/PycharmProjects/Yearning-1.2.0_me/src/deploy.conf')
 
 
 def dingding(content: str = None, url: str = None):

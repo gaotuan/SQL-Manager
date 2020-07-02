@@ -6,7 +6,7 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser
 import ast
 from core.utils.models import BaseModel
-
+from django.utils.timezone import now
 
 
 class JSONField(models.TextField):
@@ -129,6 +129,26 @@ class CloudAccount(BaseModel):
     account_alias = models.CharField(null=True,max_length=50, blank=True, verbose_name='账号别名')
     cloud_account_origin_id = models.CharField(null=True,max_length=50, verbose_name='云厂商厂家ID')
     cloud_provide_id = models.IntegerField(null=True,verbose_name='云厂商ID')
+
+class MetricMetaList(BaseModel):
+    MetricName = models.CharField(null=True,max_length=50)
+    Periods = models.CharField(null=True,max_length=50)
+    Description = models.CharField(null=True,max_length=50)
+    Namespace = models.CharField(null=True,max_length=50)
+
+class MetricList(BaseModel):
+    timestamp = models.CharField(null=True,max_length=20)
+    userId = models.CharField(null=True,max_length=50)
+    instanceId = models.CharField(null=True,max_length=50)
+    MetricName = models.CharField(null=True, max_length=50)
+    Maximum = models.CharField(null=True,max_length=10)
+    Minimum = models.CharField(null=True, max_length=10)
+    Average = models.CharField(null=True, max_length=10)
+    create_time = models.DateTimeField(default=now, blank=True, verbose_name="创建时间",db_index=True)
+    is_delete = None
+
+    class Meta:
+        unique_together = ['timestamp','instanceId','MetricName']
 
 
 class SqlRecord(models.Model):

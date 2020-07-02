@@ -39,7 +39,8 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'core.apps.CoreConfig',
     'rest_framework',
-    'django_q'
+    'django_q',
+    'django_crontab',
 ]
 
 MIDDLEWARE = [
@@ -116,7 +117,7 @@ USE_I18N = True
 
 USE_L10N = True
 
-USE_TZ = True
+USE_TZ = False
 
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': (
@@ -180,3 +181,5 @@ LOGGING = {
 
     }
 }
+
+CRONJOBS = [('*/1 * * * *', 'core.crontab.rds_metrics.rds_metrics','>> /tmp/rds_metrics.log 2>&1 ')]
