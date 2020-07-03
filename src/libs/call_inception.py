@@ -13,7 +13,7 @@ import pymysql
 import sqlparse
 import ast
 
-pymysql.install_as_MySQLdb()
+# pymysql.install_as_MySQLdb()
 
 
 class Inception(object):

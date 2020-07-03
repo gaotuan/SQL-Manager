@@ -19,9 +19,16 @@ import time
 import ldap3
 import configparser
 import ast
+import os
+
+def findfile(start, name):
+    for relpath, dirs, files in os.walk(start):
+        if name in files:
+            full_path = os.path.join(start, relpath, name)
+            return os.path.normpath(os.path.abspath(full_path))
 
 _conf = configparser.ConfigParser()
-_conf.read('/Users/gaoshaopang/PycharmProjects/Yearning-1.2.0_me/src/deploy.conf')
+_conf.read(findfile('/Users/gaoshaopang/PycharmProjects/Yearning-1.2.0_me','deploy.conf'))
 
 
 def dingding(content: str = None, url: str = None):

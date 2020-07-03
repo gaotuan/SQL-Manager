@@ -1,6 +1,5 @@
 import pymysql
 
-
 pymysql.install_as_MySQLdb()
 
 # This will make sure the app is always imported when
