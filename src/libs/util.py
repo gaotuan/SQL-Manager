@@ -28,8 +28,8 @@ def findfile(start, name):
             return os.path.normpath(os.path.abspath(full_path))
 
 _conf = configparser.ConfigParser()
-# _conf.read(findfile('/Users/gaoshaopang/PycharmProjects/Yearning-1.2.0_me','deploy.conf'))
-_conf.read(findfile('/root//Yearning-1.2.0_me/src','deploy.conf'))
+_conf.read(findfile('/Users/gaoshaopang/PycharmProjects/Yearning-1.2.0_me','deploy.conf'))
+# _conf.read(findfile('/root//Yearning-1.2.0_me/src','deploy.conf'))
 
 
 def dingding(content: str = None, url: str = None):

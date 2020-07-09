@@ -672,6 +672,8 @@
               util.err_notice(error)
           })
           } else {
+            this.validate_gen = false
+            this.load = false
             this.$Message.error('请选择相关的数据库!')
           }
         })
@@ -731,6 +733,7 @@
           })
           } else {
             this.validate_gen = false
+            this.load = false
             this.$Message.error('请选择相关的数据库!')
           }
         }
