@@ -127,8 +127,11 @@
                   <FormItem label="飞书APP_SECRET:">
                     <Input placeholder="飞书APP_SECRET" v-model="message.fs_app_secret"></Input>
                   </FormItem>
-                  <FormItem label="APP_VERIFICATION_TOKEN::">
+                  <FormItem label="APP_VERIFICATION_TOKEN:">
                     <Input placeholder="飞书APP_VERIFICATION_TOKEN" v-model="message.fs_app_token"></Input>
+                  </FormItem>
+                  <FormItem label="飞书测试消息邮箱:">
+                    <Input placeholder="飞书测试消息用户邮箱" v-model="message.fs_mail_test"></Input>
                   </FormItem>
                   <Form-item label="email推送开关:">
                     <i-switch v-model="message.mail" size="large" @on-change="mail_switching">
@@ -150,7 +153,7 @@
                   </Form-item>
                   <Button type="primary" @click="dingding_test()">钉钉测试</Button>
                   <Button type="warning" @click="mail_test()" style="margin-left: 5%">邮件测试</Button>
-                  <Button type="error" @click="mail_test()" style="margin-left: 5%">飞书测试</Button>
+                  <Button type="error" @click="feishu_test()" style="margin-left: 5%">飞书测试</Button>
                 </Form>
               </Card>
             </Col>
@@ -263,7 +266,8 @@
           feishu: '',
           fs_app_id: '',
           fs_app_secret: '',
-          fs_app_token: ''
+          fs_app_token: '',
+          fs_mail_test: ''
         },
         other: {
           sensitive_list: [],
@@ -335,6 +339,17 @@
       mail_test () {
         axios.put(`${util.url}/setting/3`, {
           'mail': JSON.stringify(this.message)
+        })
+          .then(res => {
+            util.notice(res.data)
+          })
+          .catch(error => {
+            util.err_notice(error)
+          })
+      },
+      feishu_test () {
+        axios.put(`${util.url}/setting/4`, {
+          'mail': this.message.fs_mail_test
         })
           .then(res => {
             util.notice(res.data)

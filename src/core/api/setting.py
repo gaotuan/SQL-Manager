@@ -4,6 +4,7 @@ from libs import baseview, util
 from rest_framework.response import Response
 from core.models import globalpermissions, Account
 from django.http import HttpResponse
+from core.utils.send_feishu_mess import send_msg as fs_send_msg
 
 CUSTOM_ERROR = logging.getLogger('Yearning.core.views')
 
@@ -45,7 +46,14 @@ class setting_view(baseview.SuperUserpermissions):
                 ding = request.data['ding']
                 util.dingding('SQL审核平台测试', ding)
                 return Response('已发送测试消息，请在钉钉中查看')
-
+            elif args == '4':
+                # setting = globalpermissions.objects.filter(authorization='global').values('message').first()
+                # user = {'mail':dict(setting.get('message')).get('fs_mail_test')}
+                user = {'mail':request.data['mail']}
+                if fs_send_msg('飞书消息 测试成功！',user):
+                    return Response('已发送测试消息，请在飞书中查看')
+                else:
+                    return Response('飞书测试消息，发送失败！')
             else:
                 mail = json.loads(request.data['mail'])
                 import smtplib

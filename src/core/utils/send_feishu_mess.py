@@ -48,22 +48,23 @@ def send_msg(msg,user):
     :return:
     post
     '''
-    user_id = get_by_iphone_email(user)
-    url = f'https://open.feishu.cn/open-apis/message/v4/send/'
-    token = 'Bearer ' + get_tenant_access_token()
-    headers = {'Content-Type': 'application/json', 'Authorization': token}
-    content = {
-        "user_id" : user_id,
-        "msg_type" : "text",
-        "content" : {"text": msg }
-    }
-
-    content = json.dumps(content)
-
     try:
+        user_id = get_by_iphone_email(user)
+        url = f'https://open.feishu.cn/open-apis/message/v4/send/'
+        token = 'Bearer ' + get_tenant_access_token()
+        headers = {'Content-Type': 'application/json', 'Authorization': token}
+        content = {
+            "user_id": user_id,
+            "msg_type": "text",
+            "content": {"text": msg}
+        }
+
+        content = json.dumps(content)
         requests.post(url, content, headers=headers)
+        return True
     except Exception as e:
         CUSTOM_ERROR.error(f'{e.__class__.__name__}: {e}')
+        return False
 
 def get_tenant_access_token():
     token = cache_token.get('token')
