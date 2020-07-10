@@ -10,12 +10,15 @@ from django.db import DatabaseError
 from django.utils import timezone
 from django.utils.timezone import make_aware
 from requests import Response, Session
+from core.models import globalpermissions
+
 CUSTOM_ERROR = logging.getLogger('Yearning.core.views')
 
+setting = globalpermissions.objects.filter(authorization='global').first()
 
-APP_ID = "cli_9ef07e2519f6d00e"
-APP_SECRET = "iygWMYAVCJYKFXWpk04p3w2zxxKiYpJ1"
-APP_VERIFICATION_TOKEN = "Mi8YtMTseL1WFk1zqmxFwbdeVTvXuWKx"
+APP_ID = dict(setting.message).get('fs_app_id')
+APP_SECRET = dict(setting.message).get('fs_app_secret')
+APP_VERIFICATION_TOKEN = dict(setting.message).get('fs_app_token')
 
 
 TOKEN_URL = "https://open.feishu.cn/open-apis/auth/v3/tenant_access_token/internal/"
@@ -39,13 +42,13 @@ def get_chat_id():
     return data
 
 
-def send_msg(user_id,msg):
+def send_msg(msg,user):
     '''
     发送信息
     :return:
     post
     '''
-
+    user_id = get_by_iphone_email(user)
     url = f'https://open.feishu.cn/open-apis/message/v4/send/'
     token = 'Bearer ' + get_tenant_access_token()
     headers = {'Content-Type': 'application/json', 'Authorization': token}
@@ -58,21 +61,9 @@ def send_msg(user_id,msg):
     content = json.dumps(content)
 
     try:
-        r = requests.post(url, content, headers=headers)
-        # m = Message(soure_url=source_url,
-        #             type_sel=type_sel,
-        #             object=user_ids_list,
-        #             text=text,
-        #             msg=msg
-        #             )
-        # m.save()
-
-     #   get_user_info(user_ids_list[])
-        return True
-    except:
-        return False
-    else:
-        return False
+        requests.post(url, content, headers=headers)
+    except Exception as e:
+        CUSTOM_ERROR.error(f'{e.__class__.__name__}: {e}')
 
 def get_tenant_access_token():
     token = cache_token.get('token')
@@ -166,5 +157,5 @@ if __name__ == "__main__":
           '工单备注:增加享乐配置'\
           '状态:已执行'\
           '备注:美东-common_data 工单执行完成，请核对！'
-    send_msg(get_by_iphone_email(user),msg)
+    send_msg(msg,user)
 # {'code': 0, 'msg': 'success', 'data': {'mobile_users': {'15138670506': [{'open_id': 'ou_67b41fbe127b895c3442814574337257', 'user_id': '333aa34f'}]}}}

@@ -15,7 +15,8 @@ from .models import (
     SqlRecord,
     grained
 )
-
+from core.models import Account
+from core.utils.send_feishu_mess import send_msg as fs_send_msg
 CUSTOM_ERROR = logging.getLogger('Yearning.core.views')
 
 
@@ -156,6 +157,15 @@ class order_push_message(threading.Thread):
                         url=content.url)
             except Exception as e:
                 CUSTOM_ERROR.error(f'{e.__class__.__name__}--钉钉推送失败: {e}')
+        if tag.message['feishu']:
+            try:
+                user_mail = Account.objects.filter(username=self.order.username).values('email').first()
+                user = {'mail': user_mail.get('email')}
+                fs_send_msg(
+                    msg='工单执行通知\n工单编号:%s\n发起人:%s\n审核人:%s\n地址:%s\n工单备注:%s\n状态:已执行\n备注:%s'
+                                % (self.order.work_id, self.order.username,self.order.assigned, self.addr_ip, self.order.text, content.after),user=user)
+            except Exception as e:
+                CUSTOM_ERROR.error(f'{e.__class__.__name__}--飞书推送失败: {e}')
 
         if tag.message['mail']:
             try:
@@ -216,6 +226,15 @@ class rejected_push_messages(threading.Thread):
                                 % (self._tmpData['work_id'], self.to_user,self.from_user, self.addr_ip, self.text), url=content.url)
             except Exception as e:
                 CUSTOM_ERROR.error(f'{e.__class__.__name__}--钉钉推送失败: {e}')
+        if tag.message['feishu']:
+            try:
+                user_mail = Account.objects.filter(username=self.to_user).values('email').first()
+                user = {'mail': user_mail.get('email')}
+                fs_send_msg(
+                    msg='工单驳回通知\n工单编号:%s\n发起人:%s\n操作人:%s\n地址:%s\n驳回说明:%s\n状态:驳回'
+                            % (self._tmpData['work_id'], self.to_user,self.from_user, self.addr_ip, self.text),user=user)
+            except Exception as e:
+                CUSTOM_ERROR.error(f'{e.__class__.__name__}--飞书推送失败: {e}')
         if tag.message['mail']:
             try:
                 if mail.email:
@@ -275,6 +294,15 @@ class submit_push_messages(threading.Thread):
                                 % (self.workId, self.user,self.assigned, self.addr_ip, self.text, content.before), url=content.url)
                 except Exception as e:
                     CUSTOM_ERROR.error(f'{e.__class__.__name__}--钉钉推送失败: {e}')
+        if tag.message['feishu']:
+            try:
+                user_mail = Account.objects.filter(username=self.assigned).values('email').first()
+                user = {'mail': user_mail.get('email')}
+                fs_send_msg(
+                    msg='工单提交通知\n工单编号:%s\n发起人:%s\n审批人:%s\n地址:%s\n工单说明:%s\n状态:已提交\n备注:%s'
+                                % (self.workId, self.user,self.assigned, self.addr_ip, self.text, content.before),user=user)
+            except Exception as e:
+                CUSTOM_ERROR.error(f'{e.__class__.__name__}--飞书推送失败: {e}')
         if tag.message['mail']:
             if mail.email:
                 mess_info = {
@@ -333,6 +361,15 @@ class forward_push_messages(threading.Thread):
                                 % (self.workId, self.user,self.assigned, self.addr_ip, self.text, content.before), url=content.url)
                 except Exception as e:
                     CUSTOM_ERROR.error(f'{e.__class__.__name__}--钉钉推送失败: {e}')
+        if tag.message['feishu']:
+            try:
+                user_mail = Account.objects.filter(username=self.assigned).values('email').first()
+                user = {'mail': user_mail.get('email')}
+                fs_send_msg(
+                    msg='工单转发通知\n工单编号:%s\n发起人:%s\n当前审批人:%s\n地址:%s\n工单说明:%s\n状态:已提交\n备注:%s'
+                                % (self.workId, self.user,self.assigned, self.addr_ip, self.text, content.before),user=user)
+            except Exception as e:
+                CUSTOM_ERROR.error(f'{e.__class__.__name__}--飞书推送失败: {e}')
         if tag.message['mail']:
             if mail.email:
                 mess_info = {

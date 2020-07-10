@@ -118,8 +118,17 @@
                   <FormItem label="邮件推送人密码:">
                     <Input placeholder="推送人 密码" type="password" v-model="message.password"></Input>
                   </FormItem>
-                  <FormItem label="邮件测试收件地址::">
+                  <FormItem label="邮件测试收件地址:">
                     <Input placeholder="测试收件人地址填写" v-model="message.to_user"></Input>
+                  </FormItem>
+                  <FormItem label="飞书APP_ID:">
+                    <Input placeholder="飞书APP_ID" v-model="message.fs_app_id"></Input>
+                  </FormItem>
+                  <FormItem label="飞书APP_SECRET:">
+                    <Input placeholder="飞书APP_SECRET" v-model="message.fs_app_secret"></Input>
+                  </FormItem>
+                  <FormItem label="APP_VERIFICATION_TOKEN::">
+                    <Input placeholder="飞书APP_VERIFICATION_TOKEN" v-model="message.fs_app_token"></Input>
                   </FormItem>
                   <Form-item label="email推送开关:">
                     <i-switch v-model="message.mail" size="large" @on-change="mail_switching">
@@ -133,8 +142,15 @@
                       <span slot="close">关</span>
                     </i-switch>
                   </Form-item>
+                  <Form-item label="飞书消息开关:">
+                    <i-switch v-model="message.feishu" size="large" @on-change="feishu_switching">
+                      <span slot="open">开</span>
+                      <span slot="close">关</span>
+                    </i-switch>
+                  </Form-item>
                   <Button type="primary" @click="dingding_test()">钉钉测试</Button>
                   <Button type="warning" @click="mail_test()" style="margin-left: 5%">邮件测试</Button>
+                  <Button type="error" @click="mail_test()" style="margin-left: 5%">飞书测试</Button>
                 </Form>
               </Card>
             </Col>
@@ -243,7 +259,11 @@
           password: '',
           to_user: '',
           mail: '',
-          ding: ''
+          ding: '',
+          feishu: '',
+          fs_app_id: '',
+          fs_app_secret: '',
+          fs_app_token: ''
         },
         other: {
           sensitive_list: [],
@@ -283,6 +303,9 @@
       },
       dingding_switching (status) {
         this.message.ding = status
+      },
+      feishu_switching (status) {
+        this.message.feishu = status
       },
       mail_switching (status) {
         this.message.mail = status
@@ -346,6 +369,7 @@
             this.message = res.data.message
             this.message.mail ? this.message.mail = true : this.message.mail = false
             this.message.ding ? this.message.ding = true : this.message.ding = false
+            this.message.feishu ? this.message.feishu = true : this.message.feishu = false
             this.inception = res.data.inception
             this.other = res.data.other
             this.other.multi ? this.other.multi = true : this.other.multi = false
