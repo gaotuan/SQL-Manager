@@ -530,22 +530,43 @@
         if (this.formItem.basename === '') {
           return
         }
-        // setTimeout(() => {
           axios.put(`${util.url}/workorder/table_names`, {
             'id': this.id[0].id,
             'db': this.formItem.basename
           })
             .then(res => {
-              for (var i in res.data) {
-              var NewDic = {}
-              NewDic['title'] = String(res.data[i])
-                this.tables[0]['children'].push(NewDic)
-              }
+                this.tables[0]['children'] = res.data
             })
             .catch(() => {
               util.err_notice('无法连接数据库!请检查网络')
             })
-        // }, 200)
+        // NewDic['render'] = (h, { data }) => {
+        //                     return h('span', [
+        //                       h('Tooltip', {
+        //           props: {
+        //             content: '显示列'
+        //           }
+        //         }, [
+        //           h('Button', {
+        //             props: {
+        //               size: 'small',
+        //               icon: 'plus-round'
+        //             },
+        //                     style: {
+        //                         marginRight: '8px'
+        //                     },
+        //                               value: 'x',
+        //                     on: {
+        //                         click: () => { this.dis_col(data) }
+        //                     }
+        //                 }),
+        //                             h('span', data.title),
+        //                             h('span', data.nodeKey)
+        //                         ])
+        //                     ])
+        //                 }
+        //         this.tables[0]['children'].push(NewDic)
+        //       }
       },
       editorInit: function () {
         require('brace/mode/mysql')

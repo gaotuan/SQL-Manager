@@ -143,7 +143,20 @@ class SQLgo(object):
         with self.con.cursor() as cursor:
             cursor.execute('show tables;')
             result = cursor.fetchall()
-            return result
+            res= []
+            for tab in result:
+                dict = {'title':tab[0],'expand':False,'children':[]}
+                dict['children'] = self.column_names(tab)
+                res.append(dict)
+            return res
+    def column_names(self,table):
+        with self.con.cursor() as cursor:
+            cursor.execute('show  columns from %s;' %table)
+            result = cursor.fetchall()
+            res = []
+            for i in result:
+                res.append({'title':i[0]})
+            return res
 
     def index(self, table_name):
         with self.con.cursor() as cursor:

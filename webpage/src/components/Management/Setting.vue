@@ -170,6 +170,9 @@
                   <FormItem label="Binlog2sql位置:">
                     <Input placeholder="Binlog2sql位置:" v-model="other.Binlog2sql"></Input>
                   </FormItem>
+                  <FormItem label="deploy文件位置:">
+                    <Input placeholder="deploy配置文件位置:" v-model="other.deploy_file"></Input>
+                  </FormItem>
                   <FormItem label="自定义机房:">
                     <Tag v-for="item in other.con_room" :key="item" :name="item" type="border" closable color="blue"
                          @on-close="handleClose2">{{ item }}
@@ -277,6 +280,7 @@
           foce: '',
           multi: '',
           Binlog2sql: '',
+          deploy_file: '',
           query: '',
           sensitive: ''
         }

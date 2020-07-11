@@ -3,7 +3,6 @@ from rest_framework.permissions import (
     IsAuthenticated,
     BasePermission
 )
-from core.models import globalpermissions
 from rest_framework.views import APIView
 
 
