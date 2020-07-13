@@ -146,7 +146,7 @@ class SQLgo(object):
             res= []
             for tab in result:
                 dict = {'title':tab[0],'expand':False,'children':[]}
-                dict['children'] = self.column_names(tab)
+                dict['children'] = self.column_names(tab[0])
                 res.append(dict)
             return res
     def column_names(self,table):
@@ -155,7 +155,7 @@ class SQLgo(object):
             result = cursor.fetchall()
             res = []
             for i in result:
-                res.append({'title':i[0]})
+                res.append({'title':i[0]+"  "+i[1]})
             return res
 
     def index(self, table_name):
