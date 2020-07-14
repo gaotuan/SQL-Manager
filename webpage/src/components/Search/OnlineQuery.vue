@@ -530,7 +530,7 @@
         if (this.formItem.basename === '') {
           return
         }
-          axios.put(`${util.url}/workorder/table_names`, {
+          axios.put(`${util.url}/workorder/column_names`, {
             'id': this.id[0].id,
             'db': this.formItem.basename
           })

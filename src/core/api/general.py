@@ -227,6 +227,28 @@ class addressing(baseview.BaseView):
             try:
                 con_id = request.data['id']
                 db_name = request.data['db']
+            except KeyError as e:
+                CUSTOM_ERROR.error(f'{e.__class__.__name__}: {e}')
+                return HttpResponse(status=500)
+            else:
+                _connection = DatabaseList.objects.filter(id=con_id).first()
+                try:
+                    with con_database.SQLgo(
+                            ip=_connection.ip,
+                            user=_connection.username,
+                            password=_connection.password,
+                            port=_connection.port,
+                            db=db_name
+                    ) as f:
+                        res = f.column_names()
+                        return Response(res)
+                except Exception as e:
+                    CUSTOM_ERROR.error(f'{e.__class__.__name__}: {e}')
+                    return HttpResponse(status=500)
+        elif args == "column_names":
+            try:
+                con_id = request.data['id']
+                db_name = request.data['db']
                 table = request.data['table']
             except KeyError as e:
                 CUSTOM_ERROR.error(f'{e.__class__.__name__}: {e}')
