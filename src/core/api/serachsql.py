@@ -80,8 +80,13 @@ class search(baseview.BaseView):
                             statements=query_sql,
                             db_info=db_info
                         )
-                    data_set['query_time']=f.cost
-                    return HttpResponse(simplejson.dumps(data_set, cls=DateEncoder, bigint_as_string=True))
+                    data_set['query_time'] = f.cost
+
+                    def default(o):
+                        if isinstance(o, (datetime.timedelta)):
+                            t = (datetime.datetime.min + o).time()
+                            return t.isoformat()
+                    return HttpResponse(simplejson.dumps(data_set, cls=DateEncoder, bigint_as_string=True, default=default))
                 except Exception as e:
                     CUSTOM_ERROR.error(f'{e.__class__.__name__}: {e}')
                     return Response({'error': e.args[1]})

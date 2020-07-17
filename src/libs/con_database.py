@@ -152,7 +152,10 @@ class SQLgo(object):
             res= []
             for tab in result:
                 dict = {'title':tab[0],'expand':False,'children':[]}
-                dict['children'] = self.col_names(tab[0])
+                try:
+                    dict['children'] = self.col_names(tab[0])
+                except Exception as e:
+                    print(e,tab)
                 res.append(dict)
             return res
     def col_names(self,table):
