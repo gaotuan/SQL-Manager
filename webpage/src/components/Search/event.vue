@@ -347,14 +347,14 @@
       },
       DataBaseName (index) {
         if (index) {
+          this.datalist.basenamelist = []
           this.put_info.connection_name = index
           this.id = this.item.filter(item => {
             if (item.connection_name === index) {
               return item
             }
           })
-          this.formItem.id = this.id[0]['id']
-          setTimeout(() => {
+          // setTimeout(() => {
           axios.put(`${util.url}/workorder/basename`, {
             'id': this.id[0].id
           })
@@ -364,7 +364,7 @@
             .catch(() => {
               util.err_notice('无法连接数据库!请检查网络')
             })
-            }, 1000)
+            // }, 1000)
         }
       },
       exportdata () {

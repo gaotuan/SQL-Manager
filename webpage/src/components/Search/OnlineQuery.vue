@@ -602,6 +602,7 @@
       },
       DataBaseName (index) {
         if (index) {
+          this.datalist.basenamelist = []
           this.put_info.connection_name = index
           this.id = this.item.filter(item => {
             if (item.connection_name === index) {
