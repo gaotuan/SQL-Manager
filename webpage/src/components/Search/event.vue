@@ -355,6 +355,7 @@
             }
           })
           // setTimeout(() => {
+          this.formItem.id = this.id[0]['id']
           axios.put(`${util.url}/workorder/basename`, {
             'id': this.id[0].id
           })
