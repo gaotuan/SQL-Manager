@@ -29,7 +29,7 @@
                 </Col>
               <Col span="4">
                 <FormItem label="对象过滤:" >
-                  <Select  size="small" ref="basename_ref" v-model="formItem.db_filter" filterable @on-change="GetTables"  clearable placeholder="数据库过滤(可选):" >
+                  <Select  size="small" ref="basename_ref" v-model="formItem.db_filter" filterable  clearable placeholder="数据库过滤(可选):" >
                     <Option v-for="item in datalist.basenamelist" :value="item" :key="item">{{ item }}</Option>
                   </Select>
                 </FormItem>
@@ -328,18 +328,6 @@
       splice_arr (page) {
         this.Format_dis(this.res_data.slice(page * this.my_pagesize - this.my_pagesize, page * this.my_pagesize))
       },
-      GetTables () {
-        axios.put(`${util.url}/workorder/table_names`, {
-            'id': this.id[0].id,
-            'db': this.formItem.db_filter
-          })
-            .then(res => {
-              this.tables = res.data
-            })
-            .catch(() => {
-              util.err_notice('无法连接数据库!请检查网络')
-            })
-      },
       Connection_Name (val) {
         this.datalist.connection_name_list = []
         this.datalist.basenamelist = []
@@ -366,6 +354,7 @@
             }
           })
           this.formItem.id = this.id[0]['id']
+          setTimeout(() => {
           axios.put(`${util.url}/workorder/basename`, {
             'id': this.id[0].id
           })
@@ -375,15 +364,7 @@
             .catch(() => {
               util.err_notice('无法连接数据库!请检查网络')
             })
-          axios.put(`${util.url}/workorder/binlogs`, {
-            'id': this.id[0].id
-          })
-            .then(res => {
-              this.binlogfiles = res.data
-            })
-            .catch(() => {
-              util.err_notice('无法连接数据库!请检查网络')
-            })
+            }, 1000)
         }
       },
       exportdata () {
