@@ -45,6 +45,47 @@
                   <Button type="warning" @click="PutForward">确认</Button>
                 </div>
           </Modal>
+ <Modal v-model="modal2"  :closable='true' :mask-closable=true width="900">
+      <p slot="header" style="color:#f60;font-size: 16px">
+        <Icon type="information-circled"></Icon>
+        <span>SQL工单详细信息</span>
+      </p>
+      <Form label-position="right">
+        <FormItem label="工单编号:">
+          <span>{{ formitem.work_id }}</span>
+        </FormItem>
+        <FormItem label="机房:">
+          <span>{{ formitem.computer_room }}</span>
+        </FormItem>
+        <FormItem label="连接名称:">
+          <span>{{ formitem.connection_name }}</span>
+        </FormItem>
+        <FormItem label="数据库库名:">
+          <span>{{ formitem.basename }}</span>
+        </FormItem>
+        <FormItem label="延迟执行:">
+          <span>{{ formitem.delay }}分钟</span>
+        </FormItem>
+        <FormItem label="工单说明:">
+          <span>{{ formitem.text }}</span>
+        </FormItem>
+        <FormItem label="SQL语句:">
+          <br>
+          <div class="tree">
+            <p v-for="i in sql">{{ i }}</p>
+          </div>
+        </FormItem>
+      </Form>
+         <template >
+        <p class="pa"><b>SQL检查结果:</b></p>
+        <Table :columns="columnsName" :data="dataId" stripe border width="860" height="200"></Table>
+      </template>
+         <div slot="footer">
+        <Button @click="modal2 = false">取消</Button>
+        <Button type="warning" @click.native="test_button()" >检测sql</Button>
+         </div>
+    </Modal>
+
   </div>
 </template>
 <script>
@@ -57,6 +98,52 @@
     data () {
       return {
         editforward: false,
+        modal2: false,
+        sql: null,
+        dataId: [],
+        formitem: {
+          workid: '',
+          date: '',
+          username: '',
+          dataadd: '',
+          database: '',
+          att: '',
+          id: null,
+          delay: null
+        },
+        columnsName: [
+          {
+            title: 'ID',
+            key: 'ID',
+            width: 60,
+            fixed: 'left'
+          },
+          {
+            title: '阶段状态',
+            key: 'stagestatus',
+            width: 150
+          },
+          {
+            title: '当前检查的sql',
+            key: 'sql',
+            width: 500
+          },
+          {
+            title: '错误信息',
+            key: 'errormessage',
+            width: 300
+          },
+          {
+            title: '影响行数',
+            key: 'affected_rows',
+            width: 90
+          },
+          {
+            title: 'SQLSHA1',
+            key: 'SQLSHA1',
+            width: 200
+          }
+        ],
         cur_assigne: '',
         id: '',
         forward_assigne: '',
@@ -169,6 +256,17 @@
                   },
                   on: {
                     click: () => {
+                        this.edit_tab(params.index)
+                    }
+                  }
+                }, '查看'),
+                h('Button', {
+                  props: {
+                    size: 'small',
+                    type: 'text'
+                  },
+                  on: {
+                    click: () => {
                       this.$router.push({
                         name: 'orderlist',
                         query: {
@@ -200,6 +298,17 @@
                   },
                   on: {
                     click: () => {
+                        this.edit_tab(params.index)
+                    }
+                  }
+                }, '查看'),
+                h('Button', {
+                  props: {
+                    size: 'small',
+                    type: 'text'
+                  },
+                  on: {
+                    click: () => {
                       this.$router.push({
                         name: 'orderlist',
                         query: {
@@ -222,6 +331,31 @@
       }
     },
     methods: {
+      test_button () {
+        axios.put(`${util.url}/audit_sql`, {
+          'type': 'test',
+          'base': this.formitem.basename,
+          'id': this.formitem.id
+        })
+          .then(res => {
+            if (res.data.status === 200) {
+              this.dataId = res.data.result
+            } else {
+              util.err_notice(res.data.status)
+            }
+          })
+          .catch(error => {
+            util.err_notice(error)
+          })
+      },
+      edit_tab: function (index) {
+        this.togoing = index
+        this.dataId = []
+        this.modal2 = true
+        this.formitem = this.table_data[index]
+        this.table_data[index].status === 2 ? this.switch_show = true : this.switch_show = false
+        this.sql = this.table_data[index].sql.split(';')
+      },
       Forward (v) {
         this.editforward = true
         this.cur_assigne = v.assigned
