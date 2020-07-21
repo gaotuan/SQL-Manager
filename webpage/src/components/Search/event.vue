@@ -14,14 +14,14 @@
                 <Col span="4">
                 <FormItem label="机房:" prop="computer_room">
                   <Select  size="small" ref="computer_room_ref" v-model="formItem.computer_room" @on-change="Connection_Name" placeholder="请选择机房" >
-                    <Option v-for="i in datalist.computer_roomlist" :key="i" :value="i">{{i}}</Option>
+                    <Option v-for="i in this.datalist.computer_roomlist" :key="i" :value="i">{{i}}</Option>
                   </Select>
                 </FormItem>
                 </Col>
                 <Col span="4">
                 <FormItem label="实例名:" prop="connection_name"  >
                   <Select size="small"  ref="connection_name_ref" v-model="formItem.connection_name" @on-change="DataBaseName" filterable placeholder="请选择连接名"  >
-                    <Option v-for="i in datalist.connection_name_list" :value="i.connection_name"
+                    <Option v-for="i in this.datalist.connection_name_list" :value="i.connection_name"
                             :key="i.connection_name">{{ i.connection_name }}
                     </Option>
                   </Select>
@@ -30,7 +30,7 @@
               <Col span="4">
                 <FormItem label="对象过滤:" >
                   <Select  size="small" ref="basename_ref" v-model="formItem.db_filter" filterable  clearable placeholder="数据库过滤(可选):" >
-                    <Option v-for="item in datalist.basenamelist" :value="item" :key="item">{{ item }}</Option>
+                    <Option v-for="item in this.datalist.basenamelist" :value="item" :key="item">{{ item }}</Option>
                   </Select>
                 </FormItem>
               </Col>
