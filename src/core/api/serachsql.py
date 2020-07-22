@@ -83,9 +83,13 @@ class search(baseview.BaseView):
                     data_set['query_time'] = f.cost
 
                     def default(o):
-                        if isinstance(o, (datetime.timedelta)):
+                        if isinstance(o, datetime.timedelta):
                             t = (datetime.datetime.min + o).time()
                             return t.isoformat()
+                        if isinstance(o, datetime.datetime):
+                            return str(o.date()) + ' ' + str(o.time())
+                            # return o.isoformat()
+
                     return HttpResponse(simplejson.dumps(data_set, cls=DateEncoder, bigint_as_string=True, default=default))
                 except Exception as e:
                     CUSTOM_ERROR.error(f'{e.__class__.__name__}: {e}')
