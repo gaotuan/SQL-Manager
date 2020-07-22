@@ -342,16 +342,16 @@
         this.commit_val = false
       },
       GetTables () {
-        axios.put(`${util.url}/workorder/table_names`, {
-            'id': this.id[0].id,
-            'db': this.formItem.db_filter
-          })
-            .then(res => {
-              this.tables = res.data
-            })
-            .catch(() => {
-              util.err_notice('无法连接数据库!请检查网络')
-            })
+        // axios.put(`${util.url}/workorder/table_names`, {
+        //     'id': this.id[0].id,
+        //     'db': this.formItem.db_filter
+        //   })
+        //     .then(res => {
+        //       this.tables = res.data
+        //     })
+        //     .catch(() => {
+        //       util.err_notice('无法连接数据库!请检查网络')
+        //     })
       },
       Connection_Name (val) {
         this.datalist.connection_name_list = []
@@ -370,7 +370,7 @@
         });
       },
       DataBaseName (index) {
-                this.formItem.basename = ''
+        this.formItem.db_filter = ''
         if (index) {
           this.datalist.basenamelist = []
           this.put_info.connection_name = index
@@ -385,15 +385,6 @@
           })
             .then(res => {
               this.datalist.basenamelist = res.data
-            })
-            .catch(() => {
-              util.err_notice('无法连接数据库!请检查网络')
-            })
-          axios.put(`${util.url}/workorder/binlogs`, {
-            'id': this.id[0].id
-          })
-            .then(res => {
-              this.binlogfiles = res.data
             })
             .catch(() => {
               util.err_notice('无法连接数据库!请检查网络')

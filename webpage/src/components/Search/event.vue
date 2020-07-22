@@ -345,7 +345,7 @@
         });
       },
       DataBaseName (index) {
-                this.formItem.basename = ''
+        this.formItem.db_filter = ''
         if (index) {
           this.datalist.basenamelist = []
           this.put_info.connection_name = index
