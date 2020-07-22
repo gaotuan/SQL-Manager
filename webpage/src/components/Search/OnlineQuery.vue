@@ -516,7 +516,7 @@
              }
             }
           this.res_format_data[v]['op'] = '0'
-                  }, 100)
+                  }, 200)
       },
       splice_arr (page) {
         this.Testresults = this.allsearchdata.slice(page * this.pagesize - this.pagesize, page * this.pagesize)
