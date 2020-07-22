@@ -339,7 +339,6 @@
         this.datalist.connection_name_list = []
         this.datalist.basenamelist = []
         this.formItem.connection_name = ''
-        this.formItem.basename = ''
         if (val) {
           this.ScreenConnection(val)
           this.put_info.computer_room = val
@@ -353,6 +352,7 @@
         });
       },
       DataBaseName (index) {
+                this.formItem.basename = ''
         if (index) {
           this.datalist.basenamelist = []
           this.put_info.connection_name = index
