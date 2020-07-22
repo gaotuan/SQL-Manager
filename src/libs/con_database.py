@@ -155,12 +155,13 @@ class SQLgo(object):
                 try:
                     dict['children'] = self.col_names(tab[0])
                 except Exception as e:
-                    print(e,tab)
+                    print(e, tab)
                 res.append(dict)
             return res
-    def col_names(self,table):
+
+    def col_names(self, table):
         with self.con.cursor() as cursor:
-            cursor.execute('show  columns from %s;' %table)
+            cursor.execute('show  columns from `' + table + '`')
             result = cursor.fetchall()
             res = []
             for i in result:
