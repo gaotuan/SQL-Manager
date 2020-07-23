@@ -66,9 +66,9 @@ class search(baseview.BaseView):
                         data_set = f.search(sql=query_sql)
                         for l in data_set['data']:
                             for k, v in l.items():
-                                if isinstance(v, bytes):
-                                    for n in range(data_set['len']):
-                                        data_set['data'][n].update({k: 'blob字段为不可呈现类型'})
+                                # if isinstance(v, bytes):
+                                #     for n in range(data_set['len']):
+                                #         data_set['data'][n].update({k: 'blob字段为不可呈现类型'})
                                 for i in custom_com['sensitive_list']:
                                     if k == i:
                                         for n in range(data_set['len']):
