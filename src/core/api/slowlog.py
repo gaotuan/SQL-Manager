@@ -8,6 +8,7 @@ from core.models import Database_metadata,CloudAccount
 import  json
 from rest_framework.response import Response
 from django.http import HttpResponse
+import datetime
 CUSTOM_ERROR = logging.getLogger('Yearning.core.views')
 
 class Slowlog(baseview.BaseView):
@@ -33,8 +34,9 @@ class Slowlog(baseview.BaseView):
         data['access_key_secret'] = res.get('access_key_secret')
         starttime = '' if data['start_date']=='' else (data['start_date']+'T'+ ('00:00Z' if data['start_time'] == '' else  data['start_time']+"Z"))
         stoptime =  '' if data['end_date']=='' else (data['end_date']+'T'+ ('00:00Z' if data['end_time'] == '' else  data['end_time']+"Z"))
-        data['starttime'] = starttime.replace('/','-')
-        data['stoptime'] = stoptime.replace('/','-')
+        data['starttime'] = (datetime.datetime.strptime(starttime, '%Y-%m-%dT%H:%MZ') - datetime.timedelta(hours=8)).strftime("%Y-%m-%dT%H:%MZ")
+        data['stoptime'] = (datetime.datetime.strptime(stoptime, '%Y-%m-%dT%H:%MZ') - datetime.timedelta(hours=8)).strftime("%Y-%m-%dT%H:%MZ")
+
 
 
     def fetch(self,data):

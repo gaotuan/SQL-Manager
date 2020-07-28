@@ -178,12 +178,13 @@
         }, {
           title: '开始时间',
           key: 'ExecutionStartTime',
-          width: 110}, {
+          width: 120}, {
           title: 'SQL语句',
           key: 'SQLText',
             width: 300
         }, {
           title: '客户端IP',
+          width: 120,
           key: 'HostAddress'
         }, {
           title: '数据库名',
@@ -447,6 +448,9 @@
         for (var dict in v) {
            var NewDic = {}
            for (var ite in v[dict]) {
+             if (ite === 'ExecutionStartTime') {
+               v[dict][ite] = new Date(v[dict][ite]).toLocaleString()
+             }
              if (v[dict][ite] !== null && v[dict][ite].length > this.sql_display) {
                NewDic[ite] = v[dict][ite].substr(0, this.sql_display) + '...'
              } else {
