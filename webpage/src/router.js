@@ -156,6 +156,15 @@ export const appRouter = [
           require(['./components/Search/event.vue'], resolve)
         }
       },
+          {
+        path: 'redis',
+        name: 'redis',
+        title: 'redis操作',
+        'icon': 'ios-color-filter',
+        component: resolve => {
+          require(['./components/Search/redis.vue'], resolve)
+        }
+      },
       {
         path: 'view-dml',
         name: 'view-dml',

@@ -51,6 +51,13 @@
         if (name === 'online-query') {
           localStorage.removeItem('textarea_his')
         }
+        if (name === 'redis') {
+          localStorage.removeItem('redis_text')
+          localStorage.removeItem('redis_host')
+          localStorage.removeItem('redis_port')
+          localStorage.removeItem('redis_pwd')
+          localStorage.removeItem('redis_db')
+        }
         this.$store.commit('removeTag', name)
         if (this.currentPageName === name) {
           let lastPageName = ''
@@ -76,6 +83,11 @@
       handleTagsOption (type) {
         if (type === 'clearAll') {
           localStorage.removeItem('textarea_his')
+          localStorage.removeItem('redis_text')
+          localStorage.removeItem('redis_host')
+          localStorage.removeItem('redis_port')
+          localStorage.removeItem('redis_pwd')
+          localStorage.removeItem('redis_db')
           this.$store.commit('clearAllTags')
           this.$router.push({
             name: 'home_index'

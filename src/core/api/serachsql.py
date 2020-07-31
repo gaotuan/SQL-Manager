@@ -136,20 +136,33 @@ def replace_limit(sql, limit):
             sql += ';'
         # if sql.startswith('show') == 1:
         #     return sql
-        sql_re = re.search(r'limit\s.*\d.*;', sql.lower())
+        sql1=sql.lower()
+        sql_re = sql1[sql1.rfind('limit'): ]
         length = ''
-        if sql_re is not None:
-            c = re.search(r'\d.*', sql_re.group())
+        if sql1.rfind('limit') != -1 :
+            c = re.search(r'\d.*', sql_re)
             if c is not None:
                 if c.group().find(',') != -1:
-                    length = c.group()[-2]
+                    length = c.group().split(',')[-1].rstrip(';')
                 else:
-                    length = c.group().rstrip(';')
+                    if c.group().find('offset') == -1:
+                        length = c.group().rstrip(';')
+                    else:
+                        length = c.group().split('offset')[0]
             if int(length) <= int(limit):
                 return sql
             else:
-                sql = re.sub(r'limit\s.*\d.*;', 'limit %s;' % limit, sql)
-                return sql
+                if sql_re.find(',') == -1 :
+                    if sql_re.find('offset') == -1:
+                        sql = re.sub(r'limit\s.*\d.*;', 'limit %s;' % limit, sql)
+                        return sql
+                    else:
+                        sql = re.sub(r'limit \d+', 'limit %s' % limit, sql)
+                        return sql
+                else:
+                    sql = re.sub(r'\d+;', '%s;' % limit, sql)
+                    return sql
+
         else:
             sql = sql.rstrip(';') + ' limit %s;' % limit
             return sql

@@ -70,6 +70,7 @@
           'online-query': '',
           'slowlog': '',
           'event': '',
+          'redis': '1',
           'management-user': '',
           'management-sqlopt': '',
           'management-database': '',
