@@ -435,7 +435,7 @@ class ops(baseview.BaseView):
                     }
                 )
             elif args == 'his':
-                history = querypermissions.objects.filter(username=request.user).order_by('-id')[0:10]
+                history = querypermissions.objects.filter(username=request.user).order_by('-id')[0:20]
                 serializer_his = QueryPermissions(history, many=True)
                 return Response(
                     {
