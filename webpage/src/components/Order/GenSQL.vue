@@ -11,6 +11,10 @@
     word-break: break-all;
     overflow: hidden;
   }
+#adddb{
+            position: fixed;  // 浮动
+            z-index: 999999
+        }
 </style>
 <template>
   <div>
@@ -116,7 +120,34 @@
 
     </Row>
 
-    <Modal v-model="openswitch" @on-ok="commitorder" :ok-text="'提交工单'" width="800">
+    <Modal   id="adddb" v-model="this.adddb" :closable='true' :mask-closable=true  :width="350" >
+                <h3 slot="header" style="color:#2D8CF0">选择数据库:</h3>
+            <Form :model="addinstance" :label-width="100"  :rules="ruleValidate2">
+              <Form-item label="机房:" prop="computer_room">
+                <Select v-model="addinstance.computer_room" placeholder="请选择" @on-change="Connection_Name2">
+                  <Option v-for="i in dataset" :value="i" :key="i">{{ i }}</Option>
+                </Select>
+              </Form-item>
+              <Form-item label="连接名称:" prop="connection_name">
+                <Select v-model="addinstance.connection_name" placeholder="请选择" @on-change="DataBaseName2">
+                  <Option v-for="i in tableform.sqlname" :value="i.connection_name" :key="i.connection_name" filterable>
+                    {{ i.connection_name }}
+                  </Option>
+                </Select>
+              </Form-item>
+              <Form-item label="数据库库名:" prop="basename">
+                <Select v-model="addinstance.basename" placeholder="请选择"  filterable clearable>
+                  <Option v-for="item in tableform.basename" :value="item" :key="item">{{ item }}</Option>
+                </Select>
+              </Form-item>
+            </Form>
+                <div slot="footer">
+                  <Button type="text" @click="adddb=false">取消</Button>
+                  <Button type="warning" @click="fun_putinstance">确认</Button>
+                </div>
+    </Modal>
+
+    <Modal   v-model="openswitch" @on-ok="commitorder" :ok-text="'提交工单'" width="800" >
       <Row>
         <Card>
           <div class="step-header-con">
@@ -127,14 +158,15 @@
             <FormItem label="用户名:">
               <p>{{username}}</p>
             </FormItem>
-            <FormItem label="数据库库名:">
-              <p>{{formItem.basename}}</p>
+            <FormItem label="执行SQL:">
+              <p v-for="i in sql">{{i}}</p>
             </FormItem>
             <FormItem label="数据库表名:">
               <p>{{formItem.tablename}}</p>
             </FormItem>
-            <FormItem label="执行SQL:">
-              <p v-for="i in sql">{{i}}</p>
+            <FormItem label="数据库库名:" v-model="addinstances">
+              <p>{{formItem.computer_room}}:{{formItem.connection_name}}:{{formItem.basename}}</p>
+              <p v-for="i in addinstances">{{i.computer_room}}:{{i.connection_name}}:{{i.basename}}</p>
             </FormItem>
             <FormItem label="工单提交说明:" required>
               <Input v-model="formItem.text" placeholder="最多不超过20个字"></Input>
@@ -144,7 +176,7 @@
                 <Option v-for="i in assigned" :value="i" :key="i">{{i}}</Option>
               </Select>
             </FormItem>
-            <FormItem label="延迟执行">
+            <FormItem label="延迟执行:">
               <InputNumber
                 v-model="formItem.delay"
                 :formatter="value => `${value}分钟`"
@@ -152,13 +184,16 @@
                 :min="0">
               </InputNumber>
             </FormItem>
-            <FormItem label="是否备份">
+            <FormItem label="是否备份:">
               <RadioGroup v-model="formItem.backup">
                 <Radio label="1">是</Radio>
                 <Radio label="0">否</Radio>
               </RadioGroup>
             </FormItem>
-            <FormItem label="确认提交：" required>
+            <FormItem label="添加其他需要执行的数据库:" required>
+              <Button type="info" size="small" shape="circle" @click="fun_addinstance">add</Button>
+            </FormItem>
+            <FormItem label="确认提交:" required>
               <Checkbox v-model="pass">确认</Checkbox>
             </FormItem>
           </Form>
@@ -185,10 +220,16 @@
       return {
         dataset: [],
         item: {},
+        item2: {},
         basename: [],
         sqlname: [],
         TableDataNew: [],
         tableform: {
+          sqlname: [],
+          basename: [],
+          info: []
+        },
+        tableform2: {
           sqlname: [],
           basename: [],
           info: []
@@ -321,6 +362,7 @@
         ],
         sql: [],
         openswitch: false,
+        adddb: false,
         pass: false,
         ruleValidate: {
           computer_room: [{
@@ -356,6 +398,23 @@
             }
           ]
         },
+        ruleValidate2: {
+          computer_room: [{
+            required: true,
+            message: '机房地址不得为空',
+            trigger: 'change'
+          }],
+          connection_name: [{
+            required: true,
+            message: '连接名不得为空',
+            trigger: 'change'
+          }],
+          basename: [{
+            required: true,
+            message: '数据库名不得为空',
+            trigger: 'change'
+          }]
+        },
         formItem: {
           text: '',
           computer_room: '',
@@ -366,7 +425,14 @@
           assigned: '',
           delay: 0
         },
+        addinstances: [],
+        addinstance: {
+          computer_room: '',
+          connection_name: '',
+          basename: ''
+        },
         id: null,
+        id2: null,
         tabs: 'order1',
         optionData: [
           'varchar',
@@ -406,6 +472,11 @@
       Connection_Name (index) {
         if (index) {
           this.ScreenConnection(index)
+        }
+      },
+      Connection_Name2 (index) {
+        if (index) {
+          this.ScreenConnection2(index)
         }
       },
       test_sql () {
@@ -479,8 +550,33 @@
             })
         }
       },
+      DataBaseName2 (index) {
+        if (index) {
+          this.id2 = this.item2.filter(item => {
+            if (item.connection_name === index) {
+              return item
+            }
+          })
+          axios.put(`${util.url}/workorder/basename`, {
+            'id': this.id2[0].id
+          })
+            .then(res => {
+              this.tableform2.basename = res.data
+            })
+            .catch(() => {
+              util.err_notice('无法连接数据库!请检查网络')
+            })
+        }
+      },
       ScreenConnection (b) {
         this.tableform.sqlname = this.item.filter(item => {
+          if (item.computer_room === b) {
+            return item
+          }
+        })
+      },
+      ScreenConnection2 (b) {
+        this.tableform2.sqlname = this.item2.filter(item => {
           if (item.computer_room === b) {
             return item
           }
@@ -608,6 +704,20 @@
       orderswitch () {
         this.openswitch = !this.openswitch
       },
+      fun_addinstance () {
+        this.adddb = !this.adddb
+      },
+      deepClone (obj) {
+        // eslint-disable-next-line one-var
+          let obj2 = JSON.stringify(obj),
+              objClone = JSON.parse(obj2);
+          return objClone
+      },
+      fun_putinstance () {
+        let a = this.deepClone(this.addinstance)
+        this.addinstances.push(a)
+        this.adddb = false
+      },
       commitorder () {
         if (this.sql === [] || this.formItem.basename === '' || this.assigned === '' || this.formItem.text === '' || this.formItem.assigned === '') {
           util.err_notice('工单数据缺失,请检查工单信息是否缺失!')
@@ -618,7 +728,8 @@
               'sql': JSON.stringify(this.sql),
               'user': sessionStorage.getItem('user'),
               'type': 0,
-              'id': this.id[0].id
+              'id': this.id[0].id,
+              'addinstances': this.addinstances
             })
               .then(res => {
                 util.notice(res.data)
@@ -632,6 +743,7 @@
             util.err_notice('提交工单需点击确认按钮')
           }
         }
+        this.addinstances = []
       },
       cell_change (data) {
         this.putdata.push({

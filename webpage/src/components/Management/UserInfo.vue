@@ -475,13 +475,13 @@
             trigger: 'blur'
           },
             {
-              min: 6,
-              message: '请至少输入6个字符',
+              min: 8,
+              message: '请至少输入8个字符,且包含大小写 字母、数字、特称字符',
               trigger: 'blur'
             },
             {
               max: 32,
-              message: '最多输入32个字符',
+              message: '最多输入32个字符,且包含大小写 字母、数字、特称字符',
               trigger: 'blur'
             }
           ],
@@ -523,13 +523,13 @@
             trigger: 'blur'
           },
             {
-              min: 6,
-              message: '请至少输入6个字符',
+              min: 8,
+              message: '请至少输入8个字符,且包含大小写 字母、数字、特称字符',
               trigger: 'blur'
             },
             {
               max: 32,
-              message: '最多输入32个字符',
+              message: '最多输入32个字符,且包含大小写 字母、数字、特称字符',
               trigger: 'blur'
             }
           ],
@@ -631,6 +631,11 @@
           })
       },
       Registered () {
+        var pwdRegex = new RegExp('(?=.*[0-9])(?=.*[A-Z])(?=.*[a-z])(?=.*[^a-zA-Z0-9]).{8,30}')
+        if (!pwdRegex.test(this.userinfo.password)) {
+          util.err_notice('您的密码复杂度太低（密码中必须包含大小写字母、数字、特殊字符,密码长度8到32位），请修改密码！');
+          return
+        }
         this.$refs['userinfova'].validate((valid) => {
           if (valid) {
             axios.post(util.url + '/userinfo/', {
@@ -685,6 +690,11 @@
         this.confirmuser = ''
       },
       saveEditPass () {
+        var pwdRegex = new RegExp('(?=.*[0-9])(?=.*[A-Z])(?=.*[a-z])(?=.*[^a-zA-Z0-9]).{8,30}')
+        if (!pwdRegex.test(this.editPasswordForm.newPass)) {
+          util.err_notice('您的密码复杂度太低（密码中必须包含大小写字母、数字、特殊字符,密码长度8到32位），请修改密码！');
+          return
+        }
         this.$refs['editPasswordForm'].validate((valid) => {
           if (valid) {
             this.savePassLoading = true

@@ -77,43 +77,60 @@ class sqlorder(baseview.BaseView):
             CUSTOM_ERROR.error(f'{e.__class__.__name__}: {e}')
             return HttpResponse(status=500)
         else:
+            self.commitorder(data,tmp,user,type,id)
             try:
-                x = [x.rstrip(';') for x in tmp]
-                sql = ';'.join(x)
-                sql = sql.strip(' ').rstrip(';')
-                workId = util.workId()
-                SqlOrder.objects.get_or_create(
-                    username=user,
-                    date=util.date(),
-                    work_id=workId,
-                    status=2,
-                    basename=data['basename'],
-                    sql=sql,
-                    type=type,
-                    text=data['text'],
-                    backup=data['backup'],
-                    bundle_id=id,
-                    assigned=data['assigned'],
-                    delay=data['delay']
-                )
-                # 记录转发消息
-                Usermessage.objects.create(
-                    from_user=user,
-                    time=util.date(),
-                    title='工单:'+workId+' 提交通知',
-                    content=data['text'],
-                    to_user=data['assigned'],
-                    state='unread'
-                )
-                submit_push_messages(
-                    workId=workId,
-                    user=user,
-                    addr_ip=addr_ip,
-                    text=data['text'],
-                    assigned=data['assigned'],
-                    id=id
-                ).start()
-                return Response('已提交，请等待管理员审核!')
+                addinstances = request.data['addinstances']
+                for instance in addinstances:
+                    id = DatabaseList.objects.filter(connection_name=instance['connection_name'] , computer_room=instance['computer_room']).values('id').first()['id']
+                    data['computer_room'] = instance['computer_room']
+                    data['connection_name'] = instance['connection_name']
+                    data['basename'] = instance['basename']
+                    self.commitorder(data, tmp, user, type, id)
+
+
             except Exception as e:
                 CUSTOM_ERROR.error(f'{e.__class__.__name__}: {e}')
                 return HttpResponse(status=500)
+            return Response('已提交，请等待管理员审核!')
+
+
+    def commitorder(self,data,tmp,user,type,id):
+        try:
+            x = [x.rstrip(';') for x in tmp]
+            sql = ';'.join(x)
+            sql = sql.strip(' ').rstrip(';')
+            workId = util.workId()
+            SqlOrder.objects.get_or_create(
+                username=user,
+                date=util.date(),
+                work_id=workId,
+                status=2,
+                basename=data['basename'],
+                sql=sql,
+                type=type,
+                text=data['text'],
+                backup=data['backup'],
+                bundle_id=id,
+                assigned=data['assigned'],
+                delay=data['delay']
+            )
+            # 记录转发消息
+            Usermessage.objects.create(
+                from_user=user,
+                time=util.date(),
+                title='工单:' + workId + ' 提交通知',
+                content=data['text'],
+                to_user=data['assigned'],
+                state='unread'
+            )
+            submit_push_messages(
+                workId=workId,
+                user=user,
+                addr_ip=addr_ip,
+                text=data['text'],
+                assigned=data['assigned'],
+                id=id
+            ).start()
+        except Exception as e:
+            CUSTOM_ERROR.error(f'{e.__class__.__name__}: {e}')
+            return HttpResponse(status=500)
