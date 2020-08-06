@@ -205,7 +205,8 @@
           }]
         },
         id: null,
-        assigned: []
+        assigned: [],
+        addinstances: []
       }
     },
     methods: {
@@ -314,7 +315,8 @@
                 'sql': JSON.stringify(this.datalist.sqllist),
                 'user': sessionStorage.getItem('user'),
                 'type': 1,
-                'id': this.id[0].id
+                'id': this.id[0].id,
+                'addinstances': this.addinstances
               })
                 .then(res => {
                   this.$Notice.success({
