@@ -39,7 +39,7 @@ class  Redis(baseview.BaseView):
                             continue
                         rows = conn.execute_command(i)
                         Redis_ops_log.objects.get_or_create(
-                            user=request.GET.get('user'),
+                            user=str(request.user),
                             redis_instance='addr: ' + data['redis_host'] + '  port: '+data['redis_port'] + '  port: ' + data['redis_db'],
                             ops=i.strip(),
                             create_time = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
