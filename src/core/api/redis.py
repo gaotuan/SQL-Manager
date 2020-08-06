@@ -16,10 +16,41 @@ class  Redis(baseview.BaseView):
         try:
             data = request.data
             if data['redis_text'] == 'test':
-                conn = redis.Connection(host=data['redis_host'], port=data['redis_port'], db=data['redis_db'], password=data['redis_pwd'])
+                try:
+                    conn = redis.Redis(host=data['redis_host'], port=data['redis_port'], db=data['redis_db'], password=data['redis_pwd'],socket_connect_timeout=3)
+                    rows = conn.execute_command('ping')
+                    if rows:
+                        return Response({'ok': 'Redis连接测试,成功！'})
+                    else:
+                        return Response({'error': 'Redis连接测试,失败！'})
+                except Exception as e:
+                    CUSTOM_ERROR.error(f'{e.__class__.__name__}: {e}')
+                    return Response({'error': 'Redis连接测试失败:' + e.args[0]})
+            else:
+                try:
+                    conn = redis.Redis(host=data['redis_host'], port=data['redis_port'], db=data['redis_db'], password=data['redis_pwd'],socket_connect_timeout=3)
+                    res2 = []
+                    a = 1
+                    for i in data['redis_text'].strip().split(';'):
+                        if i =='':
+                            continue
+                        if i.strip()[0:1] == '#':
+                            continue
+                        rows = conn.execute_command(i)
+                        res2.append('== res:%d =============================================================' %a)
+                        res2.append(rows)
+                        a = a + 1
+
+                    if res2:
+                        return Response({'data': res2})
+                    else:
+                        return Response({'error': 'Redis执行失败！'})
+                except Exception as e:
+                    CUSTOM_ERROR.error(f'{e.__class__.__name__}: {e}')
+                    return Response({'error': 'Redis执行失败:' + e.args[0]})
 
 
-            return HttpResponse()
+
         except Exception as e:
             CUSTOM_ERROR.error(f'{e.__class__.__name__}: {e}')
             return HttpResponse(status=500)

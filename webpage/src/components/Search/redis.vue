@@ -6,42 +6,41 @@
 <template>
     <div >
         <Card>
-              <Form ref="formItem" class="" :model="formInline" label-position="right" label-width="80" style="height: 30px; ">
-<Row>
-                <Col span="1" style="width: 80px">
-                  <Icon type="gear-b"></Icon> <b>数据源:</b>
-                </Col>
-                <Col span="6">
-                <FormItem label="地址:" prop="computer_room" >
-                  <Input v-model="redis_host" placeholder="redis地址..." ></Input>
-                </FormItem>
-                </Col>
-                <Col span="3">
-                <FormItem label="端口:" prop="connection_name"  >
-                     <InputNumber v-model="redis_port"></InputNumber>
-                </FormItem>
-                </Col>
-              <Col span="3">
-                <FormItem label="密码:" >
-                  <Input type="password" v-model="redis_pwd" placeholder="password"></Input>
-                </FormItem>
-              </Col>
-              <Col span="3">
-                <FormItem label="DB:" >
-                  <InputNumber v-model="redis_db"></InputNumber>
-                </FormItem>
-              </Col>
-              <Col span="3">
-                <FormItem  label-position="center" >
-                  <Button    type="warning" icon="ios-redo"  @click.native="Test" >测试连接</Button>
-                </FormItem>
-              </Col>
-                <Col span="2">
-                <FormItem  label-position="center" >
-                  <Button  type="success" icon="ios-redo"   :disabled="this.commit_val" @click.native="Submmit" >执行</Button>
-                </FormItem>
-              </Col>
-            </Row>
+              <Form ref="formItem" class="" :model="formInline" label-position="right" label-width="50" style="height: 30px; "  >
+                    <Row>
+                                      <div style="float: left;margin-top: 5px;font-size: 14px;display: inline-block">
+                                         <Icon type="gear-b" ></Icon>
+                                        <strong>数据源： </strong>
+                                      </div>
+
+                                    <Col span="6">
+                                    <FormItem label="地址:" prop="computer_room" >
+                                      <Input v-model="redis_host" placeholder="redis地址..." ></Input>
+                                    </FormItem>
+                                    </Col>
+                                    <Col span="3">
+                                    <FormItem label="端口:" prop="connection_name"  >
+                                         <InputNumber v-model="redis_port" style="width:100%" ></InputNumber>
+                                    </FormItem>
+                                    </Col>
+                                  <Col span="3">
+                                    <FormItem label="密码:" >
+                                      <Input type="password" v-model="redis_pwd" placeholder="password" style="width:100%"  ></Input>
+                                    </FormItem>
+                                  </Col>
+                                  <Col span="3">
+                                    <FormItem label="DB:" >
+                                      <InputNumber v-model="redis_db" style="width:100%" ></InputNumber>
+                                    </FormItem>
+                                  </Col>
+                                  <div style="display: inline-block;float: right">
+                                     <FormItem  label-position="center" style="margin-left: 10px">
+                                        <Button   type="warning" icon="ios-redo"  @click.native="Test" >测试连接</Button>
+                                        <Button  type="success" icon="ios-redo"   :disabled="this.commit_val" @click.native="Submmit" >执行</Button>
+                                      </FormItem>
+                                  </div>
+
+                    </Row>
               </Form>
         </Card>
       <Card>
@@ -49,11 +48,11 @@
       </Card>
       <Card>
                       <Tabs type="card" closable  v-model="select_tab"  @on-click="MyFavite">
-                  <TabPane label="查询历史"  :key="1" name="his">
-                    <Table border stripe :columns="this.his_cols" :data="this.his_res" highlight-row ref="table"></Table>
-                  </TabPane>
+<!--                  <TabPane label="查询历史"  :key="1" name="his">-->
+<!--                    <Table border stripe :columns="this.his_cols" :data="this.his_res" highlight-row ref="table"></Table>-->
+<!--                  </TabPane>-->
                   <TabPane label="帮助文档" :key="3">
-                      <RadioGroup v-model="help.type" @on-change="K_type">
+                      <RadioGroup v-model="help.type" @on-change="K_type" name="default">
                           <Radio label="Key操作"></Radio>
                           <Radio label="String"></Radio>
                           <Radio label="Hash"></Radio>
@@ -67,9 +66,10 @@
                     </Card>
 
                   </TabPane>
-                  <TabPane label="查询结果" :key="4" :closable="false" name="res">
-                    <Table border stripe :columns="columnsName" :data="this.res_format_data" highlight-row ref="table"></Table>
-                    <Page :total="total" show-total show-sizer  show-elevator @on-change="splice_arr"  @on-page-size-change="Set_pagesize"	:page-size=this.pagesize :page-size-opts="[10,20,30,40,50,70,100]"  ref="totol"></Page>
+                  <TabPane label="执行结果" :key="4" :closable="false" name="res">
+                    <p style="white-space: pre-line;">{{this.res}}</p>
+<!--                    <Table border stripe :columns="columnsName" :data="this.res_format_data" highlight-row ref="table"></Table>-->
+<!--                    <Page :total="total" show-total show-sizer  show-elevator @on-change="splice_arr"  @on-page-size-change="Set_pagesize"	:page-size=this.pagesize :page-size-opts="[10,20,30,40,50,70,100]"  ref="totol"></Page>-->
                   </TabPane>
               </Tabs>
 
@@ -90,7 +90,8 @@
     name: 'SlowLog',
     data () {
       return {
-        commit_val: false,
+        commit_val: true,
+        select_tab: 'default',
         help: {
           text: '1、exists key　检查key是否存在，若key存在返回1，否则返回0\n' +
             '                                    2、keys pattern 查找所有符合给定模式的key，通常用于查找key\n' +
@@ -101,6 +102,7 @@
             '                                    7、type key 返回key存储的值的类型，返回none（不存在）、string（字符串）、list（列表）、set（集合）、zset（有序集合）、hash（哈希表)',
           type: 'Key操作'
         },
+        res: null,
         redis_text: '',
         redis_host: '',
         redis_port: '6379',
@@ -165,34 +167,44 @@
           'redis_text': 'test'
           })
             .then(res => {
-                this.res_data = res.data['data']
-                this.my_total = res.data['total']
-                this.Format_dis(this.res_data.slice(0, this.my_pagesize))
-              this.commit_load = false
+              if (res.data['error']) {
+              this.$Message.error(res.data['error'])
+              util.err_notice(res.data['error'])
+            }
+              if (res.data['ok']) {
+              this.$Message.info(res.data['ok'])
+              util.notice(res.data['ok'])
+              this.commit_val = false
+            }
             })
             .catch(() => {
               util.err_notice('Redis 测试失败，请联系管理员！')
-              this.commit_load = false
             })
       },
       Submmit () {
-        this.commit_load = true
-        this.res_format_data = []
-        this.res_data = []
-
-        axios.post(`${util.url}/event`, {
-            'id': this.formItem.id,
-          'db': this.formItem.db_filter
+        if (this.redis_text === '') {
+          util.notice('输入文本不能为空！')
+          return
+        }
+        this.select_tab = 'res'
+        this.res = ''
+        axios.post(`${util.url}/redis`, {
+          'redis_host': this.redis_host,
+          'redis_port': this.redis_port,
+          'redis_pwd': this.redis_pwd,
+          'redis_db': this.redis_db,
+          'redis_text': this.redis_text
           })
             .then(res => {
-                this.res_data = res.data['data']
-                this.my_total = res.data['total']
-                this.Format_dis(this.res_data.slice(0, this.my_pagesize))
-              this.commit_load = false
+              if (res.data['error']) {
+                this.$Message.error(res.data['error'])
+                util.err_notice(res.data['error'])
+                return
+              }
+              this.res = String(res.data['data']).replace('"', '').replace(/,/g, '\r\n')
             })
             .catch(() => {
-              util.err_notice('Event 查询失败，请联系管理员！')
-              this.commit_load = false
+              util.err_notice('Redis 执行失败，请联系管理员！')
             })
       }
     },
