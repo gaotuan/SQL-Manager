@@ -1,10 +1,11 @@
 from libs import con_database
 from django.http import HttpResponse
 import redis
+import datetime
 import logging
 from rest_framework.response import Response
 from libs import baseview
-from core.models import DatabaseList
+from core.models import Redis_ops_log
 CUSTOM_ERROR = logging.getLogger('Yearning.core.views')
 
 
@@ -37,6 +38,13 @@ class  Redis(baseview.BaseView):
                         if i.strip()[0:1] == '#':
                             continue
                         rows = conn.execute_command(i)
+                        Redis_ops_log.objects.get_or_create(
+                            user=request.GET.get('user'),
+                            redis_instance='addr: ' + data['redis_host'] + '  port: '+data['redis_port'] + '  port: ' + data['redis_db'],
+                            ops=i.strip(),
+                            create_time = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+                            update_time = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+                        )
                         res2.append('== res:%d =============================================================' %a)
                         res2.append(rows)
                         a = a + 1
@@ -54,56 +62,3 @@ class  Redis(baseview.BaseView):
         except Exception as e:
             CUSTOM_ERROR.error(f'{e.__class__.__name__}: {e}')
             return HttpResponse(status=500)
-
-    def get_data(self,_c,db=''):
-        if db == '':
-            sql = '''select '%s' room,'%s' instance_name,
-                      EVENT_SCHEMA db,
-                    EVENT_NAME name,
-                    EVENT_DEFINITION body,
-                 definer,
-              execute_at,
-          interval_value,
-          interval_field,
-                 created,
-    LAST_ALTERED modified,
-           last_executed,
-                  starts,
-                    ends,
-                  status,
-           on_completion,
-                sql_mode,
-    LAST_ALTERED comment,
-               time_zone from information_schema.events;''' %(_c.computer_room,_c.connection_name)
-        else:
-            sql = '''select '%s' room,'%s' instance_name,
-                              EVENT_SCHEMA db,
-                            EVENT_NAME name,
-                            EVENT_DEFINITION body,
-                         definer,
-                      execute_at,
-                  interval_value,
-                  interval_field,
-                         created,
-            LAST_ALTERED modified,
-                   last_executed,
-                          starts,
-                            ends,
-                          status,
-                   on_completion,
-                        sql_mode,
-            LAST_ALTERED comment,
-                       time_zone from information_schema.events where EVENT_SCHEMA='%s';''' % (_c.computer_room, _c.connection_name,db)
-
-
-        try:
-            with con_database.SQLgo(
-                    ip=_c.ip,
-                    password=_c.password,
-                    user=_c.username,
-                    port=_c.port        ) as f:
-                data_set = f.search(sql=sql)
-            return data_set
-            # return simplejson.dumps(data_set, cls=DateEncoder, bigint_as_string=True)
-        except Exception as e:
-            CUSTOM_ERROR.error(f'{e.__class__.__name__}: {e}')
