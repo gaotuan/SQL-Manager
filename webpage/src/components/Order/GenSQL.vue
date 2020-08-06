@@ -125,19 +125,19 @@
             <Form :model="addinstance" :label-width="100"  :rules="ruleValidate2">
               <Form-item label="机房:" prop="computer_room">
                 <Select v-model="addinstance.computer_room" placeholder="请选择" @on-change="Connection_Name2">
-                  <Option v-for="i in dataset" :value="i" :key="i">{{ i }}</Option>
+                  <Option v-for="i in dataset2" :value="i" :key="i">{{ i }}</Option>
                 </Select>
               </Form-item>
               <Form-item label="连接名称:" prop="connection_name">
                 <Select v-model="addinstance.connection_name" placeholder="请选择" @on-change="DataBaseName2">
-                  <Option v-for="i in tableform.sqlname" :value="i.connection_name" :key="i.connection_name" filterable>
+                  <Option v-for="i in tableform2.sqlname" :value="i.connection_name" :key="i.connection_name" filterable>
                     {{ i.connection_name }}
                   </Option>
                 </Select>
               </Form-item>
               <Form-item label="数据库库名:" prop="basename">
                 <Select v-model="addinstance.basename" placeholder="请选择"  filterable clearable>
-                  <Option v-for="item in tableform.basename" :value="item" :key="item">{{ item }}</Option>
+                  <Option v-for="item in tableform2.basename" :value="item" :key="item">{{ item }}</Option>
                 </Select>
               </Form-item>
             </Form>
@@ -219,6 +219,7 @@
     data () {
       return {
         dataset: [],
+        dataset2: [],
         item: {},
         item2: {},
         basename: [],
@@ -475,6 +476,7 @@
         }
       },
       Connection_Name2 (index) {
+        this.addinstance.connection_name = ''
         if (index) {
           this.ScreenConnection2(index)
         }
@@ -551,10 +553,11 @@
         }
       },
       DataBaseName2 (index) {
+        this.addinstance.basename = ''
         if (index) {
-          this.id2 = this.item2.filter(item => {
-            if (item.connection_name === index) {
-              return item
+          this.id2 = this.item2.filter(item2 => {
+            if (item2.connection_name === index) {
+              return item2
             }
           })
           axios.put(`${util.url}/workorder/basename`, {
@@ -576,9 +579,9 @@
         })
       },
       ScreenConnection2 (b) {
-        this.tableform2.sqlname = this.item2.filter(item => {
-          if (item.computer_room === b) {
-            return item
+        this.tableform2.sqlname = this.item2.filter(item2 => {
+          if (item2.computer_room === b) {
+            return item2
           }
         })
       },
@@ -600,8 +603,10 @@
         axios.put(`${util.url}/workorder/connection`, {'permissions_type': 'ddl'})
           .then(res => {
             this.item = res.data['connection']
+            this.item2 = res.data['connection']
             this.assigned = res.data['assigend']
             this.dataset = res.data['custom']
+            this.dataset2 = res.data['custom']
           })
           .catch(error => {
             util.err_notice(error)
