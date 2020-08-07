@@ -48,9 +48,6 @@
       </Card>
       <Card>
                       <Tabs type="card" closable  v-model="select_tab"  @on-click="MyFavite">
-<!--                  <TabPane label="查询历史"  :key="1" name="his">-->
-<!--                    <Table border stripe :columns="this.his_cols" :data="this.his_res" highlight-row ref="table"></Table>-->
-<!--                  </TabPane>-->
                   <TabPane label="帮助文档" :key="3">
                       <RadioGroup v-model="help.type" @on-change="K_type" name="default">
                           <Radio label="Key操作"></Radio>
@@ -67,9 +64,9 @@
 
                   </TabPane>
                   <TabPane label="执行结果" :key="4" :closable="false" name="res">
-                    <p style="white-space: pre-line;">{{this.res}}</p>
-<!--                    <Table border stripe :columns="columnsName" :data="this.res_format_data" highlight-row ref="table"></Table>-->
-<!--                    <Page :total="total" show-total show-sizer  show-elevator @on-change="splice_arr"  @on-page-size-change="Set_pagesize"	:page-size=this.pagesize :page-size-opts="[10,20,30,40,50,70,100]"  ref="totol"></Page>-->
+                    <Card style="background-color: #000000;color: #ffffff">
+                    <p style="white-space: pre-line;" v-for="i in this.res">{{i}}</p>
+                    </Card>
                   </TabPane>
               </Tabs>
 
@@ -99,7 +96,8 @@
             '                                    4、ttl key 以秒为单位返回key的剩余生存时间（time to live），当key不存在时返回-2，当key存在未设置生存时间时返回-1\n' +
             '                                    5、pttl key 这个命令和ttl类似，它以毫秒为单位返回key的剩余生存时间\n' +
             '                                    6、move key db 将key移动到指定数据库中\n' +
-            '                                    7、type key 返回key存储的值的类型，返回none（不存在）、string（字符串）、list（列表）、set（集合）、zset（有序集合）、hash（哈希表)',
+            '                                    7、type key 返回key存储的值的类型，返回none（不存在）、string（字符串）、list（列表）、set（集合）、zset（有序集合）、hash（哈希表)\n' +
+            '                                    8、SCAN cursor [MATCH pattern] [COUNT count] The default COUNT value is 10',
           type: 'Key操作'
         },
         res: null,
@@ -130,7 +128,8 @@
             '                                    4、ttl key 以秒为单位返回key的剩余生存时间（time to live），当key不存在时返回-2，当key存在未设置生存时间时返回-1\n' +
             '                                    5、pttl key 这个命令和ttl类似，它以毫秒为单位返回key的剩余生存时间\n' +
             '                                    6、move key db 将key移动到指定数据库中\n' +
-            '                                    7、type key 返回key存储的值的类型，返回none（不存在）、string（字符串）、list（列表）、set（集合）、zset（有序集合）、hash（哈希表)'
+            '                                    7、type key 返回key存储的值的类型，返回none（不存在）、string（字符串）、list（列表）、set（集合）、zset（有序集合）、hash（哈希表)\n' +
+            '                                    8、SCAN cursor [MATCH pattern] [COUNT count] The default COUNT value is 10'
         }
         if (this.help.type === 'Hash') {
           this.help.text = '1、hgetall key 获取hash表中所有field的值\n' +
@@ -155,7 +154,23 @@
             '                                     9、srem key member[member]　移除key中的一个或多个member元素，不存在的member会被忽略'
         }
         if (this.help.type === 'List') {
-          this.help.text = ''
+          this.help.text = '1、BLPOP key1 [key2 ] timeout 移出并获取列表的第一个元素， 如果列表没有元素会阻塞列表直到等待超时或发现可弹出元素为止。\n' +
+            '2、BRPOP key1 [key2 ] timeout 移出并获取列表的最后一个元素， 如果列表没有元素会阻塞列表直到等待超时或发现可弹出元素为止。\n' +
+            '3、BRPOPLPUSH source destination timeout 从列表中弹出一个值，将弹出的元素插入到另外一个列表中并返回它； 如果列表没有元素会阻塞列表直到等待超时或发现可弹出元素为止。\n' +
+            '4、LINDEX key index 通过索引获取列表中的元素\n' +
+            '5、LINSERT key BEFORE|AFTER pivot value 在列表的元素前或者后插入元素\n' +
+            '6、LLEN key 获取列表长度\n' +
+            '7、LPOP key 移出并获取列表的第一个元素\n' +
+            '8、LPUSH key value1 [value2] 将一个或多个值插入到列表头部\n' +
+            '9、LPUSHX key value 将一个值插入到已存在的列表头部\n' +
+            '10、LRANGE key start stop 获取列表指定范围内的元素\n' +
+            '11、LREM key count value 移除列表元素\n' +
+            '12、LSET key index value 通过索引设置列表元素的值\n' +
+            '13、LTRIM key start stop 对一个列表进行修剪(trim)，就是说，让列表只保留指定区间内的元素，不在指定区间之内的元素都将被删除。\n' +
+            '14、RPOP key 移除列表的最后一个元素，返回值为移除的元素。\n' +
+            '15、RPOPLPUSH source destination 移除列表的最后一个元素，并将该元素添加到另一个列表并返回\n' +
+            '16、RPUSH key value1 [value2] 在列表中添加一个或多个值\n' +
+            '17、RPUSHX key value 为已存在的列表添加值'
         }
       },
       Test () {
@@ -201,7 +216,8 @@
                 util.err_notice(res.data['error'])
                 return
               }
-              this.res = String(res.data['data']).replace('"', '').replace(/,/g, '\r\n')
+              // this.res = String(res.data['data']).replace('"', '').replace(/,/g, '\r\n')
+              this.res = res.data['data']
             })
             .catch(() => {
               util.err_notice('Redis 执行失败，请联系管理员！')

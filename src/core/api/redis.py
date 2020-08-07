@@ -45,7 +45,7 @@ class  Redis(baseview.BaseView):
                             create_time = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
                             update_time = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
                         )
-                        res2.append('== res:%d =============================================================' %a)
+                        res2.append('## result:%d ########################################################' %a)
                         res2.append(rows)
                         a = a + 1
 
