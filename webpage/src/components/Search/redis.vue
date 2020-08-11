@@ -35,7 +35,10 @@
                                   </Col>
                                   <div style="display: inline-block;float: right">
                                      <FormItem  label-position="center" style="margin-left: 10px">
-                                        <Button   type="warning" icon="ios-redo"  @click.native="Test" >测试连接</Button>
+                                        <Button  type="warning" icon="ios-redo"  @click.native="Test" >测试连接</Button>
+                                       <Tooltip content="利用monitor生成热点key、top命令等功能">
+                                              <Button  type="info"    icon="ios-redo"   :disabled="this.commit_val2" @click.native="Hotkey" >Redis分析</Button>
+                                        </Tooltip>
                                         <Button  type="success" icon="ios-redo"   :disabled="this.commit_val" @click.native="Submmit" >执行</Button>
                                       </FormItem>
                                   </div>
@@ -88,6 +91,7 @@
     data () {
       return {
         commit_val: true,
+        commit_val2: true,
         select_tab: 'default',
         help: {
           text: '1、exists key　检查key是否存在，若key存在返回1，否则返回0\n' +
@@ -190,10 +194,36 @@
               this.$Message.info(res.data['ok'])
               util.notice(res.data['ok'])
               this.commit_val = false
+              this.commit_val2 = false
             }
             })
             .catch(() => {
               util.err_notice('Redis 测试失败，请联系管理员！')
+            })
+      },
+      Hotkey () {
+        this.commit_val2 = true
+        this.select_tab = 'res'
+        this.res = ''
+        axios.post(`${util.url}/redis_faina`, {
+          'redis_host': this.redis_host,
+          'redis_port': this.redis_port,
+          'redis_pwd': this.redis_pwd
+          })
+            .then(res => {
+              if (res.data['error']) {
+                this.commit_val2 = false
+                this.$Message.error(res.data['error'])
+                util.err_notice(res.data['error'])
+                return
+              }
+              // this.res = String(res.data['data']).replace('"', '').replace(/,/g, '\r\n')
+              this.res = res.data['data']
+              this.commit_val2 = false
+            })
+            .catch(() => {
+              this.commit_val2 = false
+              util.err_notice('Redis_faina 执行失败，请联系管理员！')
             })
       },
       Submmit () {

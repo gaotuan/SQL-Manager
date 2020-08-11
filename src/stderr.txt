@@ -1,0 +1,9 @@
+Warning: Using a password with '-a' or '-u' option on the command line interface may not be safe.
+Traceback (most recent call last):
+  File "/Users/gaoshaopang/soft/redis-faina/redis-faina.py3", line 179, in <module>
+    counter.print_stats()
+  File "/Users/gaoshaopang/soft/redis-faina/redis-faina.py3", line 138, in print_stats
+    self._pretty_print(self._top_n(self.prefixes), 'Top Prefixes', percentages = True)
+  File "/Users/gaoshaopang/soft/redis-faina/redis-faina.py3", line 115, in _top_n
+    sorted_items = sorted(stat.iteritems(), key = lambda x: x[1], reverse = True)
+AttributeError: 'collections.defaultdict' object has no attribute 'iteritems'

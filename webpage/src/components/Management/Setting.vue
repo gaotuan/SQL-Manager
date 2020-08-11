@@ -167,11 +167,17 @@
                   <FormItem label="默认展示的sql长度:">
                     <InputNumber placeholder="默认展示的sql长度" v-model="other.sql_display"></InputNumber>
                   </FormItem>
+                  <FormItem label="Redis分析的条数:">
+                    <InputNumber placeholder="Redis分析的条数" v-model="other.redis_faina_cnt"></InputNumber>
+                  </FormItem>
                   <FormItem label="Binlog2sql位置:">
                     <Input placeholder="Binlog2sql位置:" v-model="other.Binlog2sql"></Input>
                   </FormItem>
                   <FormItem label="deploy文件位置:">
                     <Input placeholder="deploy配置文件位置:" v-model="other.deploy_file"></Input>
+                  </FormItem>
+                  <FormItem label="redis_faina文件位置:">
+                    <Input placeholder="deploy配置文件位置:" v-model="other.redis_faina_file"></Input>
                   </FormItem>
                   <FormItem label="自定义机房:">
                     <Tag v-for="item in other.con_room" :key="item" :name="item" type="border" closable color="blue"
@@ -281,6 +287,8 @@
           multi: '',
           Binlog2sql: '',
           deploy_file: '',
+          redis_faina_file: '',
+          redis_faina_cnt: '',
           query: '',
           sensitive: ''
         }

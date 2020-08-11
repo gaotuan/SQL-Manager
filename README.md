@@ -18,11 +18,17 @@
     - 自动填充最后一次sql的执行信息
     - 可以从查询历史，我的收藏等地方直接执行sql
     - 查询报错到审计
+    - 数据清理任务查询
+    - 阿里云慢查询日志
 - SQL优化
     - 基于profiling的优化
     - 其他第三方优化功能
 - 工具
-    - 基于binlog2sql界面操作     
+    - 基于binlog2sql界面操作 
+- redis操作
+    - redis常用命令
+    - redis faina,利用monitor生成热点key、top命令等功能
+        
 
 
 ## Yearing Feature 功能
