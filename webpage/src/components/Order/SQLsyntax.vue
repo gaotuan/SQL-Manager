@@ -95,7 +95,7 @@
         <Card>
           <p slot="title">
             <Icon type="ios-crop-strong"></Icon>
-            填写sql语句
+            填写sql语句(去掉注释行)
           </p>
           <editor v-model="formItem.textarea" @init="editorInit"></editor>
           <br>

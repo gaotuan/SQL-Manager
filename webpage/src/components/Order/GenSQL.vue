@@ -75,7 +75,7 @@
           </p>
           <div class="edittable-table-height-con">
             <Tabs :value="tabs">
-              <TabPane label="手动模式--输入变更sql:" name="order1" icon="edit">
+              <TabPane label="手动模式--输入变更sql:(去掉注释行)" name="order1" icon="edit">
                 <Form>
                   <FormItem>
                     <editor v-model="formDynamic" @init="editorInit"></editor>

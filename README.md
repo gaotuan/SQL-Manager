@@ -87,6 +87,7 @@
  
 ## 注意
 1、使用原始inception时要替换connection.py和cursor.py文件
+2、redis-faina地址：git clone https://github.com/Instagram/redis-faina.git
 
 ## Snapshot 效果展示
 
