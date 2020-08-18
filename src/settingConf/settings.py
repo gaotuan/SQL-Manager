@@ -182,4 +182,4 @@ LOGGING = {
     }
 }
 
-CRONJOBS = [('*/1 * * * *', 'core.crontab.rds_metrics.rds_metrics','>> /tmp/django_crontab.log 2>&1 '),('1 * * * *', 'core.crontab.metadata.metadata','>> /tmp/django_crontab.log 2>&1 ')]
+CRONJOBS = [('*/1 * * * *', 'core.crontab.rds_metrics.rds_metrics','>> /tmp/django_crontab.log 2>&1 '),('2 2 * * *', 'core.crontab.metadata.metadata','>> /tmp/django_crontab.log 2>&1 ')]

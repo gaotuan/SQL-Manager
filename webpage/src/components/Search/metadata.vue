@@ -53,13 +53,13 @@
         columnsName: [
           {
             title: '机房',
-            key: 'computer_room',
-            width: 150
+            key: 'connection_name',
+            width: 200
           },
           {
             title: '连接名',
-            key: 'connection_name',
-            width: 100
+            key: 'computer_room',
+            width: 200
           },
           {
             title: '数据库名',
@@ -69,17 +69,17 @@
           {
             title: '表名',
             key: 'table_name',
-            width: 300
+            width: 350
           },
           {
             title: '表注释',
             key: 'table_comment',
-            width: 200
+            width: 300
           },
                     {
             title: '列名',
             key: 'column_name',
-            width: 90
+            width: 200
           },
           {
             title: '列注释',

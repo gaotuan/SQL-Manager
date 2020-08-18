@@ -91,8 +91,8 @@ class Db_metadata(models.Model):
     '''
     数据库 元数据
     '''
-    connection_name = models.CharField(max_length=50,null=True)  # 连接名
-    computer_room = models.CharField(max_length=50,null=True)  # 机房
+    connection_name = models.CharField(max_length=50,null=True)  # 机房
+    computer_room = models.CharField(max_length=50,null=True)  # 连接名
     db_name = models.CharField(max_length=200,null=True)  # 数据库名
     table_name = models.CharField(db_index=True,max_length=200,null=True)  # 表名
     create_time = models.DateTimeField(null=True)  #过期时间
