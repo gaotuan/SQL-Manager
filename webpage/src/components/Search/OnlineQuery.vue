@@ -495,7 +495,7 @@
       Set_my_pagesize (v) {
         this.my_pagesize = v
         this.my_tmp_res = this.my_res.slice(0, this.my_pagesize)
-        this.my_pagenumber = this.total / this.pagesize
+        this.my_pagenumber = this.total / this.my_pagesize
       },
       Set_textarea_his () {
         localStorage.setItem('textarea_his', this.formItem.textarea)

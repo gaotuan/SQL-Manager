@@ -166,6 +166,15 @@ export const appRouter = [
         }
       },
       {
+        path: 'metadata',
+        name: 'metadata',
+        title: '元数据查询',
+        'icon': 'android-sunny',
+        component: resolve => {
+          require(['./components/Search/metadata.vue'], resolve)
+        }
+      },
+      {
         path: 'view-dml',
         name: 'view-dml',
         title: '数据库字典',

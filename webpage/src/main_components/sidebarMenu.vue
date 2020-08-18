@@ -71,6 +71,7 @@
           'slowlog': '',
           'event': '',
           'redis': '1',
+          'metadata': '1',
           'management-user': '',
           'management-sqlopt': '',
           'management-database': '',

@@ -41,6 +41,7 @@ from core.api.serachsql import search, query_worklf, Query_order
 from core.api.binlog2sql import Binlog2sql
 from core.api.events import Event
 from core.api.redis import Redis
+from core.api.metadata import Metadata
 from core.api.redis_faina import Redis_faina
 from core.api.slowlog import Slowlog
 from core.api.osc import osc_step
@@ -68,6 +69,7 @@ urlpatterns = [
     url(r'^api/v1/gensql/(.*)', gen_sql.as_view()),
     url(r'^api/v1/management_db/(.*)', management_db.as_view()),
     url(r'^api/v1/audit_sql', audit.as_view()),
+    url(r'^api/v1/db_metadata', Metadata.as_view()),
     url(r'^api/v1/sqldic/(.*)', dictionary.as_view()),
     url(r'^api/v1/auth_twice', authgroup.as_view()),
     url(r'^api/v1/sqlsyntax/(.*)', sqlorder.as_view()),

@@ -10,7 +10,7 @@ from core.models import DatabaseList
 from core.models import SqlDictionary
 from core.models import SqlRecord
 from core.models import Account
-from core.models import SqlOrder, query_order, querypermissions, globalpermissions
+from core.models import SqlOrder, query_order, querypermissions, globalpermissions,Db_metadata
 
 
 class Globalpermissions(serializers.HyperlinkedModelSerializer):
@@ -41,6 +41,15 @@ class UserINFO(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Account
         fields = ('id', 'username', 'group', 'department', 'email')
+
+class Db_metadata(serializers.HyperlinkedModelSerializer):
+    '''
+    平台用户信息列表serializers
+    '''
+
+    class Meta:
+        model = Db_metadata
+        fields = ('id','connection_name', 'computer_room', 'db_name', 'table_name', 'create_time','table_comment','column_name','column_comment')
 
 class QueryPermissions(serializers.HyperlinkedModelSerializer):
     '''

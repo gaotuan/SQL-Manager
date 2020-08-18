@@ -87,6 +87,19 @@ class DatabaseList(models.Model):
     after = models.TextField(null=True)  # 工单执行成功后 钉钉webhook发送内容
     url = models.TextField(blank=True)  # 钉钉webhook url地址
 
+class Db_metadata(models.Model):
+    '''
+    数据库 元数据
+    '''
+    connection_name = models.CharField(max_length=50,null=True)  # 连接名
+    computer_room = models.CharField(max_length=50,null=True)  # 机房
+    db_name = models.CharField(max_length=200,null=True)  # 数据库名
+    table_name = models.CharField(db_index=True,max_length=200,null=True)  # 表名
+    create_time = models.DateTimeField(null=True)  #过期时间
+    table_comment = models.CharField(max_length=200,null=True)  # 表注释
+    column_name = models.CharField(max_length=200,null=True)  # 列名
+    column_comment = models.CharField(max_length=200,null=True)  # 列注释
+
 class Database_metadata(models.Model):
     '''
     数据库元数据信息
