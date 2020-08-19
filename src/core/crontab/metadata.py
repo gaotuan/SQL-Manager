@@ -25,6 +25,7 @@ def metadata():
         cursor = connection.cursor()
         cursor.execute('truncate table  {0} ;'.format(Db_metadata._meta.db_table))
         for database in  databases:
+            print("begin:" + str(database.id) +":"+ database.connection_name)
             try:
                 with con_database.SQLgo(
                         ip=database.ip,
@@ -41,10 +42,11 @@ def metadata():
                             Db_metadata.objects.create(connection_name=database.computer_room,computer_room=database.connection_name,db_name=i[0],table_name=i[1],create_time=i[2],table_comment=i[3])
             except Exception as e:
                 CUSTOM_ERROR.error(f'{e.__class__.__name__}: {e}')
-                print("Error  metadata: " + database.connection_name + ":" +datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S') + e)  # 日期格式化
+                print("Error  metadata: " + database.connection_name + ":" +datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S') + f'{e.__class__.__name__}: {e}')  # 日期格式化
         print("done  metadata: " + datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'))  # 日期格式化
     except Exception as e:
         CUSTOM_ERROR.error(f'{e.__class__.__name__}: {e}')
+        print("Error  metadata: " + f'{e.__class__.__name__}: {e}')  # 日期格式化
 
 
 
