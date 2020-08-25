@@ -172,7 +172,7 @@
               <Input v-model="formItem.text" placeholder="最多不超过20个字"></Input>
             </FormItem>
             <FormItem label="指定审核人:" required>
-              <Select v-model="formItem.assigned" filterable transfer>
+              <Select v-model="formItem.assigned" filterable transfer @on-change="CheckUser">
                 <Option v-for="i in assigned" :value="i" :key="i">{{i}}</Option>
               </Select>
             </FormItem>
@@ -711,6 +711,14 @@
       },
       fun_addinstance () {
         this.adddb = !this.adddb
+      },
+      CheckUser () {
+        if (sessionStorage.getItem('user') === this.formItem.assigned) {
+          util.err_notice('审核人员不能为当前登录用户自身！')
+          setTimeout(() => {
+            this.formItem.assigned = ''
+          }, 400)
+        }
       },
       deepClone (obj) {
         // eslint-disable-next-line one-var

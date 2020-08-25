@@ -41,7 +41,7 @@
                 </FormItem>
 
                 <FormItem label="指定审核人:" prop="assigned">
-                  <Select v-model="formItem.assigned" filterable>
+                  <Select v-model="formItem.assigned" @on-change="CheckUser" filterable>
                     <Option v-for="i in this.assigned" :value="i" :key="i">{{i}}</Option>
                   </Select>
                 </FormItem>
@@ -240,6 +240,15 @@
             return item
           }
         })
+      },
+      CheckUser () {
+        if (sessionStorage.getItem('user') === this.formItem.assigned) {
+          util.err_notice('审核人员不能为当前登录用户自身！')
+          setTimeout(() => {
+            this.formItem.assigned = ''
+            // this.$refs.connection_name_ref.$emit('on-change', res.data['last_query']['connection_name']);
+          }, 400)
+        }
       },
       DataBaseName (index) {
         if (index) {
