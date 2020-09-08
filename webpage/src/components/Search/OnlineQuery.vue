@@ -38,8 +38,9 @@
                   <p>1.下拉框没有需要查询的DB时，联系DBA申请查询权限</p>
                   <p>2.select没有使用limit时，默认会自动添加limit {{ limit_num }} 的限制</p>
                   <p>3.select limit N,当N大于{{ limit_num }}时，自动替换为limit {{ limit_num }}</p>
-                  <p>4.文本框有多条SQL时，只执行最后一条</p>
-                  <p>5.所有的<b>查询、导出</b>操作，均会记录到审计日志</p>
+                  <p>4.文本框有多条SQL时，每个sql以；为结尾，注释行也需要以；结尾，只执行最后一条</p>
+                  <p>5.请使用/* xx */ 添加注释</p>
+                  <p>6.所有的<font size="2" face="arial" color="red">查询、导出</font>操作，均会记录到审计日志</p>
                 </Card>
               </Form>
             </div>
