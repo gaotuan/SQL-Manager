@@ -141,7 +141,9 @@ def get_by_iphone_email(dict):
         info = data.get('data')
         user_id = set()
         for s in info.values():
-             for a in s.values():
+            if len(s) == 0:
+                continue
+            for a in s.values():
                  user_id.add(a[0].get('user_id'))
         return user_id.pop()
     except Exception as e:
