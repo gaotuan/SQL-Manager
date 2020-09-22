@@ -495,6 +495,7 @@
         }
       },
       put_button () {
+        this.summit = true
         this.modal2 = false
         this.tmp[this.togoing].status = 3
         axios.put(`${util.url}/audit_sql`, {
