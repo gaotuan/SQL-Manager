@@ -241,7 +241,9 @@
               util.err_notice(error)
             })
             } else {
-              axios.post(`${util.url}/homedata/todolist_del_expire`)
+              axios.post(`${util.url}/homedata/todolist_del_expire`, {
+            'todo': ''
+          })
             }
           })
           .catch(error => {
