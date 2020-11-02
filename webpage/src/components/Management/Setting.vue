@@ -170,6 +170,9 @@
                   <FormItem label="Redis分析的条数:">
                     <InputNumber placeholder="Redis分析的条数" v-model="other.redis_faina_cnt"></InputNumber>
                   </FormItem>
+                  <FormItem label="用户有效期天数:">
+                    <InputNumber placeholder="账号密码有效期天数" v-model="other.expire_days"></InputNumber>
+                  </FormItem>
                   <FormItem label="Binlog2sql位置:">
                     <Input placeholder="Binlog2sql位置:" v-model="other.Binlog2sql"></Input>
                   </FormItem>
@@ -289,6 +292,7 @@
           deploy_file: '',
           redis_faina_file: '',
           redis_faina_cnt: '',
+          expire_days: '',
           query: '',
           sensitive: ''
         }

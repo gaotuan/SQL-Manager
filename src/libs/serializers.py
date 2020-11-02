@@ -40,7 +40,7 @@ class UserINFO(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = Account
-        fields = ('id', 'username', 'group', 'department', 'email')
+        fields = ('id', 'username', 'group', 'department', 'email','expire_date')
 
 class Db_metadata(serializers.HyperlinkedModelSerializer):
     '''

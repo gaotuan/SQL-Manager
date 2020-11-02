@@ -142,6 +142,7 @@
         toDoList: [{
           title: ''
         }],
+        expiredays: '',
         count: {
           createUser: 0,
           order: 0,
@@ -216,6 +217,34 @@
           .catch(error => {
             util.err_notice(error)
           })
+      },
+      getExpireDays () {
+        axios.put(`${util.url}/homedata/getexpiredays`)
+          .then(res => {
+            this.expiredays = res.data
+            if (this.expiredays < 30) {
+             util.notice('您的登录密码将在' + this.expiredays + '天后过期，请及时修改密码！')
+             axios.post(`${util.url}/homedata/todolist_expire`, {
+            'todo': '您的登录密码将在' + this.expiredays + '天后过期，请及时修改密码！'
+          })
+            // .then(() => {
+            //   let vm = this
+            //   this.toDoList.unshift({
+            //     title: this.newToDoItemValue
+            //   })
+            //   setTimeout(function () {
+            //     vm.newToDoItemValue = ''
+            //   }, 200)
+            //   this.showAddNewTodo = false
+            // })
+            .catch(error => {
+              util.err_notice(error)
+            })
+            }
+          })
+          .catch(error => {
+            util.err_notice(error)
+          })
       }
     },
     mounted () {
@@ -229,7 +258,10 @@
         .catch(error => {
           util.err_notice(error)
         })
-      this.gettodo()
+      this.getExpireDays()
+      clearTimeout(this.timer);
+      this.timer = setTimeout(() => { this.gettodo() }, 1000);
+      // setTimeout(this.gettodo(), 20000)
       this.formatDate()
     }
   }

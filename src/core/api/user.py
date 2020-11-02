@@ -1,5 +1,7 @@
 import logging
 import json
+import ast
+from datetime import datetime,timedelta
 from libs import baseview, util
 from core.task import grained_permissions
 from libs.serializers import UserINFO
@@ -103,6 +105,9 @@ class userinfo(baseview.BaseView):
     def put(self, request, args=None):
         if args == 'changepwd':
             try:
+                un_init = util.init_conf()
+                limit = ast.literal_eval(un_init['other'])
+                expire_days = limit.get('expire_days') if limit.get('expire_days') is not None else 90
                 username = request.data['username']
                 new_password = request.data['new']
             except KeyError as e:
@@ -112,6 +117,7 @@ class userinfo(baseview.BaseView):
                 try:
                     user = Account.objects.get(username__exact=username)
                     user.set_password(new_password)
+                    user.expire_date = (datetime.now() + timedelta(days=expire_days)).isoformat()
                     user.save()
                     return Response('%s--密码修改成功!' % username)
                 except Exception as e:
@@ -240,13 +246,14 @@ class generaluser(baseview.BaseView):
         if args == 'changepwd':
             try:
                 username = request.data['username']
-                old_password = request.data['old']
+                # old_password = request.data['old']
                 new_password = request.data['new']
             except KeyError as e:
                 CUSTOM_ERROR.error(f'{e.__class__.__name__}: {e}')
             else:
                 try:
-                    user = authenticate(username=username, password=old_password)
+                    # user = authenticate(username=username, password=old_password)
+                    user = authenticate(username=username)
                     if user is not None and user.is_active:
                         user.set_password(new_password)
                         user.save()
@@ -346,6 +353,8 @@ class login_auth(baseview.AnyLogin):
         else:
             permissions = authenticate(username=user, password=password)
             if permissions is not None and permissions.is_active:
+                if permissions.expire_date < datetime.now():
+                    return HttpResponse(status=402)
                 token = jwt_encode_handler(jwt_payload_handler(permissions))
                 return Response({'token': token, 'res': '', 'permissions': permissions.group})
             else:

@@ -37,6 +37,7 @@ class Account(AbstractUser):
     '''
     group = models.CharField(max_length=40)  # 权限组 guest/admin
     department = models.CharField(max_length=40)  # 部门
+    expire_date = models.DateTimeField(null=True)  #过期时间
 
 
 class SqlDictionary(models.Model):

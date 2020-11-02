@@ -1,5 +1,6 @@
 import logging
 import json
+import datetime
 from libs import baseview
 from rest_framework.response import Response
 from django.http import HttpResponse
@@ -89,6 +90,14 @@ class dashboard(baseview.BaseView):
             except Exception as e:
                 CUSTOM_ERROR.error(f'{e.__class__.__name__}: {e}')
                 return HttpResponse(status=500)
+        elif args == 'getexpiredays':
+            try:
+                user = Account.objects.filter(username=request.user).first()
+                expire_days = (user.expire_date - datetime.datetime.now()).days
+                return Response(expire_days)
+            except Exception as e:
+                CUSTOM_ERROR.error(f'{e.__class__.__name__}: {e}')
+                return HttpResponse(status=500)
 
         elif args == 'deltodo':
             try:
@@ -122,7 +131,11 @@ class dashboard(baseview.BaseView):
             CUSTOM_ERROR.error(f'{e.__class__.__name__}: {e}')
         else:
             try:
-                Todolist.objects.get_or_create(username=request.user, content=todo)
+                if args == 'todolist_expire':
+                    Todolist.objects.filter(username=request.user, content__startswith='您的登录密码将在').delete()
+                    Todolist.objects.create(username=request.user, content=todo)
+                else:
+                    Todolist.objects.get_or_create(username=request.user, content=todo)
                 return Response('')
             except Exception as e:
                 CUSTOM_ERROR.error(f'{e.__class__.__name__}: {e}')

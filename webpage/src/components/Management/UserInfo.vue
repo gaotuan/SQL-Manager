@@ -72,7 +72,7 @@
           <Input v-model="username" readonly="readonly"></Input>
         </FormItem>
         <FormItem label="新密码" prop="newPass">
-          <Input v-model="editPasswordForm.newPass" placeholder="请输入新密码，至少6位字符"></Input>
+          <Input v-model="editPasswordForm.newPass" placeholder="请输入新密码，至少8位字符"></Input>
         </FormItem>
         <FormItem label="确认新密码" prop="rePass">
           <Input v-model="editPasswordForm.rePass" placeholder="请再次输入新密码"></Input>
@@ -352,6 +352,11 @@
           {
             title: 'email',
             key: 'email',
+            sortable: true
+          },
+          {
+            title: '用户有效期',
+            key: 'expire_date',
             sortable: true
           },
           {

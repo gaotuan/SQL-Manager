@@ -32,6 +32,8 @@ util.ajanxerrorcode = function (vm, error) {
       vm.$router.push({name: 'error_401'})
     } else if (error.response.status === 400) {
       Notice.error({title: '警告', desc: '账号密码错误,请重新输入!'})
+    } else if (error.response.status === 402) {
+      Notice.error({title: '警告', desc: '账号已过期,请联系管理员!'})
     } else if (error.response.status === 500) {
       vm.$router.push({name: 'error_500'})
     } else if (error.response.status === 404) {

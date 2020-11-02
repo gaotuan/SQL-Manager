@@ -25,6 +25,9 @@
           <FormItem label="邮箱：">
             <span>{{ userForm.email }}</span>
           </FormItem>
+          <FormItem label="密码有效期：">
+            <span>{{ userForm.expire_date }}</span>
+          </FormItem>
           <FormItem label="具体权限：">
             <br>
             <FormItem label="DDL是否可见:">
@@ -70,11 +73,11 @@
       <h3 slot="header" style="color:#2D8CF0">修改密码</h3>
       <Form ref="editPasswordForm" :model="editPasswordForm" :label-width="100" label-position="right"
             :rules="passwordValidate">
-        <FormItem label="原密码" prop="oldPass" :error="oldPassError">
-          <Input v-model="editPasswordForm.oldPass" placeholder="请输入现在使用的密码" type="password"></Input>
-        </FormItem>
+<!--        <FormItem label="原密码" prop="oldPass" :error="oldPassError">-->
+<!--          <Input v-model="editPasswordForm.oldPass" placeholder="请输入现在使用的密码" type="password"></Input>-->
+<!--        </FormItem>-->
         <FormItem label="新密码" prop="newPass">
-          <Input v-model="editPasswordForm.newPass" placeholder="请输入新密码，至少6位字符" type="password"></Input>
+          <Input v-model="editPasswordForm.newPass" placeholder="请输入新密码，至少8位字符" type="password"></Input>
         </FormItem>
         <FormItem label="确认新密码" prop="rePass">
           <Input v-model="editPasswordForm.rePass" placeholder="请再次输入新密码" type="password"></Input>
@@ -305,8 +308,8 @@
             trigger: 'blur'
           },
             {
-              min: 6,
-              message: '请至少输入6个字符',
+              min: 8,
+              message: '请至少输入8个字符',
               trigger: 'blur'
             },
             {
@@ -364,13 +367,19 @@
     },
     methods: {
       saveEditPass () {
+        var pwdRegex = new RegExp('(?=.*[0-9])(?=.*[A-Z])(?=.*[a-z])(?=.*[^a-zA-Z0-9]).{8,30}')
+        if (!pwdRegex.test(this.editPasswordForm.newPass)) {
+          util.err_notice('您的密码复杂度太低（密码中必须包含大小写字母、数字、特殊字符,密码长度8到32位），请修改密码！');
+          return
+        }
         this.$refs['editPasswordForm'].validate((valid) => {
           if (valid) {
             this.savePassLoading = true
-            axios.post(`${util.url}/otheruser/changepwd`, {
+            // axios.post(`${util.url}/otheruser/changepwd`, {
+            axios.put(util.url + '/userinfo/changepwd', {
               'username': sessionStorage.getItem('user'),
-              'new': this.editPasswordForm.newPass,
-              'old': this.editPasswordForm.oldPass
+              'new': this.editPasswordForm.newPass
+              // 'old': this.editPasswordForm.oldPass
             })
               .then(res => {
                 util.notice(res.data)
