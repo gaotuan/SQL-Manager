@@ -85,6 +85,7 @@ class dashboard(baseview.BaseView):
 
         if args == 'todolist':
             try:
+                Todolist.objects.filter(username=request.user, content__startswith='您的登录密码将在').delete()
                 todo = Todolist.objects.filter(username=request.user).all()
                 return Response([{'title': i.content} for i in todo])
             except Exception as e:
@@ -135,7 +136,6 @@ class dashboard(baseview.BaseView):
                     Todolist.objects.filter(username=request.user, content__startswith='您的登录密码将在').delete()
                     Todolist.objects.create(username=request.user, content=todo)
                 else:
-                    Todolist.objects.filter(username=request.user, content__startswith='您的登录密码将在').delete()
                     Todolist.objects.get_or_create(username=request.user, content=todo)
                 return Response('')
             except Exception as e:
