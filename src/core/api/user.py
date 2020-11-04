@@ -183,6 +183,11 @@ class userinfo(baseview.BaseView):
             group = request.data['group']
             department = request.data['department']
             email = request.data['email']
+            # //添加密码过期时间
+            un_init = util.init_conf()
+            limit = ast.literal_eval(un_init['other'])
+            expire_days = limit.get('expire_days') if limit.get('expire_days') is not None else 90
+            expire_date = (datetime.now() + timedelta(days=expire_days)).isoformat()
         except KeyError as e:
             CUSTOM_ERROR.error(f'{e.__class__.__name__}: {e}')
             return HttpResponse(status=500)
@@ -195,7 +200,9 @@ class userinfo(baseview.BaseView):
                         department=department,
                         group=group,
                         is_staff=1,
-                        email=email)
+                        email=email,
+                        expire_date=expire_date
+                    )
                     user.save()
                     grained.objects.get_or_create(username=username, permissions=PERMISSION)
                     return Response('%s 用户注册成功!' % username)
@@ -205,7 +212,8 @@ class userinfo(baseview.BaseView):
                         password=password,
                         department=department,
                         group=group,
-                        email=email
+                        email=email,
+                        expire_date=expire_date
                     )
                     user.save()
                     grained.objects.get_or_create(username=username, permissions=PERMISSION)
