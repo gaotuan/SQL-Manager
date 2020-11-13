@@ -1,4 +1,4 @@
-#SQL审核平台
+# SQL审核平台
 
 ![](https://img.shields.io/badge/build-release-brightgreen.svg)  
 ![](https://img.shields.io/badge/version-v1.2.0-brightgreen.svg)  
@@ -25,13 +25,20 @@
     - 其他第三方优化功能
 - 工具
     - 基于binlog2sql界面操作 
+    - SQL优化
 - redis操作
     - redis常用命令
     - redis faina,利用monitor生成热点key、top命令等功能
+- 用户管理
+    - 添加用户密码有效期
+    - 用户密码复杂度校验
+- 消息
+    - 增加飞书消息
+    - 用户密码到期提醒
         
 
 
-## Yearing Feature 功能
+#### Yearing Feature 功能
 
 - 数据库字典自动生成
 - SQL查询
@@ -88,28 +95,6 @@
 ## 注意
 1、使用原始inception时要替换connection.py和cursor.py文件
 2、redis-faina地址：git clone https://github.com/Instagram/redis-faina.git
-
-## Snapshot 效果展示
-
-- Login
-
-![login](http://oy0f4k5qi.bkt.clouddn.com/login_yearning.png)
-
-
-- Dashboard
-
-![](http://oy0f4k5qi.bkt.clouddn.com/23123.png)
-
-- SQL语法高亮及自动补全
-
-![](http://oy0f4k5qi.bkt.clouddn.com/dml.png)
-
-- 细粒度的权限分配
-![](http://oy0f4k5qi.bkt.clouddn.com/per.png)
-
-- 我的工单
-![](http://oy0f4k5qi.bkt.clouddn.com/myorder.png)
-
 
 ## License
 
