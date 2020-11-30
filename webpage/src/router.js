@@ -166,6 +166,15 @@ export const appRouter = [
         }
       },
       {
+        path: 'mongo',
+        name: 'mongo',
+        title: 'mongo查询',
+        'icon': 'help-buoy',
+        component: resolve => {
+          require(['./components/Search/mongo.vue'], resolve)
+        }
+      },
+      {
         path: 'metadata',
         name: 'metadata',
         title: '元数据查询',

@@ -398,6 +398,7 @@ class addressing(baseview.BaseView):
                 res = {  'connection': con_name,
                         'custom': custom_com['con_room'],
                         'sql_display': custom_com['sql_display'],
+                        'sql_limit': custom_com['limit'],
                         'data': res_data,
                         'total': total }
 

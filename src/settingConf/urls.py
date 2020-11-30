@@ -41,6 +41,7 @@ from core.api.serachsql import search, query_worklf, Query_order
 from core.api.binlog2sql import Binlog2sql
 from core.api.events import Event
 from core.api.redis import Redis
+from core.api.mongo import Mongo
 from core.api.metadata import Metadata
 from core.api.redis_faina import Redis_faina
 from core.api.slowlog import Slowlog
@@ -58,6 +59,7 @@ urlpatterns = [
     url(r'^api/v1/event', Event.as_view()),
     url(r'^api/v1/redis_faina', Redis_faina.as_view()),
     url(r'^api/v1/redis', Redis.as_view()),
+    url(r'^api/v1/mongo', Mongo.as_view()),
     url(r'^api/v1/query_order', Query_order.as_view()),
     url(r'^api/v1/query_worklf', query_worklf.as_view()),
     url(r'^api/v1/userinfo/(.*)', userinfo.as_view()),

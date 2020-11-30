@@ -19,3 +19,4 @@ aliyun-python-sdk-core
 aliyun-python-sdk-rds
 aliyun-python-sdk-cms
 django-unixtimestampfield
+pymongo==3.11

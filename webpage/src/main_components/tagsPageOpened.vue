@@ -58,6 +58,11 @@
           localStorage.removeItem('redis_pwd')
           localStorage.removeItem('redis_db')
         }
+        if (name === 'mongo') {
+          localStorage.removeItem('mongo_text')
+          localStorage.removeItem('mongo_url')
+          localStorage.removeItem('mongo_db')
+        }
         this.$store.commit('removeTag', name)
         if (this.currentPageName === name) {
           let lastPageName = ''
@@ -88,6 +93,9 @@
           localStorage.removeItem('redis_port')
           localStorage.removeItem('redis_pwd')
           localStorage.removeItem('redis_db')
+          localStorage.removeItem('mongo_text')
+          localStorage.removeItem('mongo_url')
+          localStorage.removeItem('mongo_db')
           this.$store.commit('clearAllTags')
           this.$router.push({
             name: 'home_index'

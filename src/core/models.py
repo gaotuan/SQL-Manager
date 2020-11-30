@@ -269,3 +269,10 @@ class Redis_ops_log(BaseModel):
     ops = models.TextField(null=True)
     create_time = models.DateTimeField(default=now, blank=True, verbose_name="创建时间",db_index=True)
     is_delete = None
+
+class Mongo_ops_log(BaseModel):
+    user = models.CharField(null=True,max_length=50)
+    mongo_instance = models.CharField(null=True,max_length=200)
+    ops = models.TextField(null=True)
+    create_time = models.DateTimeField(default=now, blank=True, verbose_name="创建时间",db_index=True)
+    is_delete = None
