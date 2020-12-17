@@ -22,9 +22,9 @@ util.notice = function (vl) {
   })
 }
 
-util.url = location.protocol + '//' + document.domain + ':8000/api/v1'
+util.url = location.protocol + '//' + document.domain + '/api/v1'
 
-util.auth = location.protocol + '//' + document.domain + ':8000/api-token-auth/'
+util.auth = location.protocol + '//' + document.domain + '/api-token-auth/'
 
 util.ajanxerrorcode = function (vm, error) {
   if (error.response) {
