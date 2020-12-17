@@ -79,12 +79,6 @@
 
 [使用及安装文档](http://supermancookie.com/Yearning-document/)
 
-## Support 支持Yearning
-
-如果Yearning能够帮助到你，请支持下Yearning吧，让Yearning能够持续改善并更新
-
-![](http://oy0f4k5qi.bkt.clouddn.com/alipay.jpg)
-![](http://oy0f4k5qi.bkt.clouddn.com/wechat.jpg)
   
 ## About 联系方式
    
