@@ -13,10 +13,11 @@ simplejson==3.15.0
 gevent==1.3.4
 gunicorn==19.8.1
 wheel==0.29.0
-mysqlclient==1.4.6
+#mysqlclient==1.4.6
 mysql-replication==0.13
 aliyun-python-sdk-core
 aliyun-python-sdk-rds
 aliyun-python-sdk-cms
 django-unixtimestampfield
 pymongo==3.11
+requests
